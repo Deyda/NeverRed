@@ -41,7 +41,7 @@ Documentation for NeverRed, including usage examples, is located here: [Document
 
 ## Versioning
 
-The script uses an enumerated version notation. It can be assumed that the script undergoes changes on a regular basis. The version numbering is therefore intended to make it as easy as possible to track whether you are using the current version. See the [Changelog](https://www.deyda.net/index.php/en/neverred/changelog/) for details of each change.
+The script uses an enumerated version notation. It can be assumed that the script undergoes changes on a regular basis. The version numbering is therefore intended to make it as easy as possible to track whether you are using the current version. See the [Changelog](https://www.deyda.net/index.php/en/neverred-changelog/) for details of each change.
 
 The script automatically detects if it is up to date when started on a system with internet, and if it is not, an automatic update is offered.
 
