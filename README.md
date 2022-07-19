@@ -55,6 +55,8 @@ NeverRed supports Windows PowerShell 5.1 and PowerShell 7.0+. NeverRed should wo
 
 The NeverRed script is published to GitHub and can be found here: [NeverRed](https://github.com/Deyda/NeverRed/). This is the best and recommend method to get NeverRed.
 
+### Start the script
+
 The script can be started directly after download in a administrative powershell window.
 
 #### GUI Method
