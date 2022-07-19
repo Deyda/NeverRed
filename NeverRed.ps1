@@ -3863,6 +3863,8 @@ If ($myWindowsPrincipal.IsInRole($adminRole)) {
     # OK, runs as admin
     Write-Host -Foregroundcolor Green "OK, script is running with admin rights."
     Write-Output ""
+    If (!(Test-Path -Path "$PSScriptRoot\shortcut")) { New-Item -Path "$PSScriptRoot\shortcut" -ItemType Directory | Out-Null }
+    If (!(Test-Path -Path "$PSScriptRoot\shortcut\NeverRed.ico")) {Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/shortcut/NeverRed.ico -OutFile ("$PSScriptRoot\shortcut\" + "NeverRed.ico")}
 }
 Else {
     # Script doesn't run as admin, stop!
@@ -7845,7 +7847,7 @@ Else {
     }
     If (!(Test-Path -Path "$PSScriptRoot\img\Logo_DEYDA.png")) {
         If (!(Test-Path -Path "$PSScriptRoot\img")) { New-Item -Path "$PSScriptRoot\img" -ItemType Directory | Out-Null }
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/Evergreen-Script/main/img/Logo_DEYDA.png -OutFile ("$PSScriptRoot\img\" + "Logo_DEYDA.png")
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/Neverred/master/img/Logo_DEYDA.png -OutFile ("$PSScriptRoot\img\" + "Logo_DEYDA.png")
     }
     gui_mode
 }
