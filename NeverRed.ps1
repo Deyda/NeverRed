@@ -3918,7 +3918,7 @@ $inputXML = @"
                         <RowDefinition Height="60"/>
                         <RowDefinition Height="870"/>
                     </Grid.RowDefinitions>
-                    <Image x:Name="Image_Logo" Height="100" Margin="0,3,30,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Source="$PSScriptRoot\img\Logo_DEYDA_no_cta.png" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ToolTip="www.deyda.net"/>
+                    <Image x:Name="Image_Logo" Height="100" Margin="0,3,30,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Source="$PSScriptRoot\img\Logo_DEYDA.png" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ToolTip="www.deyda.net"/>
                     <Label x:Name="Label_SelectMode" Content="Select Mode" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_Download" Content="Download" HorizontalAlignment="Left" Margin="12,34,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_Install" Content="Install" HorizontalAlignment="Left" Margin="100,34,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"/>
@@ -4194,7 +4194,7 @@ $inputXML = @"
                         <RowDefinition Height="60"/>
                         <RowDefinition Height="850"/>
                     </Grid.RowDefinitions>
-                    <Image x:Name="Image_Logo_Detail" Height="100" Margin="0,3,30,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Source="$PSScriptRoot\img\Logo_DEYDA_no_cta.png" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ToolTip="www.deyda.net"/>
+                    <Image x:Name="Image_Logo_Detail" Height="100" Margin="0,3,30,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Source="$PSScriptRoot\img\Logo_DEYDA.png" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ToolTip="www.deyda.net"/>
                     <Label x:Name="Label_OptionalMode" Content="Optional Mode" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_WhatIf" Content="WhatIf" HorizontalAlignment="Left" Margin="12,34,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_Repository" Content="Installer Repository" HorizontalAlignment="Left" Margin="76,34,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0"/>
