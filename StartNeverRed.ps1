@@ -1,1 +1,1 @@
-& "C:\install\Evergreen-Script\evergreen.ps1" -list -install -file C:\install\Evergreen-Script\LastSetting.txt
+& "C:\install\NeverRed\NeverRed.ps1" -list -install -file C:\install\NeverRed\LastSetting.txt
