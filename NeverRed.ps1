@@ -3708,7 +3708,7 @@ $eVersion = "2.09.03"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$WebResponseVersion = Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/Deyda/NeverRed/main/NeverRed.ps1"
+$WebResponseVersion = Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1"
 If ($WebResponseVersion) {
     $WebVersion = (($WebResponseVersion.tostring() -split "[`r`n]" | select-string "Version:" | Select-Object -First 1) -split ":")[1].Trim()
 }
@@ -3820,7 +3820,7 @@ If (!($NoUpdate)) {
             $update = @'
                 Remove-Item -Path "$PSScriptRoot\Evergreen.ps1" -Force
                 Remove-Item -Path "$PSScriptRoot\NeverRed.ps1" -Force 
-                Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/main/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
+                Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
                 & "$PSScriptRoot\NeverRed.ps1" -ESfile $ESfile
 '@
             $update > $PSScriptRoot\update.ps1
@@ -3831,7 +3831,7 @@ If (!($NoUpdate)) {
             $update = @'
                 Remove-Item -Path "$PSScriptRoot\Evergreen.ps1" -Force
                 Remove-Item -Path "$PSScriptRoot\NeverRed.ps1" -Force
-                Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/main/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
+                Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
                 & "$PSScriptRoot\NeverRed.ps1" -GUIfile $GUIfile
 '@
             $update > $PSScriptRoot\update.ps1
@@ -3847,7 +3847,7 @@ If (!($NoUpdate)) {
                 $update = @'
                     Remove-Item -Path "$PSScriptRoot\Evergreen.ps1" -Force
                     Remove-Item -Path "$PSScriptRoot\NeverRed.ps1" -Force
-                    Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/main/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
+                    Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
                     & "$PSScriptRoot\NeverRed.ps1"
 '@
                 $update > $PSScriptRoot\update.ps1
@@ -7835,7 +7835,7 @@ Else {
         $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
         $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0"
         If (!(Test-Path -Path "$PSScriptRoot\shortcut")) { New-Item -Path "$PSScriptRoot\shortcut" -ItemType Directory | Out-Null }
-        If (!(Test-Path -Path "$PSScriptRoot\shortcut\NeverRed.ico")) {Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/main/shortcut/NeverRed.ico -OutFile ("$PSScriptRoot\shortcut\" + "NeverRed.ico")}
+        If (!(Test-Path -Path "$PSScriptRoot\shortcut\NeverRed.ico")) {Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/shortcut/NeverRed.ico -OutFile ("$PSScriptRoot\shortcut\" + "NeverRed.ico")}
         $shortcut.IconLocation="$PSScriptRoot\shortcut\NeverRed.ico"
         $Shortcut.Arguments = '-noexit -ExecutionPolicy Bypass -file "' + "$PSScriptRoot" + '\NeverRed.ps1"'
         $Shortcut.Save()
