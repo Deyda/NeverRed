@@ -6,11 +6,11 @@
 NeverRed is a simple PowerShell script to download and install the latest version for several common enterprise Windows applications. The script consists a number of simple functions to use in EUC environments like:
 
 * Disabling the auto update of the software (e.g. Adobe Reader, Microsoft Edge, Google Chrome, etc.)
-* Right installers or parameters during installation (e.g. user-based install for Microsoft OneDrive, Slack or Microsoft Teams)
+* Right installers or parameters during installation (e.g. machine-based install for Microsoft OneDrive, Slack or Microsoft Teams)
 * Add customizations after installation (e.g. reg hacks or customizations to files at Microsoft FSLogix or Microsoft Teams)
 * Search for current versions on obscure pages (e.g. Cisco Webex)
 
-Exactly this is where I wanted to remedy with the NeverRed.
+Exactly this is where I wanted to remedy with NeverRed.
 
 * No more searching for the current version on the confusing manufacturer pages.
 * Comparison of the installed version, with the current one from the Internet
@@ -21,9 +21,9 @@ Exactly this is where I wanted to remedy with the NeverRed.
 
 ## How NeverRed Works
 
-NeverRed uses several approach that returns at least the version number and download URI for applications programmatically.
+NeverRed uses several approaches to automatically get the version number and download URL for the applications.
 
-NeverRed uses several strategies and PowerShell Modules to return the latest version of software:
+Various strategies and PowerShell modules are used for this purpose:
 
 1. [Evergreen PowerShell Module by Aaron Parker](https://github.com/aaronparker/evergreen)
 2. [Nevergreen PowerShell Module by Dan Gough](https://github.com/DanGough/Nevergreen)
@@ -31,7 +31,7 @@ NeverRed uses several strategies and PowerShell Modules to return the latest ver
 
 ## Why
 
-There are several community and commercial products that manage application deployment and updates already. This script isn't intended to compete against those.
+There are community and commercial products that manage application deployment and updates already. This script isn't intended to compete against those.
 
 NeverRed's focus is on a simple solution to keep standard software up to date without having to package it or search and compare versions on vendor sites.
 
