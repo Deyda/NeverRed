@@ -57,7 +57,7 @@ The NeverRed script is published to GitHub and can be found here: [NeverRed](htt
 
 ### Start the script
 
-The script can be started directly after download in a administrative powershell window.
+The script can be started directly after download in an administrative PowerShell window.
 
 #### GUI Method
 
@@ -75,5 +75,5 @@ Adaptation of the StartNeverRed.ps1 script to the correct path and the required 
 
 ### Updating the Script
 
-If you have start a previous version of the script in GUI Mode, you get a message that a update is available and whether it should be executed.
+If you have start a previous version of the script in GUI Mode, you get a message that an update is available and whether it should be executed.
 With the parameter -ESFile and -GUIFile the update is performed automatically.
