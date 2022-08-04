@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.06
+  Version:          2.09.07
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -166,7 +166,7 @@ the script checks the version number and will update the package.
   2022-07-04        Correction msedge UviProcessExcludes reg entry / Add Ditto, Opera Browser and XCA to the GUI
   2022-07-06        Correction Microsoft Edge Registry
   2022-07-19        Renaming and correction auto update flow
-  2022-08-04        Auto use PowerShell 7 when it is installed / Implement Global Log
+  2022-08-04        Auto use PowerShell 7 when it is installed / Implement Global Log / Correction Microsoft PowerShell download
 
 .PARAMETER ESfile
 
@@ -3705,7 +3705,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.06"
+$eVersion = "2.09.07"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -12937,9 +12937,9 @@ If ($Download -eq "1") {
     If ($MSPowerShell -eq 1) {
         $Product = "Microsoft PowerShell"
         $PackageName = "PowerShell" + "$MSPowerShellArchitectureClear" + "_$MSPowerShellReleaseClear"
-        $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "$MSPowerShellReleaseClear"}
+        $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "$MSPowerShellReleaseClear"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!($MSPowershellD)) {
-            $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "Stable"}
+            $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "Stable"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         $Version = $MSPowershellD.Version
         $URL = $MSPowershellD.uri
