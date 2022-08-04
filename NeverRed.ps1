@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.03
+  Version:          2.09.04
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -166,6 +166,7 @@ the script checks the version number and will update the package.
   2022-07-04        Correction msedge UviProcessExcludes reg entry / Add Ditto, Opera Browser and XCA to the GUI
   2022-07-06        Correction Microsoft Edge Registry
   2022-07-19        Renaming and correction auto update flow
+  2022-08-04        Auto use PowerShell 7 when it is installed
 
 .PARAMETER ESfile
 
@@ -3704,7 +3705,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.03"
+$eVersion = "2.09.04"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -3721,6 +3722,11 @@ If ($WebVersion -gt $eVersion) {
 $myWindowsID=[System.Security.Principal.WindowsIdentity]::GetCurrent()
 $myWindowsPrincipal=new-object System.Security.Principal.WindowsPrincipal($myWindowsID)
 $adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
+
+# Which PowerShell Version do u use?
+# ========================================================================================================================================
+$PowerShellVersion = $PSVersionTable.PSVersion
+$PSVersion = $PowerShellVersion.Major
 
 # Is there a pending reboot?
 # ========================================================================================================================================
@@ -3771,24 +3777,31 @@ Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "       NeverRed -
 Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "      Manuel Winkel - Deyda Consulting (www.deyda.net)      "
 Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "                      Version $eVersion                       "
 $host.ui.RawUI.WindowTitle ="NeverRed - Update your Software, the lazy way - Manuel Winkel (www.deyda.net) - Version $eVersion"
+
 If (Test-Path "$PSScriptRoot\update.ps1" -PathType leaf) {
     Remove-Item -Path "$PSScriptRoot\Update.ps1" -Force
     Remove-Item -Path "$PSScriptRoot\Rename.ps1" -Force
 } Else {
-    If (!(Test-Path -Path HKLM:SOFTWARE\EvergreenScript)) {
-        New-Item -Path HKLM:SOFTWARE\EvergreenScript -ErrorAction SilentlyContinue | Out-Null
-        New-ItemProperty -Path HKLM:SOFTWARE\EvergreenScript -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+    If (!(Test-Path -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed")) {
+        New-Item -Path "HKLM:\SOFTWARE\Deyda Consulting" -ErrorAction SilentlyContinue | Out-Null
+        New-Item -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -ErrorAction SilentlyContinue | Out-Null
+        New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+        New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name PSVersion -Value "$PSVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
     }
     Else {
-        If (!(Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\EvergreenScript | Select-Object $_.Version).Version -ne "") {
-            New-ItemProperty -Path HKLM:\SOFTWARE\EvergreenScript -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+        If (!(Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Deyda Consulting\NeverRed" | Select-Object $_.Version).Version -ne "") {
+            New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
         } Else {
-            Set-ItemProperty -Path HKLM:\SOFTWARE\EvergreenScript -Name Version -Value "$eVersion" -ErrorAction SilentlyContinue | Out-Null
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name Version -Value "$eVersion" -ErrorAction SilentlyContinue | Out-Null
+        }
+        If (!(Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Deyda Consulting\NeverRed" | Select-Object $_.PSVersion).Version -ne "") {
+            New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name PSVersion -Value "$PSVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+        } Else {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name PSVersion -Value "$PSVersion" -ErrorAction SilentlyContinue | Out-Null
         }
     }
-    If (((Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\EvergreenScript | Select-Object $_.UpdateLanguage).UpdateLanguage -eq "1") -eq $true) {
-    } else {
-        New-ItemProperty -Path HKLM:SOFTWARE\EvergreenScript -Name UpdateLanguage -Value 1 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
+    If (((Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Deyda Consulting\NeverRed" | Select-Object $_.UpdateLanguage).UpdateLanguage -eq "1") -eq $true) {} else {
+        New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name UpdateLanguage -Value 1 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
     }
 }
 
@@ -3814,16 +3827,21 @@ If (!($NoUpdate)) {
         # No new version available
         Write-Host -Foregroundcolor Green "OK, NeverRed is newest version!"
         Write-Output ""
+
         # Change old LastSetting.txt files to the new format (AddScript)
-        If (!(Test-Path -Path HKLM:SOFTWARE\EvergreenScript)) {
-            New-Item -Path HKLM:SOFTWARE\EvergreenScript -ErrorAction SilentlyContinue | Out-Null
-            New-ItemProperty -Path HKLM:SOFTWARE\EvergreenScript -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+        If (!(Test-Path -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed")) {
+            New-Item -Path "HKLM:\SOFTWARE\Deyda Consulting" -ErrorAction SilentlyContinue | Out-Null
+            New-Item -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -ErrorAction SilentlyContinue | Out-Null
+            New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+            New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name PSVersion -Value "$PSVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
         }
         Else {
-            If (!(Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\EvergreenScript | Select-Object $_.Version).Version -ne "") {
-                New-ItemProperty -Path HKLM:\SOFTWARE\EvergreenScript -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+            If (!(Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Deyda Consulting\NeverRed" | Select-Object $_.Version).Version -ne "") {
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name Version -Value "$eVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name PSVersion -Value "$PSVersion" -PropertyType STRING -ErrorAction SilentlyContinue | Out-Null
             } Else {
-                Set-ItemProperty -Path HKLM:\SOFTWARE\EvergreenScript -Name Version -Value "$eVersion" -ErrorAction SilentlyContinue | Out-Null
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name Version -Value "$eVersion" -ErrorAction SilentlyContinue | Out-Null
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Deyda Consulting\NeverRed" -Name PSVersion -Value "$PSVersion" -ErrorAction SilentlyContinue | Out-Null
             }
         }
     }
@@ -3878,6 +3896,7 @@ If ($myWindowsPrincipal.IsInRole($adminRole)) {
     # OK, runs as admin
     Write-Host -Foregroundcolor Green "OK, script is running with admin rights."
     Write-Output ""
+
     If (!(Test-Path -Path "$PSScriptRoot\shortcut")) { New-Item -Path "$PSScriptRoot\shortcut" -ItemType Directory | Out-Null }
     If (!(Test-Path -Path "$PSScriptRoot\shortcut\NeverRed.ico")) {Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/shortcut/NeverRed.ico -OutFile ("$PSScriptRoot\shortcut\" + "NeverRed.ico")}
 }
@@ -3885,6 +3904,19 @@ Else {
     # Script doesn't run as admin, stop!
     Write-Host -Foregroundcolor Red "Error! Script is NOT running with admin rights!"
     Break
+}
+
+Write-Host -Foregroundcolor DarkGray "Which PowerShell version is used??"
+If ($PowerShellVersion.Major -lt "7") {
+    # PowerShell Version < 7
+    Write-Host -Foregroundcolor Green "PowerShell $PowerShellVersion is used."
+    Write-Host -Foregroundcolor Yellow "PowerShell 7 is not used and therefore the download of WebexVDI is unfortunately not possible."
+    Write-Output ""
+}
+Else {
+    # PowerShell Version > 7
+    Write-Host -Foregroundcolor Green "PowerShell $PowerShellVersion is used."
+    Write-Output ""
 }
 
 If ($ESfile -eq $False) {
@@ -7845,12 +7877,24 @@ Else {
     If ((Test-Path -Path "$env:USERPROFILE\Desktop\Evergreen Script.lnk")) {
         Remove-Item "$env:USERPROFILE\Desktop\Evergreen Script.lnk"
     }
+    If (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
+        $sh = New-Object -ComObject WScript.Shell
+        $target = $sh.CreateShortcut("$env:USERPROFILE\Desktop\NeverRed.lnk").TargetPath
+        If ($target -ne "$env:ProgramFiles\PowerShell\7") {
+            Remove-Item "$env:USERPROFILE\Desktop\NeverRed.lnk"
+        } 
+    }
     If (!(Test-Path -Path "$env:USERPROFILE\Desktop\NeverRed.lnk")) {
         $WScriptShell = New-Object -ComObject 'WScript.Shell'
         $ShortcutFile = "$env:USERPROFILE\Desktop\NeverRed.lnk"
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-        $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-        $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0"
+        If (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
+            $Shortcut.TargetPath = '"C:\Program Files\PowerShell\7\pwsh.exe"'
+            $Shortcut.WorkingDirectory = '"C:\Program Files\PowerShell\7\"' 
+        } else {
+            $Shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+            $Shortcut.WorkingDirectory = "C:\Windows\System32\WindowsPowerShell\v1.0"
+        }
         If (!(Test-Path -Path "$PSScriptRoot\shortcut")) { New-Item -Path "$PSScriptRoot\shortcut" -ItemType Directory | Out-Null }
         If (!(Test-Path -Path "$PSScriptRoot\shortcut\NeverRed.ico")) {Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/shortcut/NeverRed.ico -OutFile ("$PSScriptRoot\shortcut\" + "NeverRed.ico")}
         $shortcut.IconLocation="$PSScriptRoot\shortcut\NeverRed.ico"
