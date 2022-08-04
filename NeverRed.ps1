@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.05
+  Version:          2.09.06
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -3705,7 +3705,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.05"
+$eVersion = "2.09.06"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -3774,7 +3774,7 @@ If ((Test-RegistryValue -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon"
 # ========================================================================================================================================
 $GlobalLogDir = "$PSScriptRoot\_Global Logs"
 If (!(Test-Path $GlobalLogDir)) { New-Item -Path $GlobalLogDir -ItemType directory | Out-Null }
-$LogGlobal = "$PSScriptRoot\_Global Logs\" + "GlobalLog.log"
+$LogGlobal = "$PSScriptRoot\_Global Logs\GlobalLog - " + $env:computername + ".log"
 Start-Transcript $LogGlobal | Out-Null
 
 # Script Version
