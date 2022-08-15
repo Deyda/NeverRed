@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.08
+  Version:          2.09.09
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -167,7 +167,7 @@ the script checks the version number and will update the package.
   2022-07-06        Correction Microsoft Edge Registry
   2022-07-19        Renaming and correction auto update flow
   2022-08-04        Auto use PowerShell 7 when it is installed / Implement Global Log / Correction Microsoft PowerShell download
-  2022-08-15        Add Microsoft PowerToys silent install parameter
+  2022-08-15        Add Microsoft PowerToys silent install parameter / Add new filter to PowerShell install detection
 
 .PARAMETER ESfile
 
@@ -3706,7 +3706,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.08"
+$eVersion = "2.09.09"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -19258,9 +19258,9 @@ If ($Install -eq "1") {
         If (!($Version)) {
             $Version = $MSPowershellD.Version
         }
-        $MSPowerShellV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PowerShell*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $MSPowerShellV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PowerShell*" -and $_.Publisher -like "Microsoft Corporation"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$MSPowerShellV) {
-            $MSPowerShellV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PowerShell*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            $MSPowerShellV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PowerShell*" -and $_.Publisher -like "Microsoft Corporation"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($MSPowerShellV) {$MSPowerShellV = $MSPowerShellV -replace ".{2}$"}
         $MSPowerShellLog = "$LogTemp\MSPowerShell.log"
