@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.09
+  Version:          2.09.10
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -168,6 +168,7 @@ the script checks the version number and will update the package.
   2022-07-19        Renaming and correction auto update flow
   2022-08-04        Auto use PowerShell 7 when it is installed / Implement Global Log / Correction Microsoft PowerShell download
   2022-08-15        Add Microsoft PowerToys silent install parameter / Add new filter to PowerShell install detection
+  2022-08-17        Add MUI to Adobe Acrobat Reader DC
 
 .PARAMETER ESfile
 
@@ -3706,7 +3707,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.09"
+$eVersion = "2.09.10"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4303,6 +4304,7 @@ $inputXML = @"
                         <ListBoxItem Content="Swedish"/>
                         <ListBoxItem Content="Turkish"/>
                         <ListBoxItem Content="Ukrainian"/>
+                        <ListBoxItem Content="MUI"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_CiscoWebexTeams_Detail" Content="Cisco Webex Teams" HorizontalAlignment="Left" Margin="12,105,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <ComboBox x:Name="Box_CiscoWebexTeams_Architecture" HorizontalAlignment="Left" Margin="221,102,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="0" Grid.Row="1">
@@ -8013,6 +8015,7 @@ If ($AdobeReaderDC_Language -ne "") {
         20 { $AdobeLanguageClear = 'Swedish'}
         21 { $AdobeLanguageClear = 'Turkish'}
         22 { $AdobeLanguageClear = 'Ukrainian'}
+        23 { $AdobeLanguageClear = 'MUI'}
     }
 }
 Else {
@@ -10080,10 +10083,14 @@ If ($Download -eq "1") {
     If ($AdobeReaderDC -eq 1) {
         $Product = "Adobe Reader DC"
         $PackageName = "Adobe_Reader_DC_"
-        $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear"}
+        If ($AdobeLanguageClear -eq "MUI") {
+            $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear" -and $_.Architecture -eq "$AdobeArchitectureClear"}
+        } else {
+            $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear"}
+        }
         $Version = $AdobeReaderD.Version
         $URL = $AdobeReaderD.uri
-        If ($AdobeArchitectureClear -eq "x64") {
+        If ($AdobeArchitectureClear -eq "x64" -and $AdobeLanguageClear -ne "MUI") {
             $Adobex64URL = $URL.Replace("reader", "acrobat")
             $URL = $Adobex64URL.Replace("AcroRdrDC", "AcroRdrDCx64")
         }
