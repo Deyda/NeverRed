@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.10
+  Version:          2.09.11
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -169,6 +169,7 @@ the script checks the version number and will update the package.
   2022-08-04        Auto use PowerShell 7 when it is installed / Implement Global Log / Correction Microsoft PowerShell download
   2022-08-15        Add Microsoft PowerToys silent install parameter / Add new filter to PowerShell install detection
   2022-08-17        Add MUI to Adobe Acrobat Reader DC
+  2022-08-23        Change Desktop detection
 
 .PARAMETER ESfile
 
@@ -3707,7 +3708,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.10"
+$eVersion = "2.09.11"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -7884,19 +7885,20 @@ Else {
     Clear-Variable -name Download,Install,7ZIP,AdobeProDC,AdobeReaderDC,BISF,Citrix_Hypervisor_Tools,Filezilla,Firefox,Foxit_Reader,MSFSLogix,Greenshot,GoogleChrome,KeePass,mRemoteNG,MS365Apps,MSEdge,MSOffice,MSTeams,NotePadPlusPlus,MSOneDrive,OpenJDK,OracleJava8,TreeSize,VLCPlayer,VMWareTools,WinSCP,Citrix_WorkspaceApp,Architecture,FirefoxChannel,CitrixWorkspaceAppRelease,Language,MS365AppsChannel,MSOneDriveRing,MSTeamsRing,TreeSizeType,IrfanView,MSTeamsNoAutoStart,deviceTRUST,MSDotNetFramework,MSDotNetFrameworkChannel,MSPowerShell,MSPowerShellRelease,RemoteDesktopManager,RemoteDesktopManagerType,Slack,ShareX,Zoom,ZoomCitrixClient,deviceTRUSTPackage,deviceTRUSTClient,deviceTRUSTConsole,deviceTRUSTHost,MSEdgeChannel,Installer,MSVisualStudioCodeChannel,MSVisualStudio,MSVisualStudioCode,TeamViewer,Putty,PaintDotNet,MSPowerToys,GIMP,MSVisualStudioEdition,PuttyChannel,Wireshark,MSAzureDataStudio,MSAzureDataStudioChannel,ImageGlass,MSFSLogixChannel,uberAgent,1Password,CiscoWebexClient,ControlUpAgent,ControlUpAgentFramework,ControlUpConsole,MSSQLServerManagementStudio,MSAVDRemoteDesktop,MSAVDRemoteDesktopChannel,MSPowerBIDesktop,RDAnalyzer,SumatraPDF,CiscoWebexTeams,CitrixFiles,FoxitPDFEditor,GitForWindows,LogMeInGoToMeeting,MSAzureCLI,MSPowerBIReportBuilder,MSSysinternals,NMap,PeaZip,TechSmithCamtasia,TechSmithSnagit,WinMerge,WhatIf,CleanUp,7Zip_Architecture,AdobeReaderDC_Architecture,AdobeReaderDC_Language,CiscoWebexTeams_Architecture,CitrixHypervisorTools_Architecture,ControlUpAgent_Architecture,deviceTRUST_Architecture,FoxitPDFEditor_Language,FoxitReader_Language,GitForWindows_Architecture,GoogleChrome_Architecture,ImageGlass_Architecture,IrfanView_Architecture,Keepass_Language,MSDotNetFramework_Architecture,MS365Apps_Architecture,MS365Apps_Language,MS365Apps_Visio,MS365Apps_Visio_Language,MS365Apps_Project,MS365Apps_Project_Language,MSAVDRemoteDesktop_Architecture,MSEdge_Architecture,MSFSLogix_Architecture,MSOffice_Architecture,MSOneDrive_Architecture,MSPowerBIDesktop_Architecture,MSPowerShell_Architecture,MSSQLServerManagementStudio_Language,MSTeams_Architecture,MSVisualStudioCode_Architecture,Firefox_Architecture,Firefox_Language,NotePadPlusPlus_Architecture,OpenJDK_Architecture,OracleJava8_Architecture,PeaZip_Architecture,Putty_Architecture,Slack_Architecture,SumatraPDF_Architecture,TechSmithSnagIt_Architecture,VLCPlayer_Architecture,VMWareTools_Architecture,WinMerge_Architecture,Wireshark_Architecture,IrfanView_Language,MSOffice_Language,MSEdgeWebView2,MSEdgeWebView2_Architecture,AutodeskDWGTrueView,MindView7,MindView7_Language,PDFsam,MSOfficeVersion,OpenShellMenu,PDFForgeCreator,TotalCommander,LogMeInGoToMeeting_Installer,MSAzureDataStudio_Installer,MSVisualStudioCode_Installer,MS365Apps_Installer,MSTeams_Installer,Zoom_Installer,MSOneDrive_Installer,Slack_Installer,pdfforgePDFCreatorChannel,TotalCommander_Architecture,Repository,CleanUpStartMenu,MSVisualCPlusPlusRuntime,MSVisualCPlusPlusRuntimeRelease,MSVisualCPlusPlusRuntime_Architecture,MSOffice_Visio,MSOffice_Visio_Language,MSOffice_Project,MSOffice_Project_Language,Zoom_Architecture,CiscoWebexTeamsClient,ControlUpAgentPlugin,MozillaThunderbird,PDF24Creator,WinRAR,AdobeProDC_Architecture,GoogleChromeChannel,OpenJDKPackage,PaintDotNet_Architecture,WinRAR_Architecture,WinRAR_Language,WinRARChannel,MozillaThunderbird_Architecture,MozillaThunderbird_Language,MSAzureDataStudio_Architecture,TeamViewer_Architecture,OperaBrowser,OperaBrowser_Architecture,Ditto,Ditto_Architecture,Ditto_Channel,XCA -ErrorAction SilentlyContinue
 
     # Shortcut Creation
-    If ((Test-Path -Path "$env:USERPROFILE\Desktop\Evergreen Script.lnk")) {
-        Remove-Item "$env:USERPROFILE\Desktop\Evergreen Script.lnk"
+    $Desktop = [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
+    If ((Test-Path -Path "$Desktop\Evergreen Script.lnk")) {
+        Remove-Item "$Desktop\Evergreen Script.lnk"
     }
     If (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
         $sh = New-Object -ComObject WScript.Shell
-        $target = $sh.CreateShortcut("$env:USERPROFILE\Desktop\NeverRed.lnk").TargetPath
+        $target = $sh.CreateShortcut("$Desktop\NeverRed.lnk").TargetPath
         If ($target -ne "$env:ProgramFiles\PowerShell\7") {
-            Remove-Item "$env:USERPROFILE\Desktop\NeverRed.lnk"
+            Remove-Item "$Desktop\NeverRed.lnk"
         } 
     }
-    If (!(Test-Path -Path "$env:USERPROFILE\Desktop\NeverRed.lnk")) {
+    If (!(Test-Path -Path "$Desktop\NeverRed.lnk")) {
         $WScriptShell = New-Object -ComObject 'WScript.Shell'
-        $ShortcutFile = "$env:USERPROFILE\Desktop\NeverRed.lnk"
+        $ShortcutFile = "$Desktop\NeverRed.lnk"
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
         If (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
             $Shortcut.TargetPath = '"C:\Program Files\PowerShell\7\pwsh.exe"'
@@ -19634,7 +19636,7 @@ If ($Install -eq "1") {
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     DS_WriteLog "I" "Installation $Product $MSTeamsRingClear ring $MSTeamsArchitectureClear finished!" $LogFile
                     If ($WhatIf -eq '0') {
-                        If (Test-Path "$env:USERPROFILE\Desktop\Microsoft Teams.lnk") {Remove-Item -Path "$env:USERPROFILE\Desktop\Microsoft Teams.lnk" -Force}
+                        If (Test-Path "$Desktop\Microsoft Teams.lnk") {Remove-Item -Path "$Desktop\Microsoft Teams.lnk" -Force}
                         If ($CleanUpStartMenu) {
                             If (Test-Path -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams.lnk") {Remove-Item -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams.lnk" -Force}
                         }
@@ -21699,7 +21701,7 @@ If ($Install -eq "1") {
                 If ($inst) {
                     Wait-Process -InputObject $inst
                     If ($WhatIf -eq '0') {
-                        If (Test-Path "$env:USERPROFILE\Desktop\SumatraPDF.lnk") {Remove-Item -Path "$env:USERPROFILE\Desktop\SumatraPDF.lnk" -Force}
+                        If (Test-Path "$Desktop\SumatraPDF.lnk") {Remove-Item -Path "$Desktop\SumatraPDF.lnk" -Force}
                         If ($CleanUpStartMenu) {
                             If (Test-Path -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\SumatraPDF.lnk") {Remove-Item -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\SumatraPDF.lnk" -Force}
                         }
