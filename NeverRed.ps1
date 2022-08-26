@@ -3920,7 +3920,7 @@ Write-Host -Foregroundcolor DarkGray "Which PowerShell version is used??"
 If ($PowerShellVersion.Major -lt "7") {
     # PowerShell Version < 7
     Write-Host -Foregroundcolor Green "PowerShell $PowerShellVersion is used."
-    Write-Host -Foregroundcolor Yellow "PowerShell 7 is not used and therefore the download of WebexVDI is unfortunately not possible."
+    Write-Host -Foregroundcolor Yellow "PowerShell 7 is not used and therefore the download of ZoomVDI is unfortunately not possible."
     Write-Output ""
 }
 Else {
