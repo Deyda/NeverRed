@@ -170,6 +170,7 @@ the script checks the version number and will update the package.
   2022-08-15        Add Microsoft PowerToys silent install parameter / Add new filter to PowerShell install detection
   2022-08-17        Add MUI to Adobe Acrobat Reader DC
   2022-08-23        Change Desktop detection
+  2022-08-30        Suppress warning message at Zoom download
 
 .PARAMETER ESfile
 
