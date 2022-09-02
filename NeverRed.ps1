@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.11
+  Version:          2.09.12
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -171,6 +171,7 @@ the script checks the version number and will update the package.
   2022-08-17        Add MUI to Adobe Acrobat Reader DC
   2022-08-23        Change Desktop detection
   2022-08-30        Suppress warning message at Zoom download
+  2022-09-02        Change VMware Tools download methode
 
 .PARAMETER ESfile
 
@@ -358,6 +359,51 @@ Function Get-7-Zip {
 
         $PSObjectx64 = [PSCustomObject] @{
         Version      = $Version
+        Architecture = "x64"
+        URI          = $x64
+        }
+        Write-Output -InputObject $PSObjectx32
+        Write-Output -InputObject $PSObjectx64
+    }
+}
+
+# Function VMware Tools Download
+#========================================================================================================================================
+Function Get-VMwareTools {
+    [OutputType([System.Management.Automation.PSObject])]
+    [CmdletBinding()]
+    Param ()
+        $urlx64 = "https://packages.vmware.com/tools/releases/latest/windows/x64/"
+        $urlx86 = "https://packages.vmware.com/tools/releases/latest/windows/x86/"
+    Try {
+        $webx64 = Invoke-WebRequest -UseBasicParsing -Uri $urlx64 -ErrorAction SilentlyContinue
+        $webx86 = Invoke-WebRequest -UseBasicParsing -Uri $urlx86 -ErrorAction SilentlyContinue
+    }
+    Catch {
+        Throw "Failed to connect to URL: $urlx64 with error $_."
+        Break
+    }
+    Finally {
+        $regexAppVersion = '-[0-9][0-9].[0-9].[0-9]-'
+        $regexAppURL = 'VMware-tools-.*exe'
+        $webVersionx64 = $webx64.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webURLx64 = $webx64.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webVersionx64 = $webVersionx64.Replace('-','')
+        $webVersionx86 = $webx86.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webURLx86 = $webx86.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webVersionx86 = $webVersionx86.Replace('-','')
+        $x32 = "https://packages.vmware.com/tools/releases/latest/windows/x86/$webURLx86"
+        $x64 = "https://packages.vmware.com/tools/releases/latest/windows/x64/$webURLx64"
+
+
+        $PSObjectx32 = [PSCustomObject] @{
+        Version      = $webVersionx86
+        Architecture = "x86"
+        URI          = $x32
+        }
+
+        $PSObjectx64 = [PSCustomObject] @{
+        Version      = $webVersionx64
         Architecture = "x64"
         URI          = $x64
         }
@@ -3709,7 +3755,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.11"
+$eVersion = "2.09.12"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -15473,7 +15519,7 @@ If ($Download -eq "1") {
     If ($VMWareTools -eq 1) {
         $Product = "VMWare Tools"
         $PackageName = "VMWareTools_" + "$VMWareToolsArchitectureClear"
-        $VMWareToolsD = Get-EvergreenApp -Name VMwareTools | Where-Object { $_.Architecture -eq "$VMWareToolsArchitectureClear" }
+        $VMWareToolsD = Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMWareToolsArchitectureClear" }
         $Version = $VMWareToolsD.Version
         $URL = $VMWareToolsD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
