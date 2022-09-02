@@ -10210,6 +10210,7 @@ If ($Download -eq "1") {
                     Remove-Item -Path "$PSScriptRoot\_ADMX\$Product\en-US\AcrobatReaderDC.adml" -ErrorAction SilentlyContinue
                 }
                 Move-Item -Path "$PSScriptRoot\$Product\en-US\AcrobatReaderDC.adml" -Destination "$PSScriptRoot\_ADMX\$Product\en-US" -ErrorAction SilentlyContinue
+                Remove-Item -Path "$PSScriptRoot\$Product\en-US" -Force -Recurse
             }
             Write-Host -ForegroundColor Green "Download of the new ADMX files version $VersionP finished!"
             Write-Output ""
