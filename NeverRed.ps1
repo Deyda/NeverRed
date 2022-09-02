@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.12
+  Version:          2.09.13
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -171,7 +171,7 @@ the script checks the version number and will update the package.
   2022-08-17        Add MUI to Adobe Acrobat Reader DC
   2022-08-23        Change Desktop detection
   2022-08-30        Suppress warning message at Zoom download
-  2022-09-02        Change VMware Tools download methode
+  2022-09-02        Change VMware Tools download methode / Add Chinese and Portuguese Language to Adobe Reader DC / Correction of x64 Adobe Reader DC download for several languages
 
 .PARAMETER ESfile
 
@@ -3755,7 +3755,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.12"
+$eVersion = "2.09.13"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4330,6 +4330,7 @@ $inputXML = @"
                     </ComboBox>
                     <ComboBox x:Name="Box_AdobeReaderDC_Language" HorizontalAlignment="Left" Margin="286,77,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="0" Grid.Row="1">
                         <ListBoxItem Content="-"/>
+                        <ListBoxItem Content="Chinese (Simplified)"/>
                         <ListBoxItem Content="Croatian"/>
                         <ListBoxItem Content="Czech"/>
                         <ListBoxItem Content="Danish"/>
@@ -4344,6 +4345,7 @@ $inputXML = @"
                         <ListBoxItem Content="Korean"/>
                         <ListBoxItem Content="Norwegian"/>
                         <ListBoxItem Content="Polish"/>
+                        <ListBoxItem Content="Portuguese"/>
                         <ListBoxItem Content="Romanian"/>
                         <ListBoxItem Content="Russian"/>
                         <ListBoxItem Content="Slovak"/>
@@ -8042,37 +8044,37 @@ Else {
 
 If ($AdobeReaderDC_Language -ne "") {
     Switch ($AdobeReaderDC_Language) {
-        1 { $AdobeLanguageClear = 'Croatian'}
-        2 { $AdobeLanguageClear = 'Czech'}
-        3 { $AdobeLanguageClear = 'Danish'}
-        4 { $AdobeLanguageClear = 'Dutch'}
-        5 { $AdobeLanguageClear = 'English'}
-        6 { $AdobeLanguageClear = 'Finnish'}
-        7 { $AdobeLanguageClear = 'French'}
-        8 { $AdobeLanguageClear = 'German'}
-        9 { $AdobeLanguageClear = 'Hungarian'}
-        10 { $AdobeLanguageClear = 'Italian'}
-        11 { $AdobeLanguageClear = 'Japanese'}
-        12 { $AdobeLanguageClear = 'Korean'}
-        13 { $AdobeLanguageClear = 'Norwegian'}
-        14 { $AdobeLanguageClear = 'Polish'}
-        15 { $AdobeLanguageClear = 'Romanian'}
-        16 { $AdobeLanguageClear = 'Russian'}
-        17 { $AdobeLanguageClear = 'Slovak'}
-        18 { $AdobeLanguageClear = 'Slovenian'}
-        19 { $AdobeLanguageClear = 'Spanish'}
-        20 { $AdobeLanguageClear = 'Swedish'}
-        21 { $AdobeLanguageClear = 'Turkish'}
-        22 { $AdobeLanguageClear = 'Ukrainian'}
-        23 { $AdobeLanguageClear = 'MUI'}
+        1 { $AdobeLanguageClear = 'Chinese (Simplified)'}
+        2 { $AdobeLanguageClear = 'Croatian'}
+        3 { $AdobeLanguageClear = 'Czech'}
+        4 { $AdobeLanguageClear = 'Danish'}
+        5 { $AdobeLanguageClear = 'Dutch'}
+        6 { $AdobeLanguageClear = 'English'}
+        7 { $AdobeLanguageClear = 'Finnish'}
+        8 { $AdobeLanguageClear = 'French'}
+        9 { $AdobeLanguageClear = 'German'}
+        10 { $AdobeLanguageClear = 'Hungarian'}
+        11 { $AdobeLanguageClear = 'Italian'}
+        12 { $AdobeLanguageClear = 'Japanese'}
+        13 { $AdobeLanguageClear = 'Korean'}
+        14 { $AdobeLanguageClear = 'Norwegian'}
+        15 { $AdobeLanguageClear = 'Polish'}
+        16 { $AdobeLanguageClear = 'Portuguese'}
+        17 { $AdobeLanguageClear = 'Romanian'}
+        18 { $AdobeLanguageClear = 'Russian'}
+        19 { $AdobeLanguageClear = 'Slovak'}
+        20 { $AdobeLanguageClear = 'Slovenian'}
+        21 { $AdobeLanguageClear = 'Spanish'}
+        22 { $AdobeLanguageClear = 'Swedish'}
+        23 { $AdobeLanguageClear = 'Turkish'}
+        24 { $AdobeLanguageClear = 'Ukrainian'}
+        25 { $AdobeLanguageClear = 'MUI'}
     }
 }
 Else {
     $AdobeLanguageClear = $LanguageClear
     Switch ($LanguageClear) {
-        Portuguese { $AdobeLanguageClear = 'English'}
         Arabic { $AdobeLanguageClear = 'English'}
-        Chinese { $AdobeLanguageClear = 'English'}
         Hebrew { $AdobeLanguageClear = 'English'}
     }
 }
@@ -10140,8 +10142,17 @@ If ($Download -eq "1") {
         $Version = $AdobeReaderD.Version
         $URL = $AdobeReaderD.uri
         If ($AdobeArchitectureClear -eq "x64" -and $AdobeLanguageClear -ne "MUI") {
-            $Adobex64URL = $URL.Replace("reader", "acrobat")
-            $URL = $Adobex64URL.Replace("AcroRdrDC", "AcroRdrDCx64")
+            If ($AdobeLanguageClear -eq "German" -or $AdobeLanguageClear -eq "English" -or $AdobeLanguageClear -eq "French" -or $AdobeLanguageClear -eq "Japanese" -or $AdobeLanguageClear -eq "Spanish") {
+                $Adobex64URL = $URL.Replace("reader", "acrobat")
+                $URL = $Adobex64URL.Replace("AcroRdrDC", "AcroRdrDCx64")
+            } else {
+                $AdobeReaderDx64 = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "MUI" -and $_.Architecture -eq "x64"}
+                $URLx64 = $AdobeReaderDx64.uri
+                $Version = $AdobeReaderDx64.Version
+                $URLsplit = $URL.Split("_")
+                $URLx64split = $URLx64.Split("_")[0]
+                $URL = $URLx64split + "_" + $URLsplit[1] + "_" + $URLsplit[2]
+            }
         }
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
