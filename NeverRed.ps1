@@ -15917,7 +15917,7 @@ If ($Download -eq "1") {
         If ($ZoomCitrixClient -eq 1) {
             $Product2 = "Zoom Citrix HDX Media Plugin"
             $PackageName2 = "ZoomCitrixHDXMediaPlugin"
-            $ZoomCitrix = Get-NevergreenApp -Name Zoom | Where-Object {$_.Name -like "*Citrix*"}
+            $ZoomCitrix = Get-NevergreenApp -Name Zoom -EA SilentlyContinue | Where-Object {$_.Name -like "*Citrix*"}
             $URL2 = $ZoomCitrix.uri
             $Version2 = $ZoomCitrix.version
             $InstallerType2 = "msi"
