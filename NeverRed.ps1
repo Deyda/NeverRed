@@ -172,6 +172,7 @@ the script checks the version number and will update the package.
   2022-08-23        Change Desktop detection
   2022-08-30        Suppress warning message at Zoom download
   2022-09-02        Change VMware Tools download methode / Add Chinese and Portuguese Language to Adobe Reader DC / Correction of x64 Adobe Reader DC download for several languages
+  2022-09-08        Change MS PowerToys install behaviour
 
 .PARAMETER ESfile
 
@@ -19396,9 +19397,7 @@ If ($Install -eq "1") {
         Write-Host "Current Version:  $MSPowerToysV"
         If ($MSPowerToysV -lt $Version) {
             $Options = @(
-                "/install
-                /quiet
-                /norestart"
+                "/install /quiet /norestart"
             )
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
