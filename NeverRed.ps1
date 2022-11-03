@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.15
+  Version:          2.09.16
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -174,6 +174,7 @@ the script checks the version number and will update the package.
   2022-09-02        Change VMware Tools download methode / Add Chinese and Portuguese Language to Adobe Reader DC / Correction of x64 Adobe Reader DC download for several languages
   2022-09-08        Change MS PowerToys install behaviour / Correction XCA download
   2022-09-12        Error Action supress for Mozilla Firefox
+  2022-11-03        Query adjusted so that only 1 result is returned for Mozilla Firefox
 
 .PARAMETER ESfile
 
@@ -3757,7 +3758,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.15"
+$eVersion = "2.09.16"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -13837,7 +13838,7 @@ If ($Download -eq "1") {
     If ($Firefox -eq 1) {
         $Product = "Mozilla Firefox"
         $PackageName = "Firefox_Setup_" + "$FirefoxChannelClear" + "$FirefoxArchitectureClear" + "_$FFLanguageClear"
-        $FirefoxD = Get-EvergreenApp -Name MozillaFirefox -AppParams @{Language="$FFLanguageClear"} -WarningAction silentlyContinue -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "msi" -and $_.Architecture -eq "$FirefoxArchitectureClear" -and $_.Channel -like "*$FirefoxChannelClear*"}
+        $FirefoxD = Get-EvergreenApp -Name MozillaFirefox -AppParams @{Language="$FFLanguageClear"} -WarningAction silentlyContinue -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "msi" -and $_.Architecture -eq "$FirefoxArchitectureClear" -and $_.Channel -like "*$FirefoxChannelClear*"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         $Version = $FirefoxD.Version
         $URL = $FirefoxD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
