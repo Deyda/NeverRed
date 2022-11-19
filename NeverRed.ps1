@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.09.16
+  Version:          2.09.17
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -175,6 +175,7 @@ the script checks the version number and will update the package.
   2022-09-08        Change MS PowerToys install behaviour / Correction XCA download
   2022-09-12        Error Action supress for Mozilla Firefox
   2022-11-03        Query adjusted so that only 1 result is returned for Mozilla Firefox
+  2022-11-19        Correction Citrix Workspace App CR download
 
 .PARAMETER ESfile
 
@@ -3758,7 +3759,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.09.16"
+$eVersion = "2.09.17"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -10531,6 +10532,25 @@ If ($Download -eq "1") {
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
         $CurrentVersion = Get-Content -Path "$PSScriptRoot\Citrix\$Product\Version.txt" -EA SilentlyContinue
+        If ($CurrentVersion) {
+            $CurrentWSASplit = $CurrentVersion.split(".")
+            $CurrentWSAStrings = ([regex]::Matches($CurrentVersion, "\." )).count
+            $CurrentWSAStringTwo = ([regex]::Matches($CurrentWSASplit[1], "." )).count
+            If ($CurrentWSAStringTwo -lt "2") {
+                $CurrentWSASplit[1] = "0" + $CurrentWSASplit[1]
+            }
+            Switch ($CurrentWSAStrings) {
+                1 {
+                    $NewCurrentVersion = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1]
+                }
+                2 {
+                    $NewCurrentVersion = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2]
+                }
+                3 {
+                    $NewCurrentVersion = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2] + "." + $CurrentWSASplit[3]
+                }
+            }
+        }
         If ($WhatIf -eq '0') {
             If (!(Test-Path -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility")) { New-Item -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility" -ItemType Directory | Out-Null }
         }
@@ -10546,19 +10566,19 @@ If ($Download -eq "1") {
         }
         Write-Host -ForegroundColor Magenta "Download $Product"
         Write-Host "Download Version: $Version"
-        Write-Host "Current Version:  $CurrentVersion"
-        If ($CurrentVersion -lt $Version) {
+        Write-Host "Current Version:  $NewCurrentVersion"
+        If ($NewCurrentVersion -lt $Version) {
             Write-Host -ForegroundColor Green "Update available"
             If ($WhatIf -eq '0') {
                 If (!(Test-Path -Path "$PSScriptRoot\Citrix\$Product")) { New-Item -Path "$PSScriptRoot\Citrix\$Product" -ItemType Directory | Out-Null }
                 $LogPS = "$PSScriptRoot\Citrix\$Product\" + "$Product $Version.log"
                 If ($Repository -eq '1') {
-                    If ($CurrentVersion) {
-                        Write-Host "Copy $Product installer version $CurrentVersion to repository folder"
+                    If ($NewCurrentVersion) {
+                        Write-Host "Copy $Product installer version $NewCurrentVersion to repository folder"
                         If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product")) { New-Item -Path "$PSScriptRoot\_Repository\$Product" -ItemType Directory | Out-Null }
-                        If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product\$CurrentVersion")) { New-Item -Path "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ItemType Directory | Out-Null }
-                        Copy-Item -Path "$PSScriptRoot\Citrix\$Product\*.exe" -Destination "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ErrorAction SilentlyContinue
-                        Write-Host -ForegroundColor Green "Copy of the current version $CurrentVersion finished!"
+                        If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product\$NewCurrentVersion")) { New-Item -Path "$PSScriptRoot\_Repository\$Product\$NewCurrentVersion" -ItemType Directory | Out-Null }
+                        Copy-Item -Path "$PSScriptRoot\Citrix\$Product\*.exe" -Destination "$PSScriptRoot\_Repository\$Product\$NewCurrentVersion" -ErrorAction SilentlyContinue
+                        Write-Host -ForegroundColor Green "Copy of the current version $NewCurrentVersion finished!"
                     }
                 }
                 Remove-Item "$PSScriptRoot\Citrix\$Product\*" -Recurse
