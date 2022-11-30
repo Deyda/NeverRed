@@ -1,1 +1,1 @@
-& "C:\install\NeverRed\NeverRed.ps1" -list -install -file C:\install\NeverRed\LastSetting.txt
+& "C:\install\NeverRed\NeverRed.ps1" -GUIfile LastSetting.txt
