@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.01
+  Version:          2.10.02
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -17,7 +17,7 @@ the script checks the version number and will update the package.
   2021-01-30        Error solved: No installation without parameters / Add WinSCP Install
   2021-01-31        Error solved: Installation Workspace App -> Wrong Variable / Error solved: Detection acute version 7-Zip -> Limitation of the results
   2021-02-01        Add Gui Mode as Standard
-  2021-02-02        Add Install OpenJDK / Add Install VMWare Tools / Add Install Oracle Java 8 / Add Install Adobe Reader DC
+  2021-02-02        Add Install OpenJDK / Add Install VMware Tools / Add Install Oracle Java 8 / Add Install Adobe Reader DC
   2021-02-03        Addition of verbose comments. Chrome and Edge customization regarding disabling services and scheduled tasks.
   2021-02-04        Correction OracleJava8 detection / Add Environment Variable $env:evergreen for script path
   2021-02-12        Add Download Citrix Hypervisor Tools, Greenshot, Firefox, Foxit Reader & Filezilla / Correction Citrix Workspace Download & Install Folder / Adding Citrix Receiver Cleanup Utility
@@ -28,7 +28,7 @@ the script checks the version number and will update the package.
   2021-02-22        Add choice of architecture, language and channel (Latest and ESR) options in Mozilla Firefox / Add choice of language option in Foxit Reader / Add choice of architecture option in Google Chrome / Add choice of channel, architecture and language options in Microsoft 365 Apps / Add choice of architecture option in Microsoft Edge / Add choice of architecture and language options in Microsoft Office 2019 / Add choice of update ring option in Microsoft OneDrive
   2021-02-23        Correction Microsoft Edge Download / Google Chrome Version File
   2021-02-25        Set Mark Jump markers for better editing / Add choice of architecture and update ring options in Microsoft Teams / Add choice of architecture option in Notepad++ / Add choice of architecture option in openJDK / Add choice of architecture option in Oracle Java 8
-  2021-02-26        Add choice of version type option in TreeSize / Add choice of version type option in VLC-Player / Add choice of version type option in VMWare Tools / Fix installed version detection for x86 / x64 for Microsoft Edge, Google Chrome, 7-Zip, Citrix Hypervisor Tools, Mozilla Firefox, Microsoft365, Microsoft Teams, Microsoft Edge, Notepad++, openJDK, Oracle Java 8, VLC Player and VMWare Tols/ Correction Foxit Reader gui variable / Correction version.txt for Microsoft Teams, Notepad++, openJDK, Oracle Java 8, VLC Player and VMWare Tools
+  2021-02-26        Add choice of version type option in TreeSize / Add choice of version type option in VLC-Player / Add choice of version type option in VMware Tools / Fix installed version detection for x86 / x64 for Microsoft Edge, Google Chrome, 7-Zip, Citrix Hypervisor Tools, Mozilla Firefox, Microsoft365, Microsoft Teams, Microsoft Edge, Notepad++, openJDK, Oracle Java 8, VLC Player and VMware Tols/ Correction Foxit Reader gui variable / Correction version.txt for Microsoft Teams, Notepad++, openJDK, Oracle Java 8, VLC Player and VMware Tools
   2021-02-28        Implementation of LastSetting memory
   2021-03-02        Add Microsoft Teams Citrix Api Hook / Correction En dash Error
   2021-03-05        Adjustment regarding merge #122 (Get-AdobeAcrobatReader)
@@ -98,7 +98,7 @@ the script checks the version number and will update the package.
   2021-09-23        Change disable update task for Adobe Acrobat Reader DC, Pro and Google Chrome / Change Citrix Hypervisor, ControlUp Agent, Foxit PDF Editor, Foxit Reader, Git for Windows, Google Chrome, ImageGlass, IrfanView and deviceTRUST to new variables
   2021-09-24        Change KeePass, Microsoft .Net Framework, Microsoft 365 Apps, Microsoft AVD Remote Desktop Microsoft FSLogix, Microsoft Office 2019 and Microsoft Edge to new variables
   2021-09-25        Change Microsoft Power BI Desktop, Microsoft PowerShell Microsoft SQL Server Management Studio, Microsoft Visual Studio Code, Mozilla Firefox, Notepad ++, openJDK, OracleJava8 and Microsoft Teams to new variables / Add Microsoft Edge WebView2 Runtime
-  2021-09-27        Change PeaZip, PuTTY, Slack, VLC Player, VMWare Tools, TechSmith SnagIt, WinMerge, Wireshark and Sumatra PDF to new variables / Add Microsoft Project and Microsoft Visio to install.xml creation / Correction Sumatra PDF Reader download link / Change Microsoft Teams download / Add CleanUp Function
+  2021-09-27        Change PeaZip, PuTTY, Slack, VLC Player, VMware Tools, TechSmith SnagIt, WinMerge, Wireshark and Sumatra PDF to new variables / Add Microsoft Project and Microsoft Visio to install.xml creation / Correction Sumatra PDF Reader download link / Change Microsoft Teams download / Add CleanUp Function
   2021-09-28        Add WhatIf Function to Download section / Add OpenFileDialog Function / Add Own Microsoft 365 Apps XML File
   2021-09-29        Add WhatIf Function to Install section / Kill -List Hardcoded Function
   2021-10-04        Add PDF Split & Merge Function / Add PDF Split & Merge Download
@@ -193,7 +193,7 @@ the script checks the version number and will update the package.
   2022-12-15        Implement Report Mode for Oracle Java 8, Paint.Net, PDF24 Creator, pdfforge PDFCreator, PDF Split & Merge, PeaZip and PuTTY
   2022-12-16        Implement Report Mode for Remote Desktop Manager, Remote Display Analyzer, Screenpresso, ShareX, Slack, Sumatra PDF and TeamViewer
   2022-12-17        Implement Report Mode for TechSmith Camtasia, TechSmith Snagit, Total Commander, TreeSize and VLC Player
-  2022-12-18        Implement Report Mode for VMWareTools, WinMerge, WinRAR, WinSCP, Wireshark, XCA and Zoom
+  2022-12-18        Implement Report Mode for VMwareTools, WinMerge, WinRAR, WinSCP, Wireshark, XCA and Zoom
   2022-12-19        Correction 1Password install to not silent / Correction Autodesk DWG TrueView installer path / Correction BIS-F install version
   2022-12-20        Correction Installer for Cisco Webex Teams and Cisco Webex Teams VDI Plugin
   2022-12-21        Correction Cisco Webex Teams version
@@ -206,6 +206,8 @@ the script checks the version number and will update the package.
   2023-01-03        Create download section for BIS-F Additional Tools
   2023-01-04        Correction ControlUp Agent Auth Key
   2023-01-06        Correction BIS-F Current Version install / Implement copy of BIS-F Additional Tools
+  2023-01-16        Correction VMware Name / Correction download function for Citrix Optimizer and DelProf2 for PS5
+  
 
 
 .PARAMETER ESfile
@@ -464,8 +466,8 @@ Function Get-VMwareTools {
     [OutputType([System.Management.Automation.PSObject])]
     [CmdletBinding()]
     Param ()
-        $urlx64 = "https://packages.vmware.com/tools/releases/latest/windows/x64/"
-        $urlx86 = "https://packages.vmware.com/tools/releases/latest/windows/x86/"
+        $urlx64 = "https://packages.VMware.com/tools/releases/latest/windows/x64/"
+        $urlx86 = "https://packages.VMware.com/tools/releases/latest/windows/x86/"
     Try {
         $webx64 = Invoke-WebRequest -UseBasicParsing -Uri $urlx64 -ErrorAction SilentlyContinue
         $webx86 = Invoke-WebRequest -UseBasicParsing -Uri $urlx86 -ErrorAction SilentlyContinue
@@ -483,8 +485,8 @@ Function Get-VMwareTools {
         $webVersionx86 = $webx86.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webURLx86 = $webx86.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webVersionx86 = $webVersionx86.Replace('-','')
-        $x32 = "https://packages.vmware.com/tools/releases/latest/windows/x86/$webURLx86"
-        $x64 = "https://packages.vmware.com/tools/releases/latest/windows/x64/$webURLx64"
+        $x32 = "https://packages.VMware.com/tools/releases/latest/windows/x86/$webURLx86"
+        $x64 = "https://packages.VMware.com/tools/releases/latest/windows/x64/$webURLx64"
 
 
         $PSObjectx32 = [PSCustomObject] @{
@@ -838,7 +840,7 @@ Function Get-ControlUpRemoteDX() {
         $appVersion = $webVersion.Split("version ")[1]
 
         $appxURLCitrix = "https://downloads.controlup.com/RemoteDX/citrix/windows/curdx_windows_citrix.exe"
-        $appxURLVMware = "https://downloads.controlup.com/RemoteDX/vmware/windows/curdx_windows_vmware.exe"
+        $appxURLVMware = "https://downloads.controlup.com/RemoteDX/VMware/windows/curdx_windows_VMware.exe"
         $appxURLMicrosoft = "https://downloads.controlup.com/RemoteDX/microsoft/windows/curdx_windows_microsoft.exe"
 
         $PSObjectctx = [PSCustomObject] @{
@@ -847,7 +849,7 @@ Function Get-ControlUpRemoteDX() {
             URI          = $appxURLCitrix
         }
 
-        $PSObjectvmware = [PSCustomObject] @{
+        $PSObjectVMware = [PSCustomObject] @{
             Environment  = "VMware Horizon"
             Version      = $appVersion
             URI          = $appxURLVMware
@@ -3383,8 +3385,7 @@ Function Get-CitrixOptimizer {
         $regexAppVersion = 'CitrixOptimizerTool-.*zip'
         $webVersionCO = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersionCO.Split('-')
-        $Version = $webSplit[2].Split('.zip')
-        $Version = $Version[0]
+        $Version = $webSplit[2].TrimEnd('.zip')
         $x32 = "https://www.deyda.net/wp-content/uploads/CitrixOptimizerTool-" + $Version + ".zip"
         
         $PSObjectx32 = [PSCustomObject] @{
@@ -3414,8 +3415,7 @@ Function Get-SDelete {
         $regexAppVersion = 'SDelete v.*\<'
         $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersion.Split('v')
-        $Version = $webSplit[1].Split('<')
-        $Version = $Version[0]
+        $Version = $webSplit[1].TrimEnd('<')
         $x32 = "https://download.sysinternals.com/files/SDelete.zip"
         
         $PSObjectx32 = [PSCustomObject] @{
@@ -3445,8 +3445,7 @@ Function Get-DelProf2 {
         $regexAppVersion = 'DelProf2 .*zip'
         $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersion.Split(' ')
-        $Version = $webSplit[1].Split('.zip')
-        $Version = $Version[0]
+        $Version = $webSplit[1].TrimEnd('.zip')
         $x32 = "https://helgeklein.com/downloads/DelProf2/current/Delprof2 " + $Version + ".zip"
         
         $PSObjectx32 = [PSCustomObject] @{
@@ -4030,7 +4029,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.01"
+$eVersion = "2.10.02"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4374,7 +4373,7 @@ $inputXML = @"
                     <ComboBox x:Name="Box_ControlUpRemoteDX" HorizontalAlignment="Left" Margin="214,286,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="0" Grid.Row="1">
                         <ListBoxItem Content="for Citrix Workspace App"/>
                         <ListBoxItem Content="for Microsoft AVD and RDP"/>
-                        <ListBoxItem Content="for Vmware Horizon Client"/>
+                        <ListBoxItem Content="for VMware Horizon Client"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_deviceTRUST" Content="deviceTRUST" HorizontalAlignment="Left" Margin="12,310,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <ComboBox x:Name="Box_deviceTRUST" HorizontalAlignment="Left" Margin="214,307,0,0" VerticalAlignment="Top" SelectedIndex="1" Grid.Column="0" Grid.Row="1">
@@ -4550,7 +4549,7 @@ $inputXML = @"
                         <ListBoxItem Content="Professional"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_VLCPlayer" Content="VLC Player" HorizontalAlignment="Left" Margin="20,130,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
-                    <CheckBox x:Name="Checkbox_VMWareTools" Content="VMWare Tools" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
+                    <CheckBox x:Name="Checkbox_VMwareTools" Content="VMware Tools" HorizontalAlignment="Left" Margin="20,150,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_WinMerge" Content="WinMerge" HorizontalAlignment="Left" Margin="20,170,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_WinRAR" Content="WinRAR" HorizontalAlignment="Left" Margin="20,190,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
                     <ComboBox x:Name="Box_WinRAR" HorizontalAlignment="Left" Margin="214,187,0,0" VerticalAlignment="Top" SelectedIndex="1" Grid.Column="2" Grid.Row="1">
@@ -5254,8 +5253,8 @@ $inputXML = @"
                         <ListBoxItem Content="x86"/>
                         <ListBoxItem Content="x64"/>
                     </ComboBox>
-                    <CheckBox x:Name="Checkbox_VMWareTools_Detail" Content="VMWare Tools" HorizontalAlignment="Left" Margin="12,605,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
-                    <ComboBox x:Name="Box_VMWareTools_Architecture" HorizontalAlignment="Left" Margin="217,602,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="2" Grid.Row="1">
+                    <CheckBox x:Name="Checkbox_VMwareTools_Detail" Content="VMware Tools" HorizontalAlignment="Left" Margin="12,605,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="1"/>
+                    <ComboBox x:Name="Box_VMwareTools_Architecture" HorizontalAlignment="Left" Margin="217,602,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="2" Grid.Row="1">
                         <ListBoxItem Content="-"/>
                         <ListBoxItem Content="x86"/>
                         <ListBoxItem Content="x64"/>
@@ -5431,7 +5430,7 @@ $inputXML = @"
         $WPFBox_SumatraPDF_Architecture.SelectedIndex = $LastSetting[132] -as [int]
         $WPFBox_TechSmithSnagIT_Architecture.SelectedIndex = $LastSetting[133] -as [int]
         $WPFBox_VLCPlayer_Architecture.SelectedIndex = $LastSetting[134] -as [int]
-        $WPFBox_VMWareTools_Architecture.SelectedIndex = $LastSetting[135] -as [int]
+        $WPFBox_VMwareTools_Architecture.SelectedIndex = $LastSetting[135] -as [int]
         $WPFBox_WinMerge_Architecture.SelectedIndex = $LastSetting[136] -as [int]
         $WPFBox_Wireshark_Architecture.SelectedIndex = $LastSetting[137] -as [int]
         $WPFBox_IrfanView_Language.SelectedIndex = $LastSetting[138] -as [int]
@@ -5601,8 +5600,8 @@ $inputXML = @"
         }
         Switch ($LastSetting[32]) {
             1 {
-                $WPFCheckbox_VMWareTools.IsChecked = "True"
-                $WPFCheckbox_VMWareTools_Detail.IsChecked = "True"
+                $WPFCheckbox_VMwareTools.IsChecked = "True"
+                $WPFCheckbox_VMwareTools_Detail.IsChecked = "True"
             }
         }
         Switch ($LastSetting[33]) {
@@ -6534,17 +6533,17 @@ $inputXML = @"
     $WPFCheckbox_VLCPlayer_Detail.Add_Unchecked({
         $WPFCheckbox_VLCPlayer.IsChecked = $WPFCheckbox_VLCPlayer_Detail.IsChecked
     })
-    $WPFCheckbox_VMWareTools.Add_Checked({
-        $WPFCheckbox_VMWareTools_Detail.IsChecked = $WPFCheckbox_VMWareTools.IsChecked
+    $WPFCheckbox_VMwareTools.Add_Checked({
+        $WPFCheckbox_VMwareTools_Detail.IsChecked = $WPFCheckbox_VMwareTools.IsChecked
     })
-    $WPFCheckbox_VMWareTools.Add_Unchecked({
-        $WPFCheckbox_VMWareTools_Detail.IsChecked = $WPFCheckbox_VMWareTools.IsChecked
+    $WPFCheckbox_VMwareTools.Add_Unchecked({
+        $WPFCheckbox_VMwareTools_Detail.IsChecked = $WPFCheckbox_VMwareTools.IsChecked
     })
-    $WPFCheckbox_VMWareTools_Detail.Add_Checked({
-        $WPFCheckbox_VMWareTools.IsChecked = $WPFCheckbox_VMWareTools_Detail.IsChecked
+    $WPFCheckbox_VMwareTools_Detail.Add_Checked({
+        $WPFCheckbox_VMwareTools.IsChecked = $WPFCheckbox_VMwareTools_Detail.IsChecked
     })
-    $WPFCheckbox_VMWareTools_Detail.Add_Unchecked({
-        $WPFCheckbox_VMWareTools.IsChecked = $WPFCheckbox_VMWareTools_Detail.IsChecked
+    $WPFCheckbox_VMwareTools_Detail.Add_Unchecked({
+        $WPFCheckbox_VMwareTools.IsChecked = $WPFCheckbox_VMwareTools_Detail.IsChecked
     })
     $WPFCheckbox_WinMerge.Add_Checked({
         $WPFCheckbox_WinMerge_Detail.IsChecked = $WPFCheckbox_WinMerge.IsChecked
@@ -6623,7 +6622,7 @@ $inputXML = @"
         $WPFCheckbox_OracleJava8.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_TreeSize.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_VLCPlayer.IsChecked = $WPFCheckbox_SelectAll.IsChecked
-        $WPFCheckbox_VMWareTools.IsChecked = $WPFCheckbox_SelectAll.IsChecked
+        $WPFCheckbox_VMwareTools.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_WinSCP.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_deviceTRUST.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_MSDotNetFramework.IsChecked = $WPFCheckbox_SelectAll.IsChecked
@@ -6709,7 +6708,7 @@ $inputXML = @"
         $WPFCheckbox_OracleJava8.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_TreeSize.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_VLCPlayer.IsChecked = $WPFCheckbox_SelectAll.IsChecked
-        $WPFCheckbox_VMWareTools.IsChecked = $WPFCheckbox_SelectAll.IsChecked
+        $WPFCheckbox_VMwareTools.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_WinSCP.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_deviceTRUST.IsChecked = $WPFCheckbox_SelectAll.IsChecked
         $WPFCheckbox_MSDotNetFramework.IsChecked = $WPFCheckbox_SelectAll.IsChecked
@@ -6832,8 +6831,8 @@ $inputXML = @"
         Else {$Script:TreeSize = 0}
         If ($WPFCheckbox_VLCPlayer.ischecked -eq $true) {$Script:VLCPlayer = 1}
         Else {$Script:VLCPlayer = 0}
-        If ($WPFCheckbox_VMWareTools.ischecked -eq $true) {$Script:VMWareTools = 1}
-        Else {$Script:VMWareTools = 0}
+        If ($WPFCheckbox_VMwareTools.ischecked -eq $true) {$Script:VMwareTools = 1}
+        Else {$Script:VMwareTools = 0}
         If ($WPFCheckbox_WinSCP.ischecked -eq $true) {$Script:WinSCP = 1}
         Else {$Script:WinSCP = 0}        
         If ($WPFCheckbox_MSTeams_No_AutoStart.ischecked -eq $true) {$Script:MSTeamsNoAutoStart = 1}
@@ -7030,7 +7029,7 @@ $inputXML = @"
         $Script:SumatraPDF_Architecture = $WPFBox_SumatraPDF_Architecture.SelectedIndex
         $Script:TechSmithSnagIt_Architecture = $WPFBox_TechSmithSnagIT_Architecture.SelectedIndex
         $Script:VLCPlayer_Architecture = $WPFBox_VLCPlayer_Architecture.SelectedIndex
-        $Script:VMWareTools_Architecture = $WPFBox_VMWareTools_Architecture.SelectedIndex
+        $Script:VMwareTools_Architecture = $WPFBox_VMwareTools_Architecture.SelectedIndex
         $Script:WinMerge_Architecture = $WPFBox_WinMerge_Architecture.SelectedIndex
         $Script:Wireshark_Architecture = $WPFBox_Wireshark_Architecture.SelectedIndex
         $Script:IrfanView_Language = $WPFBox_IrfanView_Language.SelectedIndex
@@ -7077,7 +7076,7 @@ $inputXML = @"
         $Script:ControlUpEdgeDXTenantName = $WPFTextBox_ControlUpEdgeDXTenantName.Text
 
         # Write LastSetting.txt or -GUIFile Parameter file to get the settings of the last session. (AddScript)
-        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMWareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMWareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
+        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMwareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMwareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
 
         # Write ControlUp data in the files.
         $ControlUpAgentAuthKey | out-file -filepath "$PSScriptRoot\ControlUp Agent\AuthKey.txt"
@@ -7209,8 +7208,8 @@ $inputXML = @"
         Else {$Script:TreeSize = 0}
         If ($WPFCheckbox_VLCPlayer.ischecked -eq $true) {$Script:VLCPlayer = 1}
         Else {$Script:VLCPlayer = 0}
-        If ($WPFCheckbox_VMWareTools.ischecked -eq $true) {$Script:VMWareTools = 1}
-        Else {$Script:VMWareTools = 0}
+        If ($WPFCheckbox_VMwareTools.ischecked -eq $true) {$Script:VMwareTools = 1}
+        Else {$Script:VMwareTools = 0}
         If ($WPFCheckbox_WinSCP.ischecked -eq $true) {$Script:WinSCP = 1}
         Else {$Script:WinSCP = 0}        
         If ($WPFCheckbox_MSTeams_No_AutoStart.ischecked -eq $true) {$Script:MSTeamsNoAutoStart = 1}
@@ -7407,7 +7406,7 @@ $inputXML = @"
         $Script:SumatraPDF_Architecture = $WPFBox_SumatraPDF_Architecture.SelectedIndex
         $Script:TechSmithSnagIt_Architecture = $WPFBox_TechSmithSnagIT_Architecture.SelectedIndex
         $Script:VLCPlayer_Architecture = $WPFBox_VLCPlayer_Architecture.SelectedIndex
-        $Script:VMWareTools_Architecture = $WPFBox_VMWareTools_Architecture.SelectedIndex
+        $Script:VMwareTools_Architecture = $WPFBox_VMwareTools_Architecture.SelectedIndex
         $Script:WinMerge_Architecture = $WPFBox_WinMerge_Architecture.SelectedIndex
         $Script:Wireshark_Architecture = $WPFBox_Wireshark_Architecture.SelectedIndex
         $Script:IrfanView_Language = $WPFBox_IrfanView_Language.SelectedIndex
@@ -7454,7 +7453,7 @@ $inputXML = @"
         $Script:ControlUpEdgeDXTenantName = $WPFTextBox_ControlUpEdgeDXTenantName.Text
         
         # Write LastSetting.txt or -GUIFile Parameter file to get the settings of the last session. (AddScript)
-        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMWareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMWareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
+        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMwareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMwareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
         
         # Write ControlUp data in the files.
         $ControlUpAgentAuthKey | out-file -filepath "$PSScriptRoot\ControlUp Agent\AuthKey.txt"
@@ -7600,8 +7599,8 @@ $inputXML = @"
         Else {$Script:TreeSize = 0}
         If ($WPFCheckbox_VLCPlayer.ischecked -eq $true) {$Script:VLCPlayer = 1}
         Else {$Script:VLCPlayer = 0}
-        If ($WPFCheckbox_VMWareTools.ischecked -eq $true) {$Script:VMWareTools = 1}
-        Else {$Script:VMWareTools = 0}
+        If ($WPFCheckbox_VMwareTools.ischecked -eq $true) {$Script:VMwareTools = 1}
+        Else {$Script:VMwareTools = 0}
         If ($WPFCheckbox_WinSCP.ischecked -eq $true) {$Script:WinSCP = 1}
         Else {$Script:WinSCP = 0}        
         If ($WPFCheckbox_MSTeams_No_AutoStart.ischecked -eq $true) {$Script:MSTeamsNoAutoStart = 1}
@@ -7798,7 +7797,7 @@ $inputXML = @"
         $Script:SumatraPDF_Architecture = $WPFBox_SumatraPDF_Architecture.SelectedIndex
         $Script:TechSmithSnagIt_Architecture = $WPFBox_TechSmithSnagIT_Architecture.SelectedIndex
         $Script:VLCPlayer_Architecture = $WPFBox_VLCPlayer_Architecture.SelectedIndex
-        $Script:VMWareTools_Architecture = $WPFBox_VMWareTools_Architecture.SelectedIndex
+        $Script:VMwareTools_Architecture = $WPFBox_VMwareTools_Architecture.SelectedIndex
         $Script:WinMerge_Architecture = $WPFBox_WinMerge_Architecture.SelectedIndex
         $Script:Wireshark_Architecture = $WPFBox_Wireshark_Architecture.SelectedIndex
         $Script:IrfanView_Language = $WPFBox_IrfanView_Language.SelectedIndex
@@ -7845,7 +7844,7 @@ $inputXML = @"
         $Script:ControlUpEdgeDXTenantName = $WPFTextBox_ControlUpEdgeDXTenantName.Text
 
         # Write LastSetting.txt or -GUIFile Parameter file to get the settings of the last session. (AddScript)
-        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMWareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMWareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
+        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMwareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMwareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
 
         # Write ControlUp data in the files.
         $ControlUpAgentAuthKey | out-file -filepath "$PSScriptRoot\ControlUp Agent\AuthKey.txt"
@@ -7976,8 +7975,8 @@ $inputXML = @"
         Else {$Script:TreeSize = 0}
         If ($WPFCheckbox_VLCPlayer.ischecked -eq $true) {$Script:VLCPlayer = 1}
         Else {$Script:VLCPlayer = 0}
-        If ($WPFCheckbox_VMWareTools.ischecked -eq $true) {$Script:VMWareTools = 1}
-        Else {$Script:VMWareTools = 0}
+        If ($WPFCheckbox_VMwareTools.ischecked -eq $true) {$Script:VMwareTools = 1}
+        Else {$Script:VMwareTools = 0}
         If ($WPFCheckbox_WinSCP.ischecked -eq $true) {$Script:WinSCP = 1}
         Else {$Script:WinSCP = 0}        
         If ($WPFCheckbox_MSTeams_No_AutoStart.ischecked -eq $true) {$Script:MSTeamsNoAutoStart = 1}
@@ -8174,7 +8173,7 @@ $inputXML = @"
         $Script:SumatraPDF_Architecture = $WPFBox_SumatraPDF_Architecture.SelectedIndex
         $Script:TechSmithSnagIt_Architecture = $WPFBox_TechSmithSnagIT_Architecture.SelectedIndex
         $Script:VLCPlayer_Architecture = $WPFBox_VLCPlayer_Architecture.SelectedIndex
-        $Script:VMWareTools_Architecture = $WPFBox_VMWareTools_Architecture.SelectedIndex
+        $Script:VMwareTools_Architecture = $WPFBox_VMwareTools_Architecture.SelectedIndex
         $Script:WinMerge_Architecture = $WPFBox_WinMerge_Architecture.SelectedIndex
         $Script:Wireshark_Architecture = $WPFBox_Wireshark_Architecture.SelectedIndex
         $Script:IrfanView_Language = $WPFBox_IrfanView_Language.SelectedIndex
@@ -8221,7 +8220,7 @@ $inputXML = @"
         $Script:ControlUpEdgeDXTenantName = $WPFTextBox_ControlUpEdgeDXTenantName.Text
 
         # Write LastSetting.txt or -GUIFile Parameter file to get the settings of the last session. (AddScript)
-        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMWareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMWareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
+        $Language,$Architecture,$CitrixWorkspaceAppRelease,$MS365AppsChannel,$MSOneDriveRing,$MSTeamsRing,$FirefoxChannel,$TreeSizeType,$7ZIP,$AdobeProDC,$AdobeReaderDC,$BISF,$Citrix_Hypervisor_Tools,$Citrix_WorkspaceApp,$Filezilla,$Firefox,$Foxit_Reader,$MSFSLogix,$GoogleChrome,$Greenshot,$KeePass,$mRemoteNG,$MS365Apps,$MSEdge,$MSOffice,$MSOneDrive,$MSTeams,$NotePadPlusPlus,$OpenJDK,$OracleJava8,$TreeSize,$VLCPlayer,$VMwareTools,$WinSCP,$Download,$Install,$IrfanView,$MSTeamsNoAutoStart,$deviceTRUST,$MSDotNetFramework,$MSDotNetFrameworkChannel,$MSPowerShell,$MSPowerShellRelease,$RemoteDesktopManager,$RemoteDesktopManagerType,$Slack,$Wireshark,$ShareX,$Zoom,$ZoomCitrixClient,$deviceTRUSTPackage,$MSEdgeChannel,$GIMP,$MSPowerToys,$MSVisualStudio,$MSVisualStudioCode,$MSVisualStudioCodeChannel,$PaintDotNet,$Putty,$TeamViewer,$Installer,$MSVisualStudioEdition,$PuttyChannel,$MSAzureDataStudio,$MSAzureDataStudioChannel,$ImageGlass,$MSFSLogixChannel,$ControlUpEdgeDX,$1Password,$SumatraPDF,$ControlUpAgent,$OperaBrowserChannel,$ControlUpConsole,$MSSQLServerManagementStudio,$MSAVDRemoteDesktop,$MSAVDRemoteDesktopChannel,$MSPowerBIDesktop,$RDAnalyzer,$CiscoWebexTeams,$CitrixFiles,$FoxitPDFEditor,$GitForWindows,$LogMeInGoToMeeting,$MSAzureCLI,$MSPowerBIReportBuilder,$MSSysinternals,$NMap,$PeaZip,$TechSmithCamtasia,$TechSmithSnagit,$WinMerge,$WhatIf,$CleanUp,$7Zip_Architecture,$AdobeReaderDC_Architecture,$AdobeReaderDC_Language,$CiscoWebexTeams_Architecture,$CitrixHypervisorTools_Architecture,$ControlUpAgent_Architecture,$deviceTRUST_Architecture,$FoxitPDFEditor_Language,$FoxitReader_Language,$GitForWindows_Architecture,$GoogleChrome_Architecture,$ImageGlass_Architecture,$IrfanView_Architecture,$Keepass_Language,$MSDotNetFramework_Architecture,$MS365Apps_Architecture,$MS365Apps_Language,$MS365Apps_Visio,$MS365Apps_Visio_Language,$MS365Apps_Project,$MS365Apps_Project_Language,$MSAVDRemoteDesktop_Architecture,$MSEdge_Architecture,$MSFSLogix_Architecture,$MSOffice_Architecture,$MSOneDrive_Architecture,$MSPowerBIDesktop_Architecture,$MSPowerShell_Architecture,$MSSQLServerManagementStudio_Language,$MSTeams_Architecture,$MSVisualStudioCode_Architecture,$Firefox_Architecture,$Firefox_Language,$NotePadPlusPlus_Architecture,$OpenJDK_Architecture,$OracleJava8_Architecture,$PeaZip_Architecture,$Putty_Architecture,$Slack_Architecture,$SumatraPDF_Architecture,$TechSmithSnagIt_Architecture,$VLCPlayer_Architecture,$VMwareTools_Architecture,$WinMerge_Architecture,$Wireshark_Architecture,$IrfanView_Language,$MSOffice_Language,$MSEdgeWebView2,$MSEdgeWebView2_Architecture,$AutodeskDWGTrueView,$MindView7,$MindView7_Language,$PDFsam,$MSOfficeVersion,$OpenShellMenu,$PDFForgeCreator,$TotalCommander,$LogMeInGoToMeeting_Installer,$MSAzureDataStudio_Installer,$MSVisualStudioCode_Installer,$MS365Apps_Installer,$Zoom_Architecture,$MSTeams_Installer,$Zoom_Installer,$MSOneDrive_Installer,$Slack_Installer,$pdfforgePDFCreatorChannel,$TotalCommander_Architecture,$Repository,$CleanUpStartMenu,$MSVisualCPlusPlusRuntime,$MSVisualCPlusPlusRuntimeRelease,$MSVisualCPlusPlusRuntime_Architecture,$MSOffice_Visio,$MSOffice_Visio_Language,$MSOffice_Project,$MSOffice_Project_Language,$CiscoWebexTeamsClient,$BISF_Tools,$MozillaThunderbird,$PDF24Creator,$WinRAR,$AdobeProDC_Architecture,$GoogleChromeChannel,$OpenJDKPackage,$PaintDotNet_Architecture,$WinRAR_Architecture,$WinRAR_Language,$WinRARChannel,$MozillaThunderbird_Architecture,$MozillaThunderbird_Language,$MSAzureDataStudio_Architecture,$TeamViewer_Architecture,$OperaBrowser,$OperaBrowser_Architecture,$Ditto,$Ditto_Architecture,$Ditto_Channel,$XCA,$ControlUpEdgeDX_Installer,$ControlUpRemoteDX,$IISCrypto,$Screenpresso,$Report,$NoDesktopIcon,$ControlUpRemoteDXEUC | out-file -filepath "$PSScriptRoot\$GUIfile"
 
         # Write ControlUp data in the files.
         If (($ControlUpAgentAuthKey)) {
@@ -8368,7 +8367,7 @@ If ($ESfile) {
         $OracleJava8 = $FileSetting[29] -as [int]
         $TreeSize = $FileSetting[30] -as [int]
         $VLCPlayer = $FileSetting[31] -as [int]
-        $VMWareTools = $FileSetting[32] -as [int]
+        $VMwareTools = $FileSetting[32] -as [int]
         $WinSCP = $FileSetting[33] -as [int]
         $Download = $FileSetting[34] -as [int]
         If ($FileSetting[34] -eq "True") {$Download = "1"}
@@ -8462,7 +8461,7 @@ If ($ESfile) {
         $SumatraPDF_Architecture = $FileSetting[132] -as [int]
         $TechSmithSnagIt_Architecture = $FileSetting[133] -as [int]
         $VLCPlayer_Architecture = $FileSetting[134] -as [int]
-        $VMWareTools_Architecture = $FileSetting[135] -as [int]
+        $VMwareTools_Architecture = $FileSetting[135] -as [int]
         $WinMerge_Architecture = $FileSetting[136] -as [int]
         $Wireshark_Architecture = $FileSetting[137] -as [int]
         $IrfanView_Language = $FileSetting[138] -as [int]
@@ -8531,7 +8530,7 @@ If ($ESfile) {
 }
 Else {
     # Cleanup of the used variables (AddScript)
-    Clear-Variable -name Download,Install,7ZIP,AdobeProDC,AdobeReaderDC,BISF,Citrix_Hypervisor_Tools,Filezilla,Firefox,Foxit_Reader,MSFSLogix,Greenshot,GoogleChrome,KeePass,mRemoteNG,MS365Apps,MSEdge,MSOffice,MSTeams,NotePadPlusPlus,MSOneDrive,OpenJDK,OracleJava8,TreeSize,VLCPlayer,VMWareTools,WinSCP,Citrix_WorkspaceApp,Architecture,FirefoxChannel,CitrixWorkspaceAppRelease,Language,MS365AppsChannel,MSOneDriveRing,MSTeamsRing,TreeSizeType,IrfanView,MSTeamsNoAutoStart,deviceTRUST,MSDotNetFramework,MSDotNetFrameworkChannel,MSPowerShell,MSPowerShellRelease,RemoteDesktopManager,RemoteDesktopManagerType,Slack,ShareX,Zoom,ZoomCitrixClient,deviceTRUSTPackage,deviceTRUSTClient,deviceTRUSTConsole,deviceTRUSTHost,MSEdgeChannel,Installer,MSVisualStudioCodeChannel,MSVisualStudio,MSVisualStudioCode,TeamViewer,Putty,PaintDotNet,MSPowerToys,GIMP,MSVisualStudioEdition,PuttyChannel,Wireshark,MSAzureDataStudio,MSAzureDataStudioChannel,ImageGlass,MSFSLogixChannel,ControlUpEdgeDX,1Password,CiscoWebexClient,ControlUpAgent,OperaBrowserChannel,ControlUpConsole,MSSQLServerManagementStudio,MSAVDRemoteDesktop,MSAVDRemoteDesktopChannel,MSPowerBIDesktop,RDAnalyzer,SumatraPDF,CiscoWebexTeams,CitrixFiles,FoxitPDFEditor,GitForWindows,LogMeInGoToMeeting,MSAzureCLI,MSPowerBIReportBuilder,MSSysinternals,NMap,PeaZip,TechSmithCamtasia,TechSmithSnagit,WinMerge,WhatIf,CleanUp,7Zip_Architecture,AdobeReaderDC_Architecture,AdobeReaderDC_Language,CiscoWebexTeams_Architecture,CitrixHypervisorTools_Architecture,ControlUpAgent_Architecture,deviceTRUST_Architecture,FoxitPDFEditor_Language,FoxitReader_Language,GitForWindows_Architecture,GoogleChrome_Architecture,ImageGlass_Architecture,IrfanView_Architecture,Keepass_Language,MSDotNetFramework_Architecture,MS365Apps_Architecture,MS365Apps_Language,MS365Apps_Visio,MS365Apps_Visio_Language,MS365Apps_Project,MS365Apps_Project_Language,MSAVDRemoteDesktop_Architecture,MSEdge_Architecture,MSFSLogix_Architecture,MSOffice_Architecture,MSOneDrive_Architecture,MSPowerBIDesktop_Architecture,MSPowerShell_Architecture,MSSQLServerManagementStudio_Language,MSTeams_Architecture,MSVisualStudioCode_Architecture,Firefox_Architecture,Firefox_Language,NotePadPlusPlus_Architecture,OpenJDK_Architecture,OracleJava8_Architecture,PeaZip_Architecture,Putty_Architecture,Slack_Architecture,SumatraPDF_Architecture,TechSmithSnagIt_Architecture,VLCPlayer_Architecture,VMWareTools_Architecture,WinMerge_Architecture,Wireshark_Architecture,IrfanView_Language,MSOffice_Language,MSEdgeWebView2,MSEdgeWebView2_Architecture,AutodeskDWGTrueView,MindView7,MindView7_Language,PDFsam,MSOfficeVersion,OpenShellMenu,PDFForgeCreator,TotalCommander,LogMeInGoToMeeting_Installer,MSAzureDataStudio_Installer,MSVisualStudioCode_Installer,MS365Apps_Installer,MSTeams_Installer,Zoom_Installer,MSOneDrive_Installer,Slack_Installer,pdfforgePDFCreatorChannel,TotalCommander_Architecture,Repository,CleanUpStartMenu,MSVisualCPlusPlusRuntime,MSVisualCPlusPlusRuntimeRelease,MSVisualCPlusPlusRuntime_Architecture,MSOffice_Visio,MSOffice_Visio_Language,MSOffice_Project,MSOffice_Project_Language,Zoom_Architecture,CiscoWebexTeamsClient,BISF_Tools,MozillaThunderbird,PDF24Creator,WinRAR,AdobeProDC_Architecture,GoogleChromeChannel,OpenJDKPackage,PaintDotNet_Architecture,WinRAR_Architecture,WinRAR_Language,WinRARChannel,MozillaThunderbird_Architecture,MozillaThunderbird_Language,MSAzureDataStudio_Architecture,TeamViewer_Architecture,OperaBrowser,OperaBrowser_Architecture,Ditto,Ditto_Architecture,Ditto_Channel,XCA,ControlUpEdgeDX_Installer,ControlUpRemoteDX,IISCrypto,Screenpresso,Report,NoDesktopIcon,ControlUpRemoteDXEUC -ErrorAction SilentlyContinue
+    Clear-Variable -name Download,Install,7ZIP,AdobeProDC,AdobeReaderDC,BISF,Citrix_Hypervisor_Tools,Filezilla,Firefox,Foxit_Reader,MSFSLogix,Greenshot,GoogleChrome,KeePass,mRemoteNG,MS365Apps,MSEdge,MSOffice,MSTeams,NotePadPlusPlus,MSOneDrive,OpenJDK,OracleJava8,TreeSize,VLCPlayer,VMwareTools,WinSCP,Citrix_WorkspaceApp,Architecture,FirefoxChannel,CitrixWorkspaceAppRelease,Language,MS365AppsChannel,MSOneDriveRing,MSTeamsRing,TreeSizeType,IrfanView,MSTeamsNoAutoStart,deviceTRUST,MSDotNetFramework,MSDotNetFrameworkChannel,MSPowerShell,MSPowerShellRelease,RemoteDesktopManager,RemoteDesktopManagerType,Slack,ShareX,Zoom,ZoomCitrixClient,deviceTRUSTPackage,deviceTRUSTClient,deviceTRUSTConsole,deviceTRUSTHost,MSEdgeChannel,Installer,MSVisualStudioCodeChannel,MSVisualStudio,MSVisualStudioCode,TeamViewer,Putty,PaintDotNet,MSPowerToys,GIMP,MSVisualStudioEdition,PuttyChannel,Wireshark,MSAzureDataStudio,MSAzureDataStudioChannel,ImageGlass,MSFSLogixChannel,ControlUpEdgeDX,1Password,CiscoWebexClient,ControlUpAgent,OperaBrowserChannel,ControlUpConsole,MSSQLServerManagementStudio,MSAVDRemoteDesktop,MSAVDRemoteDesktopChannel,MSPowerBIDesktop,RDAnalyzer,SumatraPDF,CiscoWebexTeams,CitrixFiles,FoxitPDFEditor,GitForWindows,LogMeInGoToMeeting,MSAzureCLI,MSPowerBIReportBuilder,MSSysinternals,NMap,PeaZip,TechSmithCamtasia,TechSmithSnagit,WinMerge,WhatIf,CleanUp,7Zip_Architecture,AdobeReaderDC_Architecture,AdobeReaderDC_Language,CiscoWebexTeams_Architecture,CitrixHypervisorTools_Architecture,ControlUpAgent_Architecture,deviceTRUST_Architecture,FoxitPDFEditor_Language,FoxitReader_Language,GitForWindows_Architecture,GoogleChrome_Architecture,ImageGlass_Architecture,IrfanView_Architecture,Keepass_Language,MSDotNetFramework_Architecture,MS365Apps_Architecture,MS365Apps_Language,MS365Apps_Visio,MS365Apps_Visio_Language,MS365Apps_Project,MS365Apps_Project_Language,MSAVDRemoteDesktop_Architecture,MSEdge_Architecture,MSFSLogix_Architecture,MSOffice_Architecture,MSOneDrive_Architecture,MSPowerBIDesktop_Architecture,MSPowerShell_Architecture,MSSQLServerManagementStudio_Language,MSTeams_Architecture,MSVisualStudioCode_Architecture,Firefox_Architecture,Firefox_Language,NotePadPlusPlus_Architecture,OpenJDK_Architecture,OracleJava8_Architecture,PeaZip_Architecture,Putty_Architecture,Slack_Architecture,SumatraPDF_Architecture,TechSmithSnagIt_Architecture,VLCPlayer_Architecture,VMwareTools_Architecture,WinMerge_Architecture,Wireshark_Architecture,IrfanView_Language,MSOffice_Language,MSEdgeWebView2,MSEdgeWebView2_Architecture,AutodeskDWGTrueView,MindView7,MindView7_Language,PDFsam,MSOfficeVersion,OpenShellMenu,PDFForgeCreator,TotalCommander,LogMeInGoToMeeting_Installer,MSAzureDataStudio_Installer,MSVisualStudioCode_Installer,MS365Apps_Installer,MSTeams_Installer,Zoom_Installer,MSOneDrive_Installer,Slack_Installer,pdfforgePDFCreatorChannel,TotalCommander_Architecture,Repository,CleanUpStartMenu,MSVisualCPlusPlusRuntime,MSVisualCPlusPlusRuntimeRelease,MSVisualCPlusPlusRuntime_Architecture,MSOffice_Visio,MSOffice_Visio_Language,MSOffice_Project,MSOffice_Project_Language,Zoom_Architecture,CiscoWebexTeamsClient,BISF_Tools,MozillaThunderbird,PDF24Creator,WinRAR,AdobeProDC_Architecture,GoogleChromeChannel,OpenJDKPackage,PaintDotNet_Architecture,WinRAR_Architecture,WinRAR_Language,WinRARChannel,MozillaThunderbird_Architecture,MozillaThunderbird_Language,MSAzureDataStudio_Architecture,TeamViewer_Architecture,OperaBrowser,OperaBrowser_Architecture,Ditto,Ditto_Architecture,Ditto_Channel,XCA,ControlUpEdgeDX_Installer,ControlUpRemoteDX,IISCrypto,Screenpresso,Report,NoDesktopIcon,ControlUpRemoteDXEUC -ErrorAction SilentlyContinue
 
     If (!(Test-Path -Path "$PSScriptRoot\img\Logo_DEYDA.png")) {
         If (!(Test-Path -Path "$PSScriptRoot\img")) { New-Item -Path "$PSScriptRoot\img" -ItemType Directory | Out-Null }
@@ -10271,14 +10270,14 @@ Else {
     $VLCPlayerArchitectureClear = $ArchitectureClear
 }
 
-If ($VMWareTools_Architecture -ne "") {
-    Switch ($VMWareTools_Architecture) {
-        1 { $VMWareToolsArchitectureClear = 'x86'}
-        2 { $VMWareToolsArchitectureClear = 'x64'}
+If ($VMwareTools_Architecture -ne "") {
+    Switch ($VMwareTools_Architecture) {
+        1 { $VMwareToolsArchitectureClear = 'x86'}
+        2 { $VMwareToolsArchitectureClear = 'x64'}
     }
 }
 Else {
-    $VMWareToolsArchitectureClear = $ArchitectureClear
+    $VMwareToolsArchitectureClear = $ArchitectureClear
 }
 
 If ($WinMerge_Architecture -ne "") {
@@ -15671,19 +15670,19 @@ If ($MSTeams -eq 1) {
         }
     }
 
-    If ($VMWareTools -eq 1) {
-        $Product = "VMWare Tools"
-        $VMWareToolsD = Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMWareToolsArchitectureClear" }
-        $Version = $VMWareToolsD.Version
-        $VersionPath = "$PSScriptRoot\$Product\Version_" + "$VMWareToolsArchitectureClear" + ".txt"
+    If ($VMwareTools -eq 1) {
+        $Product = "VMware Tools"
+        $VMwareToolsD = Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMwareToolsArchitectureClear" }
+        $Version = $VMwareToolsD.Version
+        $VersionPath = "$PSScriptRoot\$Product\Version_" + "$VMwareToolsArchitectureClear" + ".txt"
         $CurrentVersionVM = Get-Content -Path "$VersionPath" -EA SilentlyContinue
-        $VMWT = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMWare Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $VMWT = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMware Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$VMWT) {
-            $VMWT = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMWare Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            $VMWT = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMware Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($VMWT) {$VMWT = $VMWT -replace ".{9}$"}
-        Write-Host -ForegroundColor Magenta "$Product $VMWareToolsArchitectureClear"
-        Add-Content -Path "$ReportFile" -Value "$Product $VMWareToolsArchitectureClear"
+        Write-Host -ForegroundColor Magenta "$Product $VMwareToolsArchitectureClear"
+        Add-Content -Path "$ReportFile" -Value "$Product $VMwareToolsArchitectureClear"
         Add-Content -Path "$ReportFile" -Value ""
         Write-Host "Internet Version:   $Version"
         Add-Content -Path "$ReportFile" -Value "Internet Version:   $Version"
@@ -22251,19 +22250,19 @@ If ($Download -eq "1") {
         }
     }
 
-    #// Mark: Download VMWareTools
-    If ($VMWareTools -eq 1) {
-        $Product = "VMWare Tools"
-        $PackageName = "VMWareTools_" + "$VMWareToolsArchitectureClear"
-        $VMWareToolsD = Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMWareToolsArchitectureClear" }
-        $Version = $VMWareToolsD.Version
-        $URL = $VMWareToolsD.uri
+    #// Mark: Download VMwareTools
+    If ($VMwareTools -eq 1) {
+        $Product = "VMware Tools"
+        $PackageName = "VMwareTools_" + "$VMwareToolsArchitectureClear"
+        $VMwareToolsD = Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMwareToolsArchitectureClear" }
+        $Version = $VMwareToolsD.Version
+        $URL = $VMwareToolsD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
-        $VersionPath = "$PSScriptRoot\$Product\Version_" + "$VMWareToolsArchitectureClear" + ".txt"
+        $VersionPath = "$PSScriptRoot\$Product\Version_" + "$VMwareToolsArchitectureClear" + ".txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
-        Write-Host -ForegroundColor Magenta "Download $Product $VMWareToolsArchitectureClear"
+        Write-Host -ForegroundColor Magenta "Download $Product $VMwareToolsArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CurrentVersion"
         If ($CurrentVersion -lt $Version) {
@@ -22284,7 +22283,7 @@ If ($Download -eq "1") {
                 Start-Transcript $LogPS | Out-Null
                 Set-Content -Path "$VersionPath" -Value "$Version"
             }
-            Write-Host "Starting download of $Product $VMWareToolsArchitectureClear version $Version"
+            Write-Host "Starting download of $Product $VMwareToolsArchitectureClear version $Version"
             If ($WhatIf -eq '0') {
                 Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
                 Write-Verbose "Stop logging"
@@ -29362,22 +29361,22 @@ If ($Install -eq "1") {
         }
     }
 
-    #// Mark: Install VMWareTools
-    If ($VMWareTools -eq 1) {
-        $Product = "VMWare Tools"
+    #// Mark: Install VMwareTools
+    If ($VMwareTools -eq 1) {
+        $Product = "VMware Tools"
         # Check, if a new version is available
-        $VersionPath = "$PSScriptRoot\$Product\Version_" + "$VMWareToolsArchitectureClear" + ".txt"
+        $VersionPath = "$PSScriptRoot\$Product\Version_" + "$VMwareToolsArchitectureClear" + ".txt"
         $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
         If (!($Version)) {
-            $Version = $VMWareToolsD.Version
+            $Version = $VMwareToolsD.Version
         }
-        $VMWT = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMWare Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $VMWT = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMware Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$VMWT) {
-            $VMWT = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMWare Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            $VMWT = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*VMware Tools*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($VMWT) {$VMWT = $VMWT -replace ".{9}$"}
-        $VMWareToolsInstaller = "VMWareTools_" + "$VMWareToolsArchitectureClear" +".exe"
-        Write-Host -ForegroundColor Magenta "Install $Product $VMWareToolsArchitectureClear"
+        $VMwareToolsInstaller = "VMwareTools_" + "$VMwareToolsArchitectureClear" +".exe"
+        Write-Host -ForegroundColor Magenta "Install $Product $VMwareToolsArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $VMWT"
         If ($VMWT -lt $Version) {
@@ -29386,27 +29385,27 @@ If ($Install -eq "1") {
                 "/v"
                 "/qn REBOOT=ReallySuppress"
             )
-            DS_WriteLog "I" "Install $Product $VMWareToolsArchitectureClear" $LogFile
+            DS_WriteLog "I" "Install $Product $VMwareToolsArchitectureClear" $LogFile
             Write-Host -ForegroundColor Green "Update available"
             Try {
-                Write-Host "Starting install of $Product $VMWareToolsArchitectureClear version $Version"
+                Write-Host "Starting install of $Product $VMwareToolsArchitectureClear version $Version"
                 If ($WhatIf -eq '0') {
-                    $inst = Start-Process -FilePath "$PSScriptRoot\$Product\$VMWareToolsInstaller" -ArgumentList $Options -PassThru -ErrorAction Stop
+                    $inst = Start-Process -FilePath "$PSScriptRoot\$Product\$VMwareToolsInstaller" -ArgumentList $Options -PassThru -ErrorAction Stop
                 }
                 else{
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     Write-Host -ForegroundColor Yellow "System needs to reboot after installation!"
-                    DS_WriteLog "I" "Installation $Product $VMWareToolsArchitectureClear finished!" $LogFile
+                    DS_WriteLog "I" "Installation $Product $VMwareToolsArchitectureClear finished!" $LogFile
                 }
                 If ($inst) {
                     Wait-Process -InputObject $inst
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     Write-Host -ForegroundColor Yellow "System needs to reboot after installation!"
-                    DS_WriteLog "I" "Installation $Product $VMWareToolsArchitectureClear finished!" $LogFile
+                    DS_WriteLog "I" "Installation $Product $VMwareToolsArchitectureClear finished!" $LogFile
                 }
             } Catch {
-                Write-Host -ForegroundColor Red "Error installing $Product $VMWareToolsArchitectureClear (Error: $($Error[0]))"
-                DS_WriteLog "E" "Error installing $Product $VMWareToolsArchitectureClear (Error: $($Error[0]))" $LogFile
+                Write-Host -ForegroundColor Red "Error installing $Product $VMwareToolsArchitectureClear (Error: $($Error[0]))"
+                DS_WriteLog "E" "Error installing $Product $VMwareToolsArchitectureClear (Error: $($Error[0]))" $LogFile
             }
             DS_WriteLog "-" "" $LogFile
             Write-Output ""
