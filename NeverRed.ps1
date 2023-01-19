@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.02
+  Version:          2.10.03
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -207,6 +207,7 @@ the script checks the version number and will update the package.
   2023-01-04        Correction ControlUp Agent Auth Key
   2023-01-06        Correction BIS-F Current Version install / Implement copy of BIS-F Additional Tools
   2023-01-16        Correction VMware Name / Correction download function for Citrix Optimizer and DelProf2 for PS5
+  2023-01-19        Correction ControlUp Agent download
   
 
 
@@ -4029,7 +4030,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.02"
+$eVersion = "2.10.03"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17209,7 +17210,7 @@ If ($Download -eq "1") {
     If ($ControlUpAgent -eq 1) {
         $Product = "ControlUp Agent"
         $PackageName = "ControlUpAgent-" + "$ControlUpAgentArchitectureClear"
-        $ControlUpAgentD = Get-EvergreenApp -Name ControlUpAgent | Where-Object {$_.Architecture -eq "$ControlUpAgentArchitectureClear" }
+        $ControlUpAgentD = Get-EvergreenApp -Name ControlUpAgent | Where-Object {$_.URI -like "$ControlUpAgentArchitectureClear" }
         $Version = $ControlUpAgentD.Version
         $URL = $ControlUpAgentD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
@@ -23351,6 +23352,7 @@ If ($Install -eq "1") {
                     Copy-Item -Path "$PSScriptRoot\BIS-F\$Product3\Version.txt" -Destination "C:\Windows\System32\$Product3" -ErrorAction SilentlyContinue -Force
                 }
                 Write-Host -ForegroundColor Green "Copy of the new version $Version3 finished!"
+                Write-Output ""
                 DS_WriteLog "I" "Copy $Product3 finished!" $LogFile
             }
             # Stop, if no new version is available
