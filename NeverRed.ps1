@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.04
+  Version:          2.10.05
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -209,6 +209,7 @@ the script checks the version number and will update the package.
   2023-01-16        Correction VMware Name / Correction download function for Citrix Optimizer and DelProf2 for PS5
   2023-01-19        Correction ControlUp Agent download
   2023-02-27        Correction ControlUp Agent download
+  2023-03-02        Add loop to recognize the ps version and use different subobjects in MS Visual C++ Download
   
 
 
@@ -4031,7 +4032,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.04"
+$eVersion = "2.10.05"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20029,7 +20030,11 @@ If ($Download -eq "1") {
             $PackageName = "VS-Setup" + "$MSVisualCPlusPlusRuntimeReleaseClear" + "_$MSVisualCPlusPlusRuntimeArchitectureClear"
             $MSVisualCPlusPlusRuntimeD = Get-VcList | Where-Object { $_.Architecture -eq "$MSVisualCPlusPlusRuntimeArchitectureClear" -and $_.Release -eq "$MSVisualCPlusPlusRuntimeReleaseClear"}
             $Version = $MSVisualCPlusPlusRuntimeD.Version
-            $URL = $MSVisualCPlusPlusRuntimeD.download
+            If ($PSVersion -eq "7") {
+                $URL = $MSVisualCPlusPlusRuntimeD.download
+            } else {
+                $URL = $MSVisualCPlusPlusRuntimeD.uri
+            }
             Add-Content -Path "$FWFile" -Value "$URL"
             $InstallerType = "exe"
             $Source = "$PackageName" + "." + "$InstallerType"
@@ -20074,7 +20079,11 @@ If ($Download -eq "1") {
                 $PackageName = "VS-Setup" + "$MSVisualCPlusPlusRuntimeReleaseClear" + "_$MSVisualCPlusPlusRuntimeArchitecture2Clear"
                 $MSVisualCPlusPlusRuntimeD = Get-VcList | Where-Object { $_.Architecture -eq "$MSVisualCPlusPlusRuntimeArchitecture2Clear" -and $_.Release -eq "$MSVisualCPlusPlusRuntimeReleaseClear"}
                 $Version = $MSVisualCPlusPlusRuntimeD.Version
-                $URL = $MSVisualCPlusPlusRuntimeD.download
+                If ($PSVersion -eq "7") {
+                    $URL = $MSVisualCPlusPlusRuntimeD.download
+                } else {
+                    $URL = $MSVisualCPlusPlusRuntimeD.uri
+                }
                 Add-Content -Path "$FWFile" -Value "$URL"
                 $InstallerType = "exe"
                 $Source = "$PackageName" + "." + "$InstallerType"
@@ -20126,9 +20135,15 @@ If ($Download -eq "1") {
             $Version2022 = $MSVisualCPlusPlusRuntime2022D.Version
             $Version2012 = $MSVisualCPlusPlusRuntime2012D.Version
             $Version2013 = $MSVisualCPlusPlusRuntime2013D.Version
-            $URL2022 = $MSVisualCPlusPlusRuntime2022D.download
-            $URL2012 = $MSVisualCPlusPlusRuntime2012D.download
-            $URL2013 = $MSVisualCPlusPlusRuntime2013D.download
+            If ($PSVersion -eq "7") {
+                $URL2022 = $MSVisualCPlusPlusRuntime2022D.download
+                $URL2012 = $MSVisualCPlusPlusRuntime2012D.download
+                $URL2013 = $MSVisualCPlusPlusRuntime2013D.download
+            } else {
+                $URL2022 = $MSVisualCPlusPlusRuntime2022D.uri
+                $URL2012 = $MSVisualCPlusPlusRuntime2012D.uri
+                $URL2013 = $MSVisualCPlusPlusRuntime2013D.uri
+            }
             Add-Content -Path "$FWFile" -Value "$URL2022"
             Add-Content -Path "$FWFile" -Value "$URL2012"
             Add-Content -Path "$FWFile" -Value "$URL2013"
