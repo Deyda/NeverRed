@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.06
+  Version:          2.10.07
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -210,7 +210,7 @@ the script checks the version number and will update the package.
   2023-01-19        Correction ControlUp Agent download
   2023-02-27        Correction ControlUp Agent download
   2023-03-02        Add loop to recognize the ps version and use different subobjects in MS Visual C++ Download / Correction of the save methode of ControlUp Auth Key and ControlUp Edge DX Keys
-  
+  2023-03-07        Correction Microsoft Teams Installer version
 
 
 .PARAMETER ESfile
@@ -4032,7 +4032,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.06"
+$eVersion = "2.10.07"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16294,15 +16294,27 @@ If ($Download -eq "1") {
         $PackageName = "1Password-Setup"
         $1PasswordD = Get-EvergreenApp -Name 1Password | Sort-Object -Property Version -Descending | Select-Object -First 1
         $Version = $1PasswordD.Version
+        $1PWSplit = $Version.split(".")
+        $1PWStringSecond = ([regex]::Matches($1PWSplit[1], "." )).count
+        If ($1PWStringSecond -lt "2") {
+            $1PWSplit[1] = "0" + $1PWSplit[1]
+        }
+        $Version = $1PWSplit[0] + "." + $1PWSplit[1] + "." + $1PWSplit[2]
         $URL = $1PasswordD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version.txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
+        $1PWCSplit = $CurrentVersion.split(".")
+        $1PWCStringSecond = ([regex]::Matches($1PWCSplit[1], "." )).count
+        If ($1PWCStringSecond -lt "2") {
+            $1PWCSplit[1] = "0" + $1PWCSplit[1]
+        }
+        $CurrentVersion = $1PWCSplit[0] + "." + $1PWCSplit[1] + "." + $1PWCSplit[2]
         Write-Host -ForegroundColor Magenta "Download $Product"
-        Write-Host "Download Version: $Version"
-        Write-Host "Current Version:  $CurrentVersion"
+        Write-Host "Download Version:  $Version"
+        Write-Host "Current Version:   $CurrentVersion"
         If ($CurrentVersion -lt $Version) {
             Write-Host -ForegroundColor Green "Update available"
             If ($WhatIf -eq '0') {
@@ -16321,14 +16333,42 @@ If ($Download -eq "1") {
                 Start-Transcript $LogPS | Out-Null
                 Set-Content -Path "$VersionPath" -Value "$Version"
             }
-            Write-Host "Starting download of $Product version $Version"
-            If ($WhatIf -eq '0') {
-                Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
-                Write-Verbose "Stop logging"
-                Stop-Transcript | Out-Null
+            If ($CleanUp -eq '1') {
+                $1PasswordV = (Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*1Password*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$1PasswordV) {
+                    $1PasswordV = (Get-ItemProperty HKCU:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like "*1Password*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+                $1PWVSplit = $1PasswordV.split(".")
+                $1PWVStringSecond = ([regex]::Matches($1PWVSplit[1], "." )).count
+                If ($1PWVStringSecond -lt "2") {
+                    $1PWVSplit[1] = "0" + $1PWVSplit[1]
+                }
+                $1PasswordV = $1PWVSplit[0] + "." + $1PWVSplit[1] + "." + $1PWVSplit[2]
+                Write-Host -ForegroundColor Blue "CleanUp Mode"
+                Write-Host "Installed Version: $1PasswordV"
+                If ($1PasswordV -lt $Version) {
+                    Write-Host "Starting download of $Product version $Version"
+                    If ($WhatIf -eq '0') {
+                        Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
+                        Write-Verbose "Stop logging"
+                        Stop-Transcript | Out-Null
+                    }
+                    Write-Host -ForegroundColor Green "Download of the new version $Version finished!"
+                    Write-Output ""
+                } Else {
+                    Write-Host -ForegroundColor Cyan "No new version available"
+                    Write-Output ""
+                }
+            } Else {
+                Write-Host "Starting download of $Product version $Version"
+                If ($WhatIf -eq '0') {
+                    Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
+                    Write-Verbose "Stop logging"
+                    Stop-Transcript | Out-Null
+                }
+                Write-Host -ForegroundColor Green "Download of the new version $Version finished!"
+                Write-Output ""
             }
-            Write-Host -ForegroundColor Green "Download of the new version $Version finished!"
-            Write-Output ""
         }
         Else {
             Write-Host -ForegroundColor Cyan "No new version available"
@@ -26575,6 +26615,15 @@ If ($Install -eq "1") {
                 If (Test-Path -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\") {
                     $Teams = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Teams Machine*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+            }
+            If ($Teams) {
+                $TeamsSplit = $Teams.split(".")
+                $TeamsStrings = ([regex]::Matches($Teams, "\." )).count
+                $TeamsStringLast = ([regex]::Matches($TeamsSplit[$TeamsStrings], "." )).count
+                If ($TeamsStringLast -lt "5") {
+                    $TeamsSplit[$TeamsStrings] = "0" + $TeamsSplit[$TeamsStrings]
+                }
+                $Teams = $TeamsSplit[0] + "." + $TeamsSplit[1] + "." + $TeamsSplit[2] + "." + $TeamsSplit[3]
             }
             $TeamsInstaller = "Teams_" + "$MSTeamsArchitectureClear" + "_$MSTeamsRingClear" + ".msi"
             $TeamsLog = "$LogTemp\MSTeams.log"
