@@ -3247,7 +3247,7 @@ Function Get-ZoomVDI {
         $webVersionZoomVDID = $webRequest.RawContent | Select-String -Pattern $regexAppVersionD -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplitD = $webVersionZoomVDID.Split(">")
         $webSplitD = $webSplitD[2].Split("<")
-        $VersionD = $webSplitD[0]
+        #$VersionD = $webSplitD[0]
         $regexAppVersion = 'ZoomCitrixHDXMediaPlugin.msi" target="_self" rel="undefined">..............'
         $webVersionZoomVDI = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersionZoomVDI.Split(">")
