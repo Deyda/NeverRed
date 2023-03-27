@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.08
+  Version:          2.10.09
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -211,6 +211,7 @@ the script checks the version number and will update the package.
   2023-02-27        Correction ControlUp Agent download
   2023-03-02        Add loop to recognize the ps version and use different subobjects in MS Visual C++ Download / Correction of the save methode of ControlUp Auth Key and ControlUp Edge DX Keys
   2023-03-07        Correction Microsoft Teams Installer version / Correction Zoom VDI download
+  2023-03-27        Correction ImageGlass Download
 
 
 .PARAMETER ESfile
@@ -4032,7 +4033,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.08"
+$eVersion = "2.10.09"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -18113,7 +18114,7 @@ If ($Download -eq "1") {
     If ($ImageGlass -eq 1) {
         $Product = "ImageGlass"
         $PackageName = "ImageGlass_" + "$ImageGlassArchitectureClear"
-        $ImageGlassD = Get-EvergreenApp -Name ImageGlass | Where-Object { $_.Architecture -eq "$ImageGlassArchitectureClear" -and $_.URI -notlike "*deleted*"  }
+        $ImageGlassD = Get-EvergreenApp -Name ImageGlass | Where-Object { $_.Architecture -eq "$ImageGlassArchitectureClear" -and $_.URI -notlike "*delete*"  }
         $Version = $ImageGlassD.Version
         $URL = $ImageGlassD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
