@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.09
+  Version:          2.10.11
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -212,7 +212,7 @@ the script checks the version number and will update the package.
   2023-03-02        Add loop to recognize the ps version and use different subobjects in MS Visual C++ Download / Correction of the save methode of ControlUp Auth Key and ControlUp Edge DX Keys
   2023-03-07        Correction Microsoft Teams Installer version / Correction Zoom VDI download
   2023-03-27        Correction ImageGlass Download
-  2023-04-04        Correction Microsoft Teams Pre Preview Deyploment Download
+  2023-04-14        Correction Microsoft Teams Pre Preview Deyploment Download
 
 
 .PARAMETER ESfile
