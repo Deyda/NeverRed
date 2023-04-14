@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.09
+  Version:          2.10.11
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -212,6 +212,7 @@ the script checks the version number and will update the package.
   2023-03-02        Add loop to recognize the ps version and use different subobjects in MS Visual C++ Download / Correction of the save methode of ControlUp Auth Key and ControlUp Edge DX Keys
   2023-03-07        Correction Microsoft Teams Installer version / Correction Zoom VDI download
   2023-03-27        Correction ImageGlass Download
+  2023-04-04        Correction Microsoft Teams Pre Preview Deyploment Download
 
 
 .PARAMETER ESfile
@@ -4033,7 +4034,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.09"
+$eVersion = "2.10.11"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -13440,7 +13441,7 @@ If ($MSTeams -eq 1) {
         If ($MSTeamsInstallerClear -eq 'Machine Based') {
             $Product = "Microsoft Teams Machine Based"
             If ($MSTeamsRingClear -eq 'Continuous Deployment' -or $MSTeamsRingClear -eq 'Exploration') {
-                $TeamsD = Get-NevergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-NevergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
             }
             Else {
                 $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
@@ -19963,7 +19964,7 @@ If ($Download -eq "1") {
         If ($MSTeamsInstallerClear -eq 'Machine Based') {
             $Product = "Microsoft Teams Machine Based"
             If ($MSTeamsRingClear -eq 'Continuous Deployment' -or $MSTeamsRingClear -eq 'Exploration') {
-                $TeamsD = Get-NevergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-NevergreenApp -Name MicrosoftTeams -WarningAction SilentlyContinue | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
             }
             Else {
                 $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
