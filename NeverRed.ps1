@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.11
+  Version:          2.10.12
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -213,6 +213,7 @@ the script checks the version number and will update the package.
   2023-03-07        Correction Microsoft Teams Installer version / Correction Zoom VDI download
   2023-03-27        Correction ImageGlass Download
   2023-04-14        Correction Microsoft Teams Pre Preview Deyploment Download
+  2023-04-17        Correction Microsoft PowerToys Download / Correction version comparison for PDF24 Creator / Kill the Update Message from Microsoft PowerToys / Correction version comparison for Microsoft PowerShell / Correction Microsoft Teams UserBased Download / Correction version comparison for Microsoft Teams UserBased / Correction Filezilla Download
 
 
 .PARAMETER ESfile
@@ -657,10 +658,10 @@ Function Get-MicrosoftTeamsUser() {
         $webVersionx86beta = $webRequest.RawContent | Select-String -Pattern $regexAppVersionx86beta -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplitx86beta = $webVersionx86beta.Split("/")
         $appVersionx86beta = $webSplitx86beta[4]
-        $appx64URLdev = "https://statics.teams.cdn.office.net/production-windows-x64/$appVersionx64dev/Teams_windows_x64.exe"
-        $appx86URLdev = "https://statics.teams.cdn.office.net/production-windows/$appVersionx86dev/Teams_windows.exe"
-        $appx64URLbeta = "https://statics.teams.cdn.office.net/production-windows-x64/$appVersionx64beta/Teams_windows_x64.exe"
-        $appx86URLbeta = "https://statics.teams.cdn.office.net/production-windows/$appVersionx86beta/Teams_windows.exe"
+        $appx64URLdev = "https://staticsint.teams.cdn.office.net/production-windows-x64/$appVersionx64dev/Teams_windows_x64.exe"
+        $appx86URLdev = "https://staticsint.teams.cdn.office.net/production-windows/$appVersionx86dev/Teams_windows.exe"
+        $appx64URLbeta = "https://staticsint.teams.cdn.office.net/production-windows-x64/$appVersionx64beta/Teams_windows_x64.exe"
+        $appx86URLbeta = "https://staticsint.teams.cdn.office.net/production-windows/$appVersionx86beta/Teams_windows.exe"
         $appx64URLG = "https://statics.teams.cdn.office.net/production-windows-x64/$VersionGeneral/Teams_windows_x64.exe"
         $appx86URLG = "https://statics.teams.cdn.office.net/production-windows/$VersionGeneral/Teams_windows.exe"
         $appx64URLP = "https://statics.teams.cdn.office.net/production-windows-x64/$VersionPreview/Teams_windows_x64.exe"
@@ -4034,7 +4035,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.11"
+$eVersion = "2.10.12"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17596,7 +17597,8 @@ If ($Download -eq "1") {
         $PackageName = "Filezilla-win64"
         $FilezillaD = Get-EvergreenApp -Name Filezilla | Where-Object { $_.URI -like "*win64*"}
         $Version = $FilezillaD.Version
-        $URL = $FilezillaD.uri
+        #$URL = $FilezillaD.uri
+        $URL = "https://dl4.cdn.filezilla-project.org/client/FileZilla_3.63.2.1_win64-setup.exe?h=8Mjlmrzz6TQnAvSmuNIdMA&x=1681741271"
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
@@ -19485,7 +19487,7 @@ If ($Download -eq "1") {
     If ($MSOneDrive -eq 1) {
         $Product = "Microsoft OneDrive"
         $PackageName = "OneDriveSetup-" + "$MSOneDriveRingClear" + "_$MSOneDriveArchitectureClear"
-        $MSOneDriveD = Get-EvergreenApp -Name MicrosoftOneDrive | Where-Object { $_.Ring -eq "$MSOneDriveRingClear" -and $_.Type -eq "Exe" -and $_.Architecture -eq "$MSOneDriveArchitectureClear"} | Sort-Object -Property Version -Descending | Select-Object -Last 1
+        $MSOneDriveD = Get-EvergreenApp -Name MicrosoftOneDrive -ErrorAction SilentlyContinue | Where-Object { $_.Ring -eq "$MSOneDriveRingClear" -and $_.Type -eq "Exe" -and $_.Architecture -eq "$MSOneDriveArchitectureClear"} | Sort-Object -Property Version -Descending | Select-Object -Last 1
         $Version = $MSOneDriveD.Version
         $URL = $MSOneDriveD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
@@ -19722,12 +19724,46 @@ If ($Download -eq "1") {
             $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "Stable"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         $Version = $MSPowershellD.Version
+        $PSSplit = $Version.split(".")
+        $PSStrings = ([regex]::Matches($Version, "\." )).count
+        $PSStringLast = ([regex]::Matches($PSSplit[$PSStrings], "." )).count
+        If ($PSStringLast -lt "2") {
+            $PSSplit[$PSStrings] = "0" + $PSSplit[$PSStrings]
+        }
+        Switch ($PSStrings) {
+            1 {
+                $Version = $PSSplit[0] + "." + $PSSplit[1]
+            }
+            2 {
+                $Version = $PSSplit[0] + "." + $PSSplit[1] + "." + $PSSplit[2]
+            }
+            3 {
+                $Version = $PSSplit[0] + "." + $PSSplit[1] + "." + $PSSplit[2] + "." + $PSSplit[3]
+            }
+        }
         $URL = $MSPowershellD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "msi"
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$MSPowerShellArchitectureClear" + "_$MSPowerShellReleaseClear" + ".txt"
         $CurrentVersion = Get-Content -Path $VersionPath -EA SilentlyContinue
+        $PSCurrentSplit = $CurrentVersion.split(".")
+        $PSCurrentStrings = ([regex]::Matches($CurrentVersion, "\." )).count
+        $PSCurrentStringLast = ([regex]::Matches($PSCurrentSplit[$PSCurrentStrings], "." )).count
+        If ($PSCurrentStringLast -lt "2") {
+            $PSCurrentSplit[$PSCurrentStrings] = "0" + $PSCurrentSplit[$PSCurrentStrings]
+        }
+        Switch ($PSCurrentStrings) {
+            1 {
+                $CurrentVersion = $PSCurrentSplit[0] + "." + $PSCurrentSplit[1]
+            }
+            2 {
+                $CurrentVersion = $PSCurrentSplit[0] + "." + $PSCurrentSplit[1] + "." + $PSCurrentSplit[2]
+            }
+            3 {
+                $CurrentVersion = $PSCurrentSplit[0] + "." + $PSCurrentSplit[1] + "." + $PSCurrentSplit[2] + "." + $PSCurrentSplit[3]
+            }
+        }
         Write-Host -ForegroundColor Magenta "Download $Product $MSPowerShellReleaseClear Release $MSPowerShellArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CurrentVersion"
@@ -19768,7 +19804,7 @@ If ($Download -eq "1") {
     If ($MSPowerToys -eq 1) {
         $Product = "Microsoft PowerToys"
         $PackageName = "PowerToysSetup-x64"
-        $MSPowerToysD = Get-EvergreenApp -Name MicrosoftPowerToys| Where-Object {$_.Architecture -eq "x64"}
+        $MSPowerToysD = Get-EvergreenApp -Name MicrosoftPowerToys| Where-Object {$_.Architecture -eq "x64" -and $_.URI -notlike "*User*"}
         $Version = $MSPowerToysD.Version
         $URL = $MSPowerToysD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
@@ -20033,12 +20069,30 @@ If ($Download -eq "1") {
             $Product = "Microsoft Teams User Based"
             $TeamsD = Get-MicrosoftTeamsUser | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear"}
             $Version = $TeamsD.Version
+            If ($Version) {
+                $TeamsSplit = $Version.split(".")
+                $TeamsStrings = ([regex]::Matches($Version, "\." )).count
+                $TeamsStringLast = ([regex]::Matches($TeamsSplit[$TeamsStrings], "." )).count
+                If ($TeamsStringLast -lt "5") {
+                    $TeamsSplit[$TeamsStrings] = "0" + $TeamsSplit[$TeamsStrings]
+                }
+                $Version = $TeamsSplit[0] + "." + $TeamsSplit[1] + "." + $TeamsSplit[2] + "." + $TeamsSplit[3]
+            }
             $URL = $TeamsD.uri
             Add-Content -Path "$FWFile" -Value "$URL"
             $InstallerType = "exe"
             $Source = "$PackageName" + "." + "$InstallerType"
             $VersionPath = "$PSScriptRoot\$Product\Version_" + "$MSTeamsArchitectureClear" + "_$MSTeamsRingClear" + ".txt"
             $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
+            If ($CurrentVersion) {
+                $TeamsSplit = $CurrentVersion.split(".")
+                $TeamsStrings = ([regex]::Matches($CurrentVersion, "\." )).count
+                $TeamsStringLast = ([regex]::Matches($TeamsSplit[$TeamsStrings], "." )).count
+                If ($TeamsStringLast -lt "5") {
+                    $TeamsSplit[$TeamsStrings] = "0" + $TeamsSplit[$TeamsStrings]
+                }
+                $CurrentVersion = $TeamsSplit[0] + "." + $TeamsSplit[1] + "." + $TeamsSplit[2] + "." + $TeamsSplit[3]
+            }
             Write-Host -ForegroundColor Magenta "Download $Product $MSTeamsRingClear ring $MSTeamsArchitectureClear"
             Write-Host "Download Version: $Version"
             Write-Host "Current Version:  $CurrentVersion"
@@ -21388,11 +21442,47 @@ If ($Download -eq "1") {
         $PackageName = "PDF24Creator"
         $PDF24CreatorD = Get-evergreenApp -name GeekSoftwarePDF24Creator | Where-Object { $_.Type -eq "Msi"}
         $Version = $PDF24CreatorD.Version
+        $PDF24Split = $Version.split(".")
+        $PDF24Strings = ([regex]::Matches($Version, "\." )).count
+        $PDF24Pen = $PDF24Strings-1
+        $PDF24StringPen = ([regex]::Matches($PDF24Split[$PDF24Pen], "." )).count
+        If ($PDF24StringPen -lt "2") {
+            $PDF24Split[$PDF24Pen] = "0" + $PDF24Split[$PDF24Pen]
+        }
+        Switch ($PDF24Strings) {
+            1 {
+                $Version = $PDF24Split[0] + "." + $PDF24Split[1]
+            }
+            2 {
+                $Version = $PDF24Split[0] + "." + $PDF24Split[1] + "." + $PDF24Split[2]
+            }
+            3 {
+                $Version = $PDF24Split[0] + "." + $PDF24Split[1] + "." + $PDF24Split[2] + "." + $PDF24Split[3]
+            }
+        }
         $URL = $PDF24CreatorD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "msi"
         $Source = "$PackageName" + "." + "$InstallerType"
         $CurrentVersion = Get-Content -Path "$PSScriptRoot\$Product\Version.txt" -EA SilentlyContinue
+        $PDF24CurrentSplit = $CurrentVersion.split(".")
+        $PDF24CurrentStrings = ([regex]::Matches($CurrentVersion, "\." )).count
+        $PDF24CurrentPen = $PDF24CurrentStrings-1
+        $PDF24CurrentStringPen = ([regex]::Matches($PDF24CurrentSplit[$PDF24CurrentPen], "." )).count
+        If ($PDF24CurrentStringPen -lt "2") {
+            $PDF24CurrentSplit[$PDF24Pen] = "0" + $PDF24CurrentSplit[$PDF24CurrentPen]
+        }
+        Switch ($PDF24CurrentStrings) {
+            1 {
+                $CurrentVersion = $PDF24CurrentSplit[0] + "." + $PDF24CurrentSplit[1]
+            }
+            2 {
+                $CurrentVersion = $PDF24CurrentSplit[0] + "." + $PDF24CurrentSplit[1] + "." + $PDF24CurrentSplit[2]
+            }
+            3 {
+                $CurrentVersion = $PDF24CurrentSplit[0] + "." + $PDF24CurrentSplit[1] + "." + $PDF24CurrentSplit[2] + "." + $PDF24CurrentSplit[3]
+            }
+        }
         Write-Host -ForegroundColor Magenta "Download $Product"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CurrentVersion"
@@ -26400,18 +26490,52 @@ If ($Install -eq "1") {
         If (!($Version)) {
             $Version = $MSPowershellD.Version
         }
+        $PSSplit = $Version.split(".")
+        $PSStrings = ([regex]::Matches($Version, "\." )).count
+        $PSStringLast = ([regex]::Matches($PSSplit[$PSStrings], "." )).count
+        If ($PSStringLast -lt "2") {
+            $PSSplit[$PSStrings] = "0" + $PSSplit[$PSStrings]
+        }
+        Switch ($PSStrings) {
+            1 {
+                $Version = $PSSplit[0] + "." + $PSSplit[1]
+            }
+            2 {
+                $Version = $PSSplit[0] + "." + $PSSplit[1] + "." + $PSSplit[2]
+            }
+            3 {
+                $Version = $PSSplit[0] + "." + $PSSplit[1] + "." + $PSSplit[2] + "." + $PSSplit[3]
+            }
+        }
         $MSPowerShellV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PowerShell*" -and $_.Publisher -like "Microsoft Corporation"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$MSPowerShellV) {
             $MSPowerShellV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PowerShell*" -and $_.Publisher -like "Microsoft Corporation"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($MSPowerShellV) {$MSPowerShellV = $MSPowerShellV -replace ".{2}$"}
+        $PSSplit = $MSPowerShellV.split(".")
+        $PSStrings = ([regex]::Matches($MSPowerShellV, "\." )).count
+        $PSStringLast = ([regex]::Matches($PSSplit[$PSStrings], "." )).count
+        If ($PSStringLast -lt "2") {
+            $PSSplit[$PSStrings] = "0" + $PSSplit[$PSStrings]
+        }
+        Switch ($PSStrings) {
+            1 {
+                $MSPowerShellV = $PSSplit[0] + "." + $PSSplit[1]
+            }
+            2 {
+                $MSPowerShellV = $PSSplit[0] + "." + $PSSplit[1] + "." + $PSSplit[2]
+            }
+            3 {
+                $MSPowerShellV = $PSSplit[0] + "." + $PSSplit[1] + "." + $PSSplit[2] + "." + $PSSplit[3]
+            }
+        }
         $MSPowerShellLog = "$LogTemp\MSPowerShell.log"
         $MSPowerShellInstaller = "PowerShell" + "$MSPowerShellArchitectureClear" + "_$MSPowerShellReleaseClear" + ".msi"
         $InstallMSI = "$PSScriptRoot\$Product\$MSPowerShellInstaller"
         Write-Host -ForegroundColor Magenta "Install $Product $MSPowerShellReleaseClear Release $MSPowerShellArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $MSPowerShellV"
-        If ($MSPowerShellV -ne $Version) {
+        If ($MSPowerShellV -lt $Version) {
             DS_WriteLog "I" "Install $Product $MSPowerShellReleaseClear Release  $MSPowerShellArchitectureClear" $LogFile
             Write-Host -ForegroundColor Green "Update available"
             $Arguments = @(
@@ -26485,6 +26609,7 @@ If ($Install -eq "1") {
                 }
                 If ($inst) {
                     Wait-Process -InputObject $inst
+                    TaskKill /IM PowerToys.Settings.exe /F
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     DS_WriteLog "I" "Installation $Product finished!" $LogFile
                 }
@@ -26773,6 +26898,15 @@ If ($Install -eq "1") {
                 If (Test-Path -Path "HKCU:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\") {
                     $Teams = (Get-ItemProperty HKCU:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Teams*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+            }
+            If ($Teams) {
+                $TeamsSplit = $Teams.split(".")
+                $TeamsStrings = ([regex]::Matches($Teams, "\." )).count
+                $TeamsStringLast = ([regex]::Matches($TeamsSplit[$TeamsStrings], "." )).count
+                If ($TeamsStringLast -lt "5") {
+                    $TeamsSplit[$TeamsStrings] = "0" + $TeamsSplit[$TeamsStrings]
+                }
+                $Teams = $TeamsSplit[0] + "." + $TeamsSplit[1] + "." + $TeamsSplit[2] + "." + $TeamsSplit[3]
             }
             $TeamsInstaller = "Teams_" + "$MSTeamsArchitectureClear" + "_$MSTeamsRingClear" + ".exe"
             $TeamsProcess = "Teams_" + "$MSTeamsArchitectureClear" + "_$MSTeamsRingClear"
@@ -28307,9 +28441,45 @@ If ($Install -eq "1") {
         If (!($Version)) {
             $Version = $PDF24CreatorD.Version
         }
+        $PDF24Split = $Version.split(".")
+        $PDF24Strings = ([regex]::Matches($Version, "\." )).count
+        $PDF24Pen = $PDF24Strings-1
+        $PDF24StringPen = ([regex]::Matches($PDF24Split[$PDF24Pen], "." )).count
+        If ($PDF24StringPen -lt "2") {
+            $PDF24Split[$PDF24Pen] = "0" + $PDF24Split[$PDF24Pen]
+        }
+        Switch ($PDF24Strings) {
+            1 {
+                $Version = $PDF24Split[0] + "." + $PDF24Split[1]
+            }
+            2 {
+                $Version = $PDF24Split[0] + "." + $PDF24Split[1] + "." + $PDF24Split[2]
+            }
+            3 {
+                $Version = $PDF24Split[0] + "." + $PDF24Split[1] + "." + $PDF24Split[2] + "." + $PDF24Split[3]
+            }
+        }
         $PDF24CreatorV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PDF24 Creator*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$PDF24CreatorV) {
             $PDF24CreatorV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*PDF24 Creator*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        $PDF24RegSplit = $PDF24CreatorV.split(".")
+        $PDF24RegStrings = ([regex]::Matches($PDF24CreatorV, "\." )).count
+        $PDF24RegPen = $PDF24RegStrings-1
+        $PDF24RegStringPen = ([regex]::Matches($PDF24RegSplit[$PDF24RegPen], "." )).count
+        If ($PDF24RegStringPen -lt "2") {
+            $PDF24RegSplit[$PDF24RegPen] = "0" + $PDF24RegSplit[$PDF24RegPen]
+        }
+        Switch ($PDF24RegStrings) {
+            1 {
+                $PDF24CreatorV = $PDF24RegSplit[0] + "." + $PDF24RegSplit[1]
+            }
+            2 {
+                $PDF24CreatorV = $PDF24RegSplit[0] + "." + $PDF24RegSplit[1] + "." + $PDF24RegSplit[2]
+            }
+            3 {
+                $PDF24CreatorV = $PDF24RegSplit[0] + "." + $PDF24RegSplit[1] + "." + $PDF24RegSplit[2] + "." + $PDF24RegSplit[3]
+            }
         }
         $PDF24CreatorInstaller = "PDF24Creator.msi"
         $PDF24CreatorLog = "$LogTemp\PDF24Creator.log"
