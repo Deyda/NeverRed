@@ -30019,7 +30019,7 @@ If ($Install -eq "1") {
                         "`"$InstallMSI`""
                         "/qn"
                         "/norestart"
-                        "/L*V $ZoomLog"
+                        "/le $ZoomLog"
                     )
                     Try {
                         Write-Host "Starting install of $Product version $Version"
@@ -30068,7 +30068,7 @@ If ($Install -eq "1") {
                         "`"$InstallMSI`""
                         "/qn"
                         "/norestart"
-                        "/L*V $ZoomLog"
+                        "/le $ZoomLog"
                     )
                     Try {
                         Write-Host "Starting install of $Product $ZoomArchitectureClear version $Version"
@@ -30118,7 +30118,7 @@ If ($Install -eq "1") {
                     "`"$InstallMSI`""
                     "/qn"
                     "/norestart"
-                    "/L*V $ZoomLog"
+                    "/le $ZoomLog"
                 )
                 Try {
                     Write-Host "Starting install of $Product version $Version"
