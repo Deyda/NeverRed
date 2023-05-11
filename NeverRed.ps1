@@ -26798,7 +26798,7 @@ If ($Install -eq "1") {
                     "ALLUSERS=1"
                     "OPTIONS='noAutoStart=true'"
                     "/qn"
-                    "/L*V $TeamsLog"
+                    "/L*I $TeamsLog"
                 )
                 #Registry key for Teams machine-based install with Citrix VDA (Thx to Kasper https://github.com/kaspersmjohansen)
                 If (!(Test-Path 'HKLM:\Software\Citrix\PortICA\')) {
