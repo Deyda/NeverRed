@@ -26776,7 +26776,7 @@ If ($Install -eq "1") {
                         }
                         $UninstallTeams = $UninstallTeams -Replace("MsiExec.exe /I","")
                         If ($WhatIf -eq '0') {
-                            Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /L*V $TeamsLog"
+                            Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /le $TeamsLog"
                             Start-Sleep 20
                         }
                         Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
@@ -26798,7 +26798,7 @@ If ($Install -eq "1") {
                     "ALLUSERS=1"
                     "OPTIONS='noAutoStart=true'"
                     "/qn"
-                    "/L*I $TeamsLog"
+                    "/le $TeamsLog"
                 )
                 #Registry key for Teams machine-based install with Citrix VDA (Thx to Kasper https://github.com/kaspersmjohansen)
                 If (!(Test-Path 'HKLM:\Software\Citrix\PortICA\')) {
