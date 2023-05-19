@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.12
+  Version:          2.10.13
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -214,6 +214,7 @@ the script checks the version number and will update the package.
   2023-03-27        Correction ImageGlass Download
   2023-04-14        Correction Microsoft Teams Pre Preview Deyploment Download
   2023-04-17        Correction Microsoft PowerToys Download / Correction version comparison for PDF24 Creator / Kill the Update Message from Microsoft PowerToys / Correction version comparison for Microsoft PowerShell / Correction Microsoft Teams UserBased Download / Correction version comparison for Microsoft Teams UserBased / Correction Filezilla Download
+  2023-05-19        Correction Microsoft Power BI Desktop version comparison
 
 
 .PARAMETER ESfile
@@ -4035,7 +4036,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.12"
+$eVersion = "2.10.13"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -13070,6 +13071,22 @@ If ($Report -eq "1") {
         $MSPowerBIDesktopV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft PowerBI Desktop*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$MSPowerBIDesktopV) {
             $MSPowerBIDesktopV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft PowerBI Desktop*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        $MSPBISplit = $MSPowerBIDesktopV.split(".")
+        $MSPBIString = ([regex]::Matches($MSPBISplit[2], "." )).count
+        If ($MSPBIString -lt "4") {
+            $MSPBISplit[2] = "0" + $MSPBISplit[2]
+        }
+        Switch ($MSPBIString) {
+            1 {
+                $MSPowerBIDesktopV = $MSPBISplit[0] + "." + $MSPBISplit[1]
+            }
+            2 {
+                $MSPowerBIDesktopV = $MSPBISplit[0] + "." + $MSPBISplit[1] + "." + $MSPBISplit[2]
+            }
+            3 {
+                $MSPowerBIDesktopV = $MSPBISplit[0] + "." + $MSPBISplit[1] + "." + $MSPBISplit[2] + "." + $MSPBISplit[3]
+            }
         }
         Write-Host -ForegroundColor Magenta "$Product $MSPowerBIDesktopArchitectureClear"
         Add-Content -Path "$ReportFile" -Value "$Product $MSPowerBIDesktopArchitectureClear"
@@ -26362,6 +26379,22 @@ If ($Install -eq "1") {
         $MSPowerBIDesktopV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft PowerBI Desktop*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$MSPowerBIDesktopV) {
             $MSPowerBIDesktopV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft PowerBI Desktop*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        $MSPBISplit = $MSPowerBIDesktopV.split(".")
+        $MSPBIString = ([regex]::Matches($MSPBISplit[2], "." )).count
+        If ($MSPBIString -lt "4") {
+            $MSPBISplit[2] = "0" + $MSPBISplit[2]
+        }
+        Switch ($MSPBIString) {
+            1 {
+                $MSPowerBIDesktopV = $MSPBISplit[0] + "." + $MSPBISplit[1]
+            }
+            2 {
+                $MSPowerBIDesktopV = $MSPBISplit[0] + "." + $MSPBISplit[1] + "." + $MSPBISplit[2]
+            }
+            3 {
+                $MSPowerBIDesktopV = $MSPBISplit[0] + "." + $MSPBISplit[1] + "." + $MSPBISplit[2] + "." + $MSPBISplit[3]
+            }
         }
         $MSPowerBIDesktopInstaller = "PBIDesktopSetup_" + "$MSPowerBIDesktopArchitectureClear"
         Write-Host -ForegroundColor Magenta "Install $Product  $MSPowerBIDesktopArchitectureClear"
