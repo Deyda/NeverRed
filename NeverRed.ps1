@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.13
+  Version:          2.10.14
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -215,6 +215,7 @@ the script checks the version number and will update the package.
   2023-04-14        Correction Microsoft Teams Pre Preview Deyploment Download
   2023-04-17        Correction Microsoft PowerToys Download / Correction version comparison for PDF24 Creator / Kill the Update Message from Microsoft PowerToys / Correction version comparison for Microsoft PowerShell / Correction Microsoft Teams UserBased Download / Correction version comparison for Microsoft Teams UserBased / Correction Filezilla Download
   2023-05-19        Correction Microsoft Power BI Desktop version comparison
+  2023-05-23        Correction Filezilla download
 
 
 .PARAMETER ESfile
@@ -4036,7 +4037,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.13"
+$eVersion = "2.10.14"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17614,8 +17615,7 @@ If ($Download -eq "1") {
         $PackageName = "Filezilla-win64"
         $FilezillaD = Get-EvergreenApp -Name Filezilla | Where-Object { $_.URI -like "*win64*"}
         $Version = $FilezillaD.Version
-        #$URL = $FilezillaD.uri
-        $URL = "https://dl4.cdn.filezilla-project.org/client/FileZilla_3.63.2.1_win64-setup.exe?h=8Mjlmrzz6TQnAvSmuNIdMA&x=1681741271"
+        $URL = $FilezillaD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
@@ -17643,7 +17643,7 @@ If ($Download -eq "1") {
             }
             Write-Host "Starting download of $Product version $Version"
             If ($WhatIf -eq '0') {
-                Invoke-WebRequest -Uri $URL -OutFile ("$PSScriptRoot\$Product\" + ($Source))
+                Invoke-WebRequest -Uri $URL -OutFile ("$PSScriptRoot\$Product\" + ($Source)) -UserAgent 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
                 Write-Verbose "Stop logging"
                 Stop-Transcript | Out-Null
             }
