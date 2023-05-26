@@ -24831,6 +24831,64 @@ If ($Install -eq "1") {
         }
     }
 
+    #// Mark: Install Google Drive
+    If ($GoogleDrive -eq 1) {
+        $Product = "Google Drive"
+        # Check, if a new version is available
+        $VersionPath = "$PSScriptRoot\$Product\Version.txt"
+        $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
+        If (!($Version)) {
+            $Version = $GoogleDriveD.Version
+        }
+        $GoogleDriveV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Google Drive*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        If (!$GoogleDriveV) {
+            $GoogleDriveV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Google Drive*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        $GoogleDriveInstaller = "GoogleDrive.exe"
+        Write-Host -ForegroundColor Magenta "Install $Product"
+        Write-Host "Download Version: $Version"
+        Write-Host "Current Version:  $GoogleDriveV"
+        If ($GoogleDriveV -lt $Version) {
+            DS_WriteLog "I" "Install $Product" $LogFile
+            Write-Host -ForegroundColor Green "Update available"
+            Try {
+                Write-Host "Starting install of $Product version $Version"
+                If ($WhatIf -eq '0') {
+                    Start-Process "$PSScriptRoot\$Product\$GoogleDriveInstaller" -ArgumentList /S
+                }
+                $p = Get-Process GoogleDrive -ErrorAction SilentlyContinue
+                If ($p) {
+                    $p.WaitForExit()
+                    Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
+                    DS_WriteLog "I" "Installation $Product finished!" $LogFile
+                }
+                If ($WhatIf -eq '0') {
+                    If ($CleanUpStartMenu) {
+                        If (Test-Path -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Google Drive") {Remove-Item -Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Google Drive" -Recurse -Force}
+                    }
+                }
+            } Catch {
+                Write-Host -ForegroundColor Red "Error installing $Product (Error: $($Error[0]))"
+                DS_WriteLog "E" "Error installing $Product (Error: $($Error[0]))" $LogFile
+            }
+            DS_WriteLog "-" "" $LogFile
+            Write-Output ""
+        }
+        # Stop, if no new version is available
+        Else {
+            Write-Host -ForegroundColor Cyan "No update available for $Product"
+            Write-Output ""
+        }
+        If ($CleanUp -eq '1') {
+            If ($WhatIf -eq '0') {
+                Remove-Item "$PSScriptRoot\$Product\*" -Recurse
+            }
+            Write-Host -ForegroundColor Green "CleanUp for $Product install files successfully."
+            DS_WriteLog "-" "" $LogFile
+            Write-Output ""
+        }
+    }
+
     #// Mark: Install Greenshot
     If ($Greenshot -eq 1) {
         $Product = "Greenshot"
