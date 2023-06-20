@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.15
+  Version:          2.10.16
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -218,6 +218,7 @@ the script checks the version number and will update the package.
   2023-05-23        Correction Filezilla download / Add Adopt Open JDK download and install / Add Adopt Open JDK Iced Tea Web download and install / Add Bloomberg Terminal download and install / Add Google Drive download and install / Add MS Teams AVD regsitry key option
   2023-05-24        Add Jabra Direct download function / Add Jabra Direct download and install
   2023-05-26        Add OpenWebStart download and install
+  2023-06-20        Correct Microsoft Teams Download options
 
 
 .PARAMETER ESfile
@@ -4099,7 +4100,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.15"
+$eVersion = "2.10.16"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20534,7 +20535,7 @@ If ($Download -eq "1") {
         If ($MSTeamsInstallerClear -eq 'Machine Based') {
             $Product = "Microsoft Teams Machine Based"
             If ($MSTeamsRingClear -eq 'Continuous Deployment' -or $MSTeamsRingClear -eq 'Exploration') {
-                $TeamsD = Get-NevergreenApp -Name MicrosoftTeams -WarningAction SilentlyContinue | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
             }
             Else {
                 $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
