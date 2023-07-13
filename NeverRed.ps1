@@ -4677,7 +4677,7 @@ $inputXML = @"
                     <CheckBox x:Name="Checkbox_CleanUpStartMenu" Content="Start Menu CleanUp" HorizontalAlignment="Left" Margin="299,34,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <CheckBox x:Name="Checkbox_Report" Content="Report Mode" HorizontalAlignment="Left" Margin="54,34,0,0" VerticalAlignment="Top" Grid.Column="2" ToolTip="Only report generation, no download or install." Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_NoDesktopIcon" Content="Disable NeverRed Icon" HorizontalAlignment="Left" Margin="152,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0"/>
-                    <CheckBox x:Name="Checkbox_WindowsUpdate" Content="Install Windows Update" HorizontalAlignment="Left" Margin="299,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="Checkbox_WindowsUpdate" Content="Install Windows Updates" HorizontalAlignment="Left" Margin="299,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <Label x:Name="Label_Software_Detail" Content="Select Software" HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
                     <Label x:Name="Label_Architecture_Detail" Content="Architecture" HorizontalAlignment="Left" Margin="177,0,0,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1" Grid.Column="1"/>
                     <Label x:Name="Label_Language_Detail" Content="Language" HorizontalAlignment="Left" Margin="249,0,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="10" Grid.Row="1"/>
