@@ -3426,7 +3426,7 @@ Function Get-XCA {
         $webVersionXCA = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersionXCA.Split('.')
         $Version = $webSplit[1] + "." + $webSplit[2] + "." + $webSplit[3]
-        $x32 = "https://github.com/chris2511/xca/releases/download/RELEASE." + $Version + "/" + $webVersionXCA
+        $x32 = "https://github.com/chris2511/xca/releases/download/RELEASE." + $Version +  "/" + "xca-" + $Version + ".msi"
         
         $PSObjectx32 = [PSCustomObject] @{
             Version      = $Version
