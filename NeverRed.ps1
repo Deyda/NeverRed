@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.17
+  Version:          2.10.18
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -220,6 +220,7 @@ the script checks the version number and will update the package.
   2023-05-26        Add OpenWebStart download and install
   2023-06-20        Correct Microsoft Teams Download options
   2023-07-13        Correct Citrix Optimizer Download / Add cleanup for Foxit Reader / Add Windows Update PS Module
+  2023-09-21        Correct Google Chrome Download
 
 
 .PARAMETER ESfile
@@ -4101,7 +4102,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.17"
+$eVersion = "2.10.18"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -18319,7 +18320,7 @@ If ($Download -eq "1") {
     If ($GoogleChrome -eq 1) {
         $Product = "Google Chrome"
         $PackageName = "googlechromestandaloneenterprise_" + "$GoogleChromeArchitectureClear" + "_$GoogleChromeChannelClear"
-        $ChromeD = Get-EvergreenApp -Name GoogleChrome | Where-Object { $_.Architecture -eq "$GoogleChromeArchitectureClear" -and $_.Channel -eq "$GoogleChromeChannelClear"}
+        $ChromeD = Get-EvergreenApp -Name GoogleChrome | Where-Object { $_.Architecture -eq "$GoogleChromeArchitectureClear" -and $_.Channel -eq "$GoogleChromeChannelClear" -and $_.Type -eq "msi"}
         $Version = $ChromeD.Version
         $ChromeSplit = $Version.split(".")
         $ChromeStrings = ([regex]::Matches($Version, "\." )).count
@@ -27931,11 +27932,7 @@ If ($Install -eq "1") {
                         #Prevents MS Teams from starting at logon, better do this with WEM or similar
                         Write-Host "Customize $Product Autorun"
                         If ($WhatIf -eq '0') {
-                            If (Test-Path -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run") {
-                                If (Test-RegistryValue2 -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" -Value "Teams") {
-                                    Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" -Name "Teams" -Force
-                                }
-                            }
+                             
                         }
                         Write-Host -ForegroundColor Green "Customize $Product Autorun finished!"
                     }
