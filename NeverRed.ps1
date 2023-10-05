@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.18
+  Version:          2.10.19
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -221,6 +221,7 @@ the script checks the version number and will update the package.
   2023-06-20        Correct Microsoft Teams Download options
   2023-07-13        Correct Citrix Optimizer Download / Add cleanup for Foxit Reader / Add Windows Update PS Module
   2023-09-21        Correct Google Chrome Download
+  2023-10-05        Correct MS FSLogix Download
 
 
 .PARAMETER ESfile
@@ -4102,7 +4103,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.18"
+$eVersion = "2.10.19"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -19847,23 +19848,23 @@ If ($Download -eq "1") {
                 Remove-Item "$PSScriptRoot\$Product\$MSFSLogixChannelClear\*" -Recurse
                 Start-Transcript $LogPS | Out-Null
                 Set-Content -Path "$VersionPath" -Value "$Version"
+                $FolderPath = "FSLogix_Apps_" + $Version
             }
             Write-Host "Starting download of $Product $MSFSLogixChannelClear release $MSFSLogixArchitectureClear version $Version"
             If ($WhatIf -eq '0') {
                 Invoke-WebRequest -Uri $URL -OutFile ("$PSScriptRoot\$Product\$MSFSLogixChannelClear\" + ($Source))
-                #Get-Download $URL "$PSScriptRoot\$Product\$MSFSLogixChannelClear\" $Source -includeStats
                 expand-archive -path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$Source" -destinationpath "$PSScriptRoot\$Product\$MSFSLogixChannelClear"
                 Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$Source" -Force
                 Switch ($MSFSLogixArchitectureClear) {
                     x86 {
-                        Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\Win32\Release\*" -Destination "$PSScriptRoot\$Product\$MSFSLogixChannelClear"
+                        Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\Win32\Release\*" -Destination "$PSScriptRoot\$Product\$MSFSLogixChannelClear"
                     }
                     x64 {
-                        Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\x64\Release\*" -Destination "$PSScriptRoot\$Product\$MSFSLogixChannelClear"
+                        Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\x64\Release\*" -Destination "$PSScriptRoot\$Product\$MSFSLogixChannelClear"
                     }
                 }
-                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\Win32" -Force -Recurse
-                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\x64" -Force -Recurse
+                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\Win32" -Force -Recurse
+                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\x64" -Force -Recurse
                 Write-Verbose "Stop logging"
                 Stop-Transcript | Out-Null
             }
@@ -19875,12 +19876,13 @@ If ($Download -eq "1") {
                 If ((Test-Path "$PSScriptRoot\_ADMX\$Product\fslogix.admx" -PathType leaf)) {
                     Remove-Item -Path "$PSScriptRoot\_ADMX\$Product\fslogix.admx" -ErrorAction SilentlyContinue
                 }
-                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\fslogix.admx" -Destination "$PSScriptRoot\_ADMX\$Product" -ErrorAction SilentlyContinue
+                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\fslogix.admx" -Destination "$PSScriptRoot\_ADMX\$Product" -ErrorAction SilentlyContinue
                 If (!(Test-Path -Path "$PSScriptRoot\_ADMX\$Product\en-US")) { New-Item -Path "$PSScriptRoot\_ADMX\$Product\en-US" -ItemType Directory | Out-Null }
                 If ((Test-Path "$PSScriptRoot\_ADMX\$Product\en-US\fslogix.adml" -PathType leaf)) {
                     Remove-Item -Path "$PSScriptRoot\_ADMX\$Product\en-US\fslogix.adml" -ErrorAction SilentlyContinue
                 }
-                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\fslogix.adml" -Destination "$PSScriptRoot\_ADMX\$Product\en-US" -ErrorAction SilentlyContinue
+                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\fslogix.adml" -Destination "$PSScriptRoot\_ADMX\$Product\en-US" -ErrorAction SilentlyContinue
+                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath" -Force -Recurse
             }
             Write-Host -ForegroundColor Green "Copy of the new ADMX files version $Version finished!"
             Write-Output ""
