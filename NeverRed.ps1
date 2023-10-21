@@ -650,22 +650,16 @@ Function Get-MicrosoftTeamsUser() {
         Break
     }
     Finally {
-        $regexAppVersionx64dev = '\<td id="LC3".+<\/td\>'
+        $regexAppVersionx64dev = 'daily build of Microsoft Teams.{16}'
         $webVersionx64dev = $webRequest.RawContent | Select-String -Pattern $regexAppVersionx64dev -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webSplitx64dev = $webVersionx64dev.Split("/")
-        $appVersionx64dev = $webSplitx64dev[4]
-        $regexAppVersionx86dev = '\<td id="LC4".+<\/td\>'
-        $webVersionx86dev = $webRequest.RawContent | Select-String -Pattern $regexAppVersionx86dev -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webSplitx86dev = $webVersionx86dev.Split("/")
-        $appVersionx86dev = $webSplitx86dev[4]
-        $regexAppVersionx64beta = '\<td id="LC11".+<\/td\>'
+        $webSplitx64dev = $webVersionx64dev.Split('\"')
+        $appVersionx64dev = $webSplitx64dev[2]
+        $appVersionx86dev = $appVersionx64dev
+        $regexAppVersionx64beta = 'experimental build of Microsoft Teams.{16}'
         $webVersionx64beta = $webRequest.RawContent | Select-String -Pattern $regexAppVersionx64beta -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webSplitx64beta = $webVersionx64beta.Split("/")
-        $appVersionx64beta = $webSplitx64beta[4]
-        $regexAppVersionx86beta = '\<td id="LC13".+<\/td\>'
-        $webVersionx86beta = $webRequest.RawContent | Select-String -Pattern $regexAppVersionx86beta -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webSplitx86beta = $webVersionx86beta.Split("/")
-        $appVersionx86beta = $webSplitx86beta[4]
+        $webSplitx64beta = $webVersionx64beta.Split('\"')
+        $appVersionx64beta = $webSplitx64beta[2]
+        $appVersionx86beta = $appVersionx64beta
         $appx64URLdev = "https://staticsint.teams.cdn.office.net/production-windows-x64/$appVersionx64dev/Teams_windows_x64.exe"
         $appx86URLdev = "https://staticsint.teams.cdn.office.net/production-windows/$appVersionx86dev/Teams_windows.exe"
         $appx64URLbeta = "https://staticsint.teams.cdn.office.net/production-windows-x64/$appVersionx64beta/Teams_windows_x64.exe"
