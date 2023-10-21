@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.19
+  Version:          2.10.20
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -222,6 +222,7 @@ the script checks the version number and will update the package.
   2023-07-13        Correct Citrix Optimizer Download / Add cleanup for Foxit Reader / Add Windows Update PS Module
   2023-09-21        Correct Google Chrome Download
   2023-10-05        Correct MS FSLogix Download
+  2023-10-22        Correct MS Teams User Based Download
 
 
 .PARAMETER ESfile
@@ -4097,7 +4098,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.19"
+$eVersion = "2.10.20"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
