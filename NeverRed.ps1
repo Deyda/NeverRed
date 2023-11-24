@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.20
+  Version:          2.10.21
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -223,6 +223,7 @@ the script checks the version number and will update the package.
   2023-09-21        Correct Google Chrome Download
   2023-10-05        Correct MS FSLogix Download
   2023-10-22        Correct MS Teams User Based Download
+  2023-11-12        Correct ControlUp Agent Version
 
 
 .PARAMETER ESfile
@@ -4098,7 +4099,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.20"
+$eVersion = "2.10.21"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17761,6 +17762,13 @@ If ($Download -eq "1") {
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$ControlUpAgentArchitectureClear" + ".txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
+        $CUASplit = $CurrentVersion.split(".")
+        $CUCount = ([regex]::Matches($CUASplit[3], "." )).count
+        If ($CUCount -lt "3") {
+            $CUASplit[3] = "0" + $CUASplit[3]
+            $CurrentVersion = $CUASplit[0] + "." + $CUASplit[1] + "." + $CUASplit[2] + "." + $CUASplit[3]
+        }
+        
         Write-Host -ForegroundColor Magenta "Download $Product $ControlUpAgentArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CurrentVersion"
@@ -24740,6 +24748,12 @@ If ($Install -eq "1") {
         $ControlUpAgentV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -eq "ControlUpAgent"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$ControlUpAgentV) {
             $ControlUpAgentV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -eq "ControlUpAgent"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        $CUAVSplit = $ControlUpAgentV.split(".")
+        $CUCount = ([regex]::Matches($CUAVSplit[3], "." )).count
+        If ($CUCount -lt "3") {
+            $CUAVSplit[3] = "0" + $CUAVSplit[3]
+            $ControlUpAgentV = $CUAVSplit[0] + "." + $CUAVSplit[1] + "." + $CUAVSplit[2] + "." + $CUAVSplit[3]
         }
         $ControlUpAgentLog = "$LogTemp\ControlUpAgent.log"
         $ControlUpAgentInstaller = "ControlUpAgent-" + "$ControlUpAgentArchitectureClear" + ".msi"
