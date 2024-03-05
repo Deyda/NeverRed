@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.22
+  Version:          2.10.23
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -231,7 +231,7 @@ the script checks the version number and will update the package.
   2024-02-05        Add new Microsoft Power BI Desktop download function
   2024-02-08        Correct Citrix Optimizer Tool Version
   2024-03-04        Correction FSLogix Installation path / Correction install.xml file for M365 Apps
-
+  2024-03-05        Correction Microsoft Teams Version 2
 
 .PARAMETER ESfile
 
@@ -4145,7 +4145,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.22"
+$eVersion = "2.10.23"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20904,6 +20904,14 @@ If ($Download -eq "1") {
                 Start-Transcript $LogPS | Out-Null
                 Set-Content -Path "$VersionPath" -Value "$Version"
             }
+            Write-Host "Starting download of $Product release $MSTeamsNewArchitectureClear version $Version"
+            If ($WhatIf -eq '0') {
+                Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
+                Write-Verbose "Stop logging"
+                Stop-Transcript | Out-Null
+            }
+            Write-Host -ForegroundColor Green "Download of the new version $Version finished!"
+            Write-Output ""
         }
         Else {
             Write-Host -ForegroundColor Cyan "No new version available"
@@ -28290,6 +28298,7 @@ If ($Install -eq "1") {
                     Write-Host "Starting install of $Product $MSTeamsArchitectureClear version $Version"
                     DS_WriteLog "I" "Install $Product $MSTeamsArchitectureClear" $LogFile
                     If ($WhatIf -eq '0') {
+                        New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowAllTrustedApps -Value 1 -PropertyType DWORD -Force | Out-Null
                         #Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-p -o $PSScriptRoot\$Product\$TeamsNewInstaller"
                         Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
                         Start-Sleep 5
@@ -28309,11 +28318,26 @@ If ($Install -eq "1") {
                     Write-Host "Customize $Product"
                     reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe  /f | Out-Null
                     reg add "HKLM\SOFTWARE\Microsoft\Teams" /v disableAutoUpdate /t REG_DWORD /d 1 /f | Out-Null
-                    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force
-                    New-Item -ItemType File -Name "filename.txt"
-                    #Write-Host "Install $Product Add-In for Outlook"
-                    #msiexec /i "MicrosoftTeamsMeetingAddinInstaller.msi" TARGETDIR="C:\myfolder" /qb
-                    #Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
+                    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
+                    New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
+                    Write-Host "Install $Product Add-In for Outlook"
+                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
+                    Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
+                    Write-Host "Register $Product Add-In for Outlook"
+                    # Register Teams add-in for Outlook - https://microsoftteams.uservoice.com/forums/555103-public/suggestions/38846044-fix-the-teams-meeting-addin-for-outlook
+                    If ($WhatIf -eq '0') {
+                        $appDLLs = (Get-ChildItem -Path "${Env:ProgramFiles(x86)}\Microsoft\TeamsMeetingAddin" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
+                        $appX64DLL = $appDLLs[0]
+                        $appX86DLL = $appDLLs[1]
+                        Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX64DLL`"" -ErrorAction SilentlyContinue
+                        Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX86DLL`"" -ErrorAction SilentlyContinue
+                        #Add Registry Keys for loading the Add-in
+                        New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins" -Name "TeamsAddin.FastConnect" -Force -ErrorAction Ignore
+                        New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "DWord" -Name "LoadBehavior" -Value 3 -force
+                        New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "Description" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force
+                        New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "FriendlyName" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force
+                    }
+                    Write-Host -ForegroundColor Green "Register $Product Add-In for Outlook finished!"
                     Write-Host -ForegroundColor Green "Customize $Product finished!"
                 } Catch {
                     Write-Host -ForegroundColor Red "Error when customizing $Product (Error: $($Error[0]))"
