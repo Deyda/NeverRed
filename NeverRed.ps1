@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.23
+  Version:          2.10.24
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -227,7 +227,7 @@ the script checks the version number and will update the package.
   2023-11-24        Correct ImageGlass Version / Correct Citrix Workspace App Version
   2024-01-04        Add new Teams Version
   2024-01-21        Add download function for Microsoft Teams 2
-  2024-01-22        Add install fnction Microsoft Teams 2
+  2024-01-22        Add install function Microsoft Teams 2
   2024-02-05        Add new Microsoft Power BI Desktop download function
   2024-02-08        Correct Citrix Optimizer Tool Version
   2024-03-04        Correction FSLogix Installation path / Correction install.xml file for M365 Apps
@@ -4145,7 +4145,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.23"
+$eVersion = "2.10.24"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28314,35 +28314,50 @@ If ($Install -eq "1") {
                 } Catch {
                     DS_WriteLog "E" "Error installing $Product $MSTeamsArchitectureClear (Error: $($Error[0]))" $LogFile
                 }
-                Try {
-                    Write-Host "Customize $Product"
-                    reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe  /f | Out-Null
-                    reg add "HKLM\SOFTWARE\Microsoft\Teams" /v disableAutoUpdate /t REG_DWORD /d 1 /f | Out-Null
-                    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
-                    New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
-                    Write-Host "Install $Product Add-In for Outlook"
-                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
-                    Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
-                    Write-Host "Register $Product Add-In for Outlook"
-                    # Register Teams add-in for Outlook - https://microsoftteams.uservoice.com/forums/555103-public/suggestions/38846044-fix-the-teams-meeting-addin-for-outlook
-                    If ($WhatIf -eq '0') {
-                        $appDLLs = (Get-ChildItem -Path "${Env:ProgramFiles(x86)}\Microsoft\TeamsMeetingAddin" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
-                        $appX64DLL = $appDLLs[0]
-                        $appX86DLL = $appDLLs[1]
-                        Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX64DLL`"" -ErrorAction SilentlyContinue
-                        Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX86DLL`"" -ErrorAction SilentlyContinue
-                        #Add Registry Keys for loading the Add-in
-                        New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins" -Name "TeamsAddin.FastConnect" -Force -ErrorAction Ignore
-                        New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "DWord" -Name "LoadBehavior" -Value 3 -force
-                        New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "Description" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force
-                        New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "FriendlyName" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force
-                    }
-                    Write-Host -ForegroundColor Green "Register $Product Add-In for Outlook finished!"
-                    Write-Host -ForegroundColor Green "Customize $Product finished!"
-                } Catch {
-                    Write-Host -ForegroundColor Red "Error when customizing $Product (Error: $($Error[0]))"
-                    DS_WriteLog "E" "Error when customizing $Product (Error: $($Error[0]))" $LogFile
+                Write-Host "Customize $Product"
+                reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe  /f | Out-Null
+                reg add "HKLM\SOFTWARE\Microsoft\Teams" /v disableAutoUpdate /t REG_DWORD /d 1 /f | Out-Null
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
+                #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
+                Write-Host "Install $Product Add-In for Outlook"
+                msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
+                Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
+                Write-Host "Register $Product Add-In for Outlook"
+                If ($WhatIf -eq '0') {
+                    $appDLLs = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x64" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
+                    $appX64DLL = $appDLLs[0]
+                    Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX64DLL`"" -ErrorAction SilentlyContinue
+                    #Add Registry Keys for loading the Add-in
+                    If (!(Test-Path 'HKLM:\Software\Microsoft\Office\Outlook\Addins\')) {New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\" | Out-Null}
+                    New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins" -Name "TeamsAddin.FastConnect" -Force -ErrorAction Ignore | Out-Null
+                    New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "DWord" -Name "LoadBehavior" -Value 3 -force | Out-Null
+                    New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "Description" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force | Out-Null
+                    New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "FriendlyName" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force | Out-Null
                 }
+                Write-Host -ForegroundColor Green "Register $Product Add-In for Outlook finished!"
+                If (!(Get-ScheduledTask -TaskName "Teams Meeting AddIn for Microsoft Outlook" -ErrorAction SilentlyContinue)) {
+                    Write-Host "Implement scheduled task to create settings.json file in the User Profile"
+                    $Class = Get-CimClass MSFT_TaskEventTrigger root/Microsoft/Windows/TaskScheduler
+                    $Trigger = New-ScheduledTaskTrigger -AtLogOn
+                    $A = New-ScheduledTaskAction -Execute powershell.exe -Argument 'If (!(Test-Path -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams")) { New-Item -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams" -ItemType Directory | Out-Null } New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"'
+                    $P = New-ScheduledTaskPrincipal -GroupId "Users" -RunLevel Highest
+                    $S = New-ScheduledTaskSettingsSet
+                    # Cook it all up and create the scheduled task
+                    $RegSchTaskParameters = @{
+                        TaskName    = "Teams Meeting AddIn for Microsoft Outlook"
+                        Description = "Create settings.json file in the User Profile"
+                        TaskPath    = "\"
+                        Action      = $A
+                        Principal   = $P
+                        Settings    = $S
+                        Trigger     = $Trigger
+                    }
+                    If ($WhatIf -eq '0') {
+                        Register-ScheduledTask @RegSchTaskParameters -ErrorAction SilentlyContinue | Out-Null
+                    }
+                    Write-Host -ForegroundColor Green "Implement scheduled task to create settings.json file in the User Profile finished!"
+                }
+                Write-Host -ForegroundColor Green "Customize $Product finished!"
                 DS_WriteLog "-" "" $LogFile
                 Write-Output ""
             }
