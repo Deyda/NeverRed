@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.24
+  Version:          2.10.25
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -232,6 +232,7 @@ the script checks the version number and will update the package.
   2024-02-08        Correct Citrix Optimizer Tool Version
   2024-03-04        Correction FSLogix Installation path / Correction install.xml file for M365 Apps
   2024-03-05        Correction Microsoft Teams Version 2
+  2024-03-06        Correction on Scheduled Task for Microsodft Teams 2
 
 .PARAMETER ESfile
 
@@ -4145,7 +4146,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.24"
+$eVersion = "2.10.25"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28326,7 +28327,10 @@ If ($Install -eq "1") {
                 If ($WhatIf -eq '0') {
                     $appDLLs = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x64" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
                     $appX64DLL = $appDLLs[0]
+                    $appDLLs = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x86" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
+                    $appX86DLL = $appDLLs[0]
                     Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX64DLL`"" -ErrorAction SilentlyContinue
+                    Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX86DLL`"" -ErrorAction SilentlyContinue
                     #Add Registry Keys for loading the Add-in
                     If (!(Test-Path 'HKLM:\Software\Microsoft\Office\Outlook\Addins\')) {New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\" | Out-Null}
                     New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins" -Name "TeamsAddin.FastConnect" -Force -ErrorAction Ignore | Out-Null
@@ -28337,12 +28341,15 @@ If ($Install -eq "1") {
                 Write-Host -ForegroundColor Green "Register $Product Add-In for Outlook finished!"
                 If (!(Get-ScheduledTask -TaskName "Teams Meeting AddIn for Microsoft Outlook" -ErrorAction SilentlyContinue)) {
                     Write-Host "Implement scheduled task to create settings.json file in the User Profile"
+                    $UsersSID = New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-545")
+                    $Users = $UsersSID.Translate([System.Security.Principal.NTAccount])
+                    $UsersName = $Users.Value
                     $Class = Get-CimClass MSFT_TaskEventTrigger root/Microsoft/Windows/TaskScheduler
                     $Trigger = New-ScheduledTaskTrigger -AtLogOn
                     $A = New-ScheduledTaskAction -Execute powershell.exe -Argument 'If (!(Test-Path -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams")) { New-Item -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams" -ItemType Directory | Out-Null } New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"'
-                    $P = New-ScheduledTaskPrincipal -GroupId "Users" -RunLevel Highest
+                    $P = New-ScheduledTaskPrincipal -GroupId "$UsersName" -RunLevel Highest
                     $S = New-ScheduledTaskSettingsSet
-                    # Cook it all up and create the scheduled task
+                    # Cook it all up and create the scheduled task    
                     $RegSchTaskParameters = @{
                         TaskName    = "Teams Meeting AddIn for Microsoft Outlook"
                         Description = "Create settings.json file in the User Profile"
@@ -28352,6 +28359,7 @@ If ($Install -eq "1") {
                         Settings    = $S
                         Trigger     = $Trigger
                     }
+
                     If ($WhatIf -eq '0') {
                         Register-ScheduledTask @RegSchTaskParameters -ErrorAction SilentlyContinue | Out-Null
                     }
