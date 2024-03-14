@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.25
+  Version:          2.10.26
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -233,6 +233,7 @@ the script checks the version number and will update the package.
   2024-03-04        Correction FSLogix Installation path / Correction install.xml file for M365 Apps
   2024-03-05        Correction Microsoft Teams Version 2
   2024-03-06        Correction on Scheduled Task for Microsodft Teams 2
+  2024-03-14        Correction typo (thx Ray Davis)
 
 .PARAMETER ESfile
 
@@ -4146,7 +4147,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.25"
+$eVersion = "2.10.26"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28316,7 +28317,7 @@ If ($Install -eq "1") {
                     DS_WriteLog "E" "Error installing $Product $MSTeamsArchitectureClear (Error: $($Error[0]))" $LogFile
                 }
                 Write-Host "Customize $Product"
-                reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe  /f | Out-Null
+                reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe /f | Out-Null
                 reg add "HKLM\SOFTWARE\Microsoft\Teams" /v disableAutoUpdate /t REG_DWORD /d 1 /f | Out-Null
                 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
