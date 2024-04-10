@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.26
+  Version:          2.10.27
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -234,6 +234,7 @@ the script checks the version number and will update the package.
   2024-03-05        Correction Microsoft Teams Version 2
   2024-03-06        Correction on Scheduled Task for Microsodft Teams 2
   2024-03-14        Correction typo (thx Ray Davis)
+  2024-04-10        2.10.26
 
 .PARAMETER ESfile
 
@@ -4147,7 +4148,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.26"
+$eVersion = "2.10.27"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20735,10 +20736,10 @@ If ($Download -eq "1") {
         If ($MSTeamsInstallerClear -eq 'Machine Based') {
             $Product = "Microsoft Teams Machine Based"
             If ($MSTeamsRingClear -eq 'Continuous Deployment' -or $MSTeamsRingClear -eq 'Exploration') {
-                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeamsClassic | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
             }
             Else {
-                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeamsClassic | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
             }
             $Version = $TeamsD.Version
             If ($Version) {
