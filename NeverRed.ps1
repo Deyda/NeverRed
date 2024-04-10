@@ -234,7 +234,7 @@ the script checks the version number and will update the package.
   2024-03-05        Correction Microsoft Teams Version 2
   2024-03-06        Correction on Scheduled Task for Microsodft Teams 2
   2024-03-14        Correction typo (thx Ray Davis)
-  2024-04-10        2.10.26
+  2024-04-10        Correction #Microsoft Teams Install
 
 .PARAMETER ESfile
 
