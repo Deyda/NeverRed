@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.27
+  Version:          2.10.28
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -234,7 +234,8 @@ the script checks the version number and will update the package.
   2024-03-05        Correction Microsoft Teams Version 2
   2024-03-06        Correction on Scheduled Task for Microsodft Teams 2
   2024-03-14        Correction typo (thx Ray Davis)
-  2024-04-10        Correction #Microsoft Teams Install
+  2024-04-10        Correction Microsoft Teams Install
+  2024-04-19        Correction Microsoft Teams Install / Correction DLLs for Microsoft Teams 2
 
 .PARAMETER ESfile
 
@@ -4148,7 +4149,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.27"
+$eVersion = "2.10.28"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20736,10 +20737,10 @@ If ($Download -eq "1") {
         If ($MSTeamsInstallerClear -eq 'Machine Based') {
             $Product = "Microsoft Teams Machine Based"
             If ($MSTeamsRingClear -eq 'Continuous Deployment' -or $MSTeamsRingClear -eq 'Exploration') {
-                $TeamsD = Get-EvergreenApp -Name MicrosoftTeamsClassic | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
             }
             Else {
-                $TeamsD = Get-EvergreenApp -Name MicrosoftTeamsClassic | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
             }
             $Version = $TeamsD.Version
             If ($Version) {
@@ -28327,10 +28328,8 @@ If ($Install -eq "1") {
                 Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
                 Write-Host "Register $Product Add-In for Outlook"
                 If ($WhatIf -eq '0') {
-                    $appDLLs = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x64" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
-                    $appX64DLL = $appDLLs[0]
-                    $appDLLs = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x86" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
-                    $appX86DLL = $appDLLs[0]
+                    $appX64DLL = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x64" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
+                    $appX86DLL = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x86" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
                     Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX64DLL`"" -ErrorAction SilentlyContinue
                     Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX86DLL`"" -ErrorAction SilentlyContinue
                     #Add Registry Keys for loading the Add-in
