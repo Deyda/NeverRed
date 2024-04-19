@@ -20765,12 +20765,12 @@ If ($Download -eq "1") {
                 If ($CurrentTeamsStringLast -lt "5") {
                     $CurrentTeamsSplit[$CurrentTeamsStrings] = "0" + $CurrentTeamsSplit[$CurrentTeamsStrings]
                 }
-                $NewCurrentVersion = $CurrentTeamsSplit[0] + "." + $CurrentTeamsSplit[1] + "." + $CurrentTeamsSplit[2] + "." + $CurrentTeamsSplit[3]
+                $NewCurrentVersionT = $CurrentTeamsSplit[0] + "." + $CurrentTeamsSplit[1] + "." + $CurrentTeamsSplit[2] + "." + $CurrentTeamsSplit[3]
             }
             Write-Host -ForegroundColor Magenta "Download $Product $MSTeamsRingClear ring $MSTeamsArchitectureClear"
             Write-Host "Download Version: $NewVersion"
-            Write-Host "Current Version:  $NewCurrentVersion"
-            If ($NewCurrentVersion -ne $NewVersion) {
+            Write-Host "Current Version:  $NewCurrentVersionT"
+            If ($NewCurrentVersionT -ne $NewVersion) {
                 Write-Host -ForegroundColor Green "Update available"
                 If ($WhatIf -eq '0') {
                     If (!(Test-Path -Path "$PSScriptRoot\$Product")) { New-Item -Path "$PSScriptRoot\$Product" -ItemType Directory | Out-Null }
