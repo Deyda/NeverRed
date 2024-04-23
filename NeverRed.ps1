@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.28
+  Version:          2.10.29
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -235,7 +235,7 @@ the script checks the version number and will update the package.
   2024-03-06        Correction on Scheduled Task for Microsodft Teams 2
   2024-03-14        Correction typo (thx Ray Davis)
   2024-04-10        Correction Microsoft Teams Install
-  2024-04-19        Correction Microsoft Teams Install / Correction DLLs for Microsoft Teams 2
+  2024-04-23        Correction Microsoft Teams Install / Correction DLLs for Microsoft Teams 2
 
 .PARAMETER ESfile
 
@@ -4149,7 +4149,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.28"
+$eVersion = "2.10.29"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20737,10 +20737,10 @@ If ($Download -eq "1") {
         If ($MSTeamsInstallerClear -eq 'Machine Based') {
             $Product = "Microsoft Teams Machine Based"
             If ($MSTeamsRingClear -eq 'Continuous Deployment' -or $MSTeamsRingClear -eq 'Exploration') {
-                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeamsClassic | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and  $_.Ring -eq "Preview" -and $_.Type -eq "MSI"}
             }
             Else {
-                $TeamsD = Get-EvergreenApp -Name MicrosoftTeams | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
+                $TeamsD = Get-EvergreenApp -Name MicrosoftTeamsClassic | Where-Object { $_.Architecture -eq "$MSTeamsArchitectureClear" -and $_.Ring -eq "$MSTeamsRingClear" -and $_.Type -eq "MSI"}
             }
             $Version = $TeamsD.Version
             If ($Version) {
@@ -20871,7 +20871,7 @@ If ($Download -eq "1") {
     If ($MSTeamsNew -eq 1) {
         $PackageName = "Teams_" + "$MSTeamsNewArchitectureClear"
         $Product = "Microsoft Teams 2"
-        $TeamsNewD = Get-EvergreenApp -Name MicrosoftTeamsPreview -WarningAction silentlyContinue | Where-Object { $_.Architecture -eq "$MSTeamsNewArchitectureClear" -and $_.Release -eq "Enterprise" -and $_.Type -eq "msix"}
+        $TeamsNewD = Get-EvergreenApp -Name MicrosoftTeams -WarningAction silentlyContinue | Where-Object { $_.Architecture -eq "$MSTeamsNewArchitectureClear" -and $_.Release -eq "Enterprise" -and $_.Type -eq "msix"}
         If (!(Test-Path -Path "$PSScriptRoot\$Product\teamsbootstrapper.exe")) {
             Write-Host -ForegroundColor Magenta "Download Microsoft Teams 2 Bootstrapper"
             If ($WhatIf -eq '0') {
@@ -28232,10 +28232,6 @@ If ($Install -eq "1") {
                             }
                         }
                         $UninstallTeams = $UninstallTeams -Replace("MsiExec.exe /I","")
-                        If ($WhatIf -eq '0') {
-                            #Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /L*V $TeamsLog"
-                            #Start-Sleep 20
-                        }
                         If (Test-Path -Path "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\") {
                             $UninstallTeamsMeeting = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Teams Meeting*"}).UninstallString
                         }
@@ -28302,9 +28298,12 @@ If ($Install -eq "1") {
                     Write-Host "Starting install of $Product $MSTeamsArchitectureClear version $Version"
                     DS_WriteLog "I" "Install $Product $MSTeamsArchitectureClear" $LogFile
                     If ($WhatIf -eq '0') {
+                        $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
+                        $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
                         New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowAllTrustedApps -Value 1 -PropertyType DWORD -Force | Out-Null
-                        #Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-p -o $PSScriptRoot\$Product\$TeamsNewInstaller"
-                        Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
+                        & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                        #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
+                        #Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
                         Start-Sleep 5
                     }
                     Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
