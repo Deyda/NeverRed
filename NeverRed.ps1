@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.30
+  Version:          2.10.31
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -4150,7 +4150,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.30"
+$eVersion = "2.10.31"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28335,7 +28335,7 @@ If ($Install -eq "1") {
                         } 
                         If ($OS -Like "*Windows Server 2019*") {
                             Write-Host "Windows Server 2019 detected. Installation without teamsbootstrapper.exe"
-                            Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:$PSScriptRoot\$Product\$TeamsNewInstaller /SkipLicense"
+                            Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:'$PSScriptRoot\$Product\$TeamsNewInstaller' /SkipLicense"
                         } else {
                             $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                             $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
