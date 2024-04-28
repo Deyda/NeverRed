@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.29
+  Version:          2.10.30
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -236,6 +236,7 @@ the script checks the version number and will update the package.
   2024-03-14        Correction typo (thx Ray Davis)
   2024-04-10        Correction Microsoft Teams Install
   2024-04-23        Correction Microsoft Teams Install / Correction DLLs for Microsoft Teams 2
+  2024-04-28        Correction of the Micrsooft Teams 2 install flow
 
 .PARAMETER ESfile
 
@@ -4149,7 +4150,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.29"
+$eVersion = "2.10.30"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -27157,7 +27158,7 @@ If ($Install -eq "1") {
                 # Application post deployment tasks (Thx to Kasper https://github.com/kaspersmjohansen)
                 Write-Host "Applying $Product post setup customizations"
                 Write-Host "Post setup customizations for $OS"
-                If ($OS -Like "*Windows Server 2019*" -or $OS -eq "Microsoft Windows 10 Enterprise for Virtual Desktops" -or $OS -Like "*Windows Server 2021*") {
+                If ($OS -Like "*Windows Server 2019*" -or $OS -eq "Microsoft Windows 10 Enterprise for Virtual Desktops" -or $OS -Like "*Windows Server 2022*") {
                     If ((Test-RegistryValue2 -Path "HKLM:SOFTWARE\FSLogix\Apps" -Value "RoamSearch") -ne $true) {
                         Write-Host "Deactivate FSLogix RoamSearch"
                         If ($WhatIf -eq '0') {
@@ -28187,6 +28188,7 @@ If ($Install -eq "1") {
     #// Mark: Install Microsoft Teams 2
     If ($MSTeamsNew -eq 1) {
             $Product = "Microsoft Teams 2"
+            $OS = (Get-WmiObject Win32_OperatingSystem).Caption
             # Check, if a new version is available
             $VersionPath = "$PSScriptRoot\$Product\Version_" + "$MSTeamsArchitectureClear" + ".txt"
             $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
@@ -28276,7 +28278,7 @@ If ($Install -eq "1") {
                 If (!($MSTeamsNewAVD)){
                     #Registry key for Teams machine-based install with Citrix VDA
                     If (!(Test-Path 'HKLM:\Software\Citrix\PortICA\')) {
-                        Write-Host "Customize System for $Product"
+                        Write-Host "Customize Citrix System for $Product"
                         If ($WhatIf -eq '0') {
                             If (!(Test-Path 'HKLM:\Software\Citrix\')) {New-Item -Path "HKLM:Software\Citrix" | Out-Null}
                             New-Item -Path "HKLM:Software\Citrix\PortICA" | Out-Null
@@ -28286,7 +28288,7 @@ If ($Install -eq "1") {
                 } else {
                     #Registry key for Teams machine-based install with AVD
                     If (!(Test-Path 'HKLM:\SOFTWARE\Microsoft\Teams\')) {
-                        Write-Host "Customize System for $Product"
+                        Write-Host "Customize AVD System for $Product"
                         If ($WhatIf -eq '0') {
                             If (!(Test-Path 'HKLM:\SOFTWARE\Microsoft\Teams\')) {New-Item -Path "HKLM:SOFTWARE\Microsoft\Teams" | Out-Null}
                             New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name IsWVDEnvironment -PropertyType DWORD -Value 1 -Force | Out-Null
@@ -28294,17 +28296,54 @@ If ($Install -eq "1") {
                         Write-Host -ForegroundColor Green "Customize System for $Product finished!"
                     }
                 }
+                $EdgeWebView2 = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft Edge WebView2*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$EdgeWebView2) {
+                    $EdgeWebView2 = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft Edge WebView2*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+                If (!$EdgeWebView2) {
+                    Write-Host -ForegroundColor Red "Microsoft Edge WebView2 is not installed."
+                    Write-Host -ForegroundColor Red "No Installation of $Product possible."
+                    Write-Host -ForegroundColor Red "Please install Microsoft Edge WebView2."
+                    Write-Host ""
+                    Write-Host -ForegroundColor Red "Press Enter to exit."
+                    Read-Host
+                    return
+                }
+                $DotNetVersion = (Get-ItemProperty "HKLM:Software\Microsoft\NET Framework Setup\NDP\v4\Full").Version
+                if ($DotNetVersion -lt 4.8){
+                    $URL = "https://go.microsoft.com/fwlink/?linkid=2088631"
+                    $PackageName = "DotNetFramework4.8"
+                    $InstallerType = "exe"
+                    $Source = "$PackageName" + "." + "$InstallerType"
+                    Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
+                    $Options = @(
+                        "/q"
+                        "/norestart"
+                        "/ChainingPackage ADMINDEPLOYMENT"
+                    )
+                    $null = Start-Process "$PSScriptRoot\$Product\$Source" -ArgumentList $Options -NoNewWindow -PassThru
+                }
                 Try {
                     Write-Host "Starting install of $Product $MSTeamsArchitectureClear version $Version"
                     DS_WriteLog "I" "Install $Product $MSTeamsArchitectureClear" $LogFile
+                    New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowAllTrustedApps -Value 1 -PropertyType DWORD -Force | Out-Null
+                    New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowDevelopmentWithoutDevLicense -Value 1 -PropertyType DWORD -Force | Out-Null
+                    New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name BlockNonAdminUserInstall -Value 0 -PropertyType DWORD -Force | Out-Null
                     If ($WhatIf -eq '0') {
-                        $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
-                        $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                        New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowAllTrustedApps -Value 1 -PropertyType DWORD -Force | Out-Null
-                        & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
-                        #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
-                        #Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
-                        Start-Sleep 5
+                        If ($OS -Like "*Windows Server 2016*") {
+                            Write-Host -ForegroundColor Red "Windows Server 2016 detected. No installation possible!"
+                        } 
+                        If ($OS -Like "*Windows Server 2019*") {
+                            Write-Host "Windows Server 2019 detected. Installation without teamsbootstrapper.exe"
+                            Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:$PSScriptRoot\$Product\$TeamsNewInstaller /SkipLicense"
+                        } else {
+                            $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
+                            $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                            & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                            #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
+                            #Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
+                            Start-Sleep 5
+                        }
                     }
                     Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
                     Remove-Item $TeamsLog -ErrorAction SilentlyContinue
@@ -28337,9 +28376,10 @@ If ($Install -eq "1") {
                     New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "DWord" -Name "LoadBehavior" -Value 3 -force | Out-Null
                     New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "Description" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force | Out-Null
                     New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "FriendlyName" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force | Out-Null
+                    If (!(Test-Path 'HKLM:\Software\Microsoft\Office\Outlook\Addins\')) {New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\" | Out-Null}
                 }
                 Write-Host -ForegroundColor Green "Register $Product Add-In for Outlook finished!"
-                If (!(Get-ScheduledTask -TaskName "Teams Meeting AddIn for Microsoft Outlook" -ErrorAction SilentlyContinue)) {
+                <#If (!(Get-ScheduledTask -TaskName "Teams Meeting AddIn for Microsoft Outlook" -ErrorAction SilentlyContinue)) {
                     Write-Host "Implement scheduled task to create settings.json file in the User Profile"
                     $UsersSID = New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-545")
                     $Users = $UsersSID.Translate([System.Security.Principal.NTAccount])
@@ -28364,7 +28404,7 @@ If ($Install -eq "1") {
                         Register-ScheduledTask @RegSchTaskParameters -ErrorAction SilentlyContinue | Out-Null
                     }
                     Write-Host -ForegroundColor Green "Implement scheduled task to create settings.json file in the User Profile finished!"
-                }
+                }#>
                 Write-Host -ForegroundColor Green "Customize $Product finished!"
                 DS_WriteLog "-" "" $LogFile
                 Write-Output ""
