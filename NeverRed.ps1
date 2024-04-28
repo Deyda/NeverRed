@@ -28335,7 +28335,7 @@ If ($Install -eq "1") {
                         } 
                         If ($OS -Like "*Windows Server 2019*") {
                             Write-Host "Windows Server 2019 detected. Installation without teamsbootstrapper.exe"
-                            Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:'$PSScriptRoot\$Product\$TeamsNewInstaller' /SkipLicense"
+                            Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"" /SkipLicense"
                         } else {
                             $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                             $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
