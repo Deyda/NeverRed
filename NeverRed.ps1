@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.31
+  Version:          2.10.32
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -237,6 +237,7 @@ the script checks the version number and will update the package.
   2024-04-10        Correction Microsoft Teams Install
   2024-04-23        Correction Microsoft Teams Install / Correction DLLs for Microsoft Teams 2
   2024-04-28        Correction of the Micrsooft Teams 2 install flow
+  2024-05-03        Correction of Powershell Module Update (Thx to chezzer64)
 
 .PARAMETER ESfile
 
@@ -4150,7 +4151,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.31"
+$eVersion = "2.10.32"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16654,7 +16655,7 @@ If ($Download -eq "1") {
             }
             else {
                 Write-Host "Update Evergreen module."
-                Update-Module Evergreen -force
+                Update-Module Evergreen -force | Import-Module Evergreen -force
                 Write-Host -ForegroundColor Green "Update Evergreen module done."
                 Write-Output ""
             }
@@ -16680,7 +16681,7 @@ If ($Download -eq "1") {
             }
             else {
                 Write-Host "Update Nevergreen module."
-                Update-Module Nevergreen -force
+                Update-Module Nevergreen -force | Import-Module Nevergreen -force
                 Write-Host -ForegroundColor Green "Update Nevergreen module done."
                 Write-Output ""
         }
@@ -16706,7 +16707,7 @@ If ($Download -eq "1") {
             }
             else {
                 Write-Host "Update VcRedist module."
-                Update-Module VcRedist -force
+                Update-Module VcRedist -force | Import-Module VcRedist -force
                 Write-Host -ForegroundColor Green "Update VcRedist module done."
                 Write-Output ""
             }
@@ -16731,7 +16732,7 @@ If ($Download -eq "1") {
             }
             else {
                 Write-Host "Update PSWindowsUpdate module."
-                Update-Module PSWindowsUpdate -force
+                Update-Module PSWindowsUpdate -force | Import-Module PSWindowsUpdate -force
                 Write-Host -ForegroundColor Green "Update PSWindowsUpdate module done."
                 Write-Output ""
             }
