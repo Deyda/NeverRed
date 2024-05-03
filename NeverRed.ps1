@@ -10040,12 +10040,12 @@ Else {
 If ($MSOneDrive_Architecture -ne "") {
     Switch ($MSOneDrive_Architecture) {
         1 { $MSOneDriveArchitectureClear = 'x86'}
-        2 { $MSOneDriveArchitectureClear = 'AMD64'}
+        2 { $MSOneDriveArchitectureClear = 'x64'}
     }
 }
 Else {
     Switch ($Architecture) {
-        0 { $MSOneDriveArchitectureClear = 'AMD64'}
+        0 { $MSOneDriveArchitectureClear = 'x64'}
         1 { $MSOneDriveArchitectureClear = 'x86'}
     }
 }
