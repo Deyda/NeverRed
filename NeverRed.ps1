@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.32
+  Version:          2.10.33
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -237,7 +237,8 @@ the script checks the version number and will update the package.
   2024-04-10        Correction Microsoft Teams Install
   2024-04-23        Correction Microsoft Teams Install / Correction DLLs for Microsoft Teams 2
   2024-04-28        Correction of the Micrsooft Teams 2 install flow
-  2024-05-03        Correction of Powershell Module Update (Thx to chezzer64)
+  2024-05-03        Correction of Powershell Module Update
+  2024-05-11        Correction first run Teams 2 download (Thx to chezzer64) / Corretion Workspace App typo / Correction Workspace App Version and download url
 
 .PARAMETER ESfile
 
@@ -803,7 +804,8 @@ Function Get-WorkspaceAppCurrent() {
         $webVersionCWA = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -Last 1
         $appDLVersion = $webVersionCWA.Split()[1]
         $appDLVersion = $appDLVersion.Split("(")[0]
-        $appURL = "https://downloadplugins.citrix.com/ReceiverUpdates/Prod/Receiver/Win/CitrixWorkspaceApp$appDLVersion.exe"
+        #$appURL = "https://downloadplugins.citrix.com/ReceiverUpdates/Prod/Receiver/Win/CitrixWorkspaceApp$appDLVersion.exe"
+        $appURL = "https://downloads.citrix.com/22681/CitrixWorkspaceApp.exe?__gda__=exp=1715472841~acl=/*~hmac=d66687ace98d8fef5c93aa5ee0e55340795cd1263bf4091372f24c0f27a0f807"
 
         $PSObject = [PSCustomObject] @{
             Version      = $appDLVersion
@@ -4151,7 +4153,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.32"
+$eVersion = "2.10.33"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -10040,12 +10042,12 @@ Else {
 If ($MSOneDrive_Architecture -ne "") {
     Switch ($MSOneDrive_Architecture) {
         1 { $MSOneDriveArchitectureClear = 'x86'}
-        2 { $MSOneDriveArchitectureClear = 'x64'}
+        2 { $MSOneDriveArchitectureClear = 'AMD64'}
     }
 }
 Else {
     Switch ($Architecture) {
-        0 { $MSOneDriveArchitectureClear = 'x64'}
+        0 { $MSOneDriveArchitectureClear = 'AMD64'}
         1 { $MSOneDriveArchitectureClear = 'x86'}
     }
 }
@@ -11587,6 +11589,12 @@ If ($Report -eq "1") {
         $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*Trolley*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$WSA) {
             $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*Trolley*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        If (!$WSA) {
+            $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        If (!$WSA) {
+            $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($WSA) {
             $CurrentWSASplit = $WSA.split(".")
@@ -17683,12 +17691,19 @@ If ($Download -eq "1") {
             3 {$PackageName = "CitrixWorkspaceAppWeb"}
         }
         If ($CitrixWorkspaceAppReleaseClear -eq "Current") {
-            #$WSACD = Get-WorkspaceAppCurrent
-            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
+            $WSACD = Get-WorkspaceAppCurrent
+            #$WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         } else {
             $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         }
-        $Version = $WSACD.version 
+        $Version = $WSACD.version
+        If ($Version -eq "0.0.0.0") {
+            $SplitVersion = $WSACD.uri
+            $SplitVersion = $SplitVersion.split("/")
+            $SplitVersion = $SplitVersion[7].split("p")
+            $SplitVersion = $SplitVersion[3].split(".")
+            $Version = $SplitVersion[0] + "." + $SplitVersion[1] + "." + $SplitVersion[2] + "." + $SplitVersion[3]
+        }
         If ($Version) {
             $CurrentWSASplit = $Version.split(".")
             $CurrentWSAStrings = ([regex]::Matches($Version, "\." )).count
@@ -20877,7 +20892,8 @@ If ($Download -eq "1") {
         If (!(Test-Path -Path "$PSScriptRoot\$Product\teamsbootstrapper.exe")) {
             Write-Host -ForegroundColor Magenta "Download Microsoft Teams 2 Bootstrapper"
             If ($WhatIf -eq '0') {
-                Get-Download "https://go.microsoft.com/fwlink/?linkid=2243204&clcid=0x409" "$PSScriptRoot\$Product\" teamsbootstrapper.exe
+                If (!(Test-Path -Path "$PSScriptRoot\$Product")) { New-Item -Path "$PSScriptRoot\$Product" -ItemType Directory | Out-Null }
+                Get-Download "https://go.microsoft.com/fwlink/?linkid=2243204&clcid=0x409" "$PSScriptRoot\$Product\" teamsbootstrapper.exe -includeStats
             }
             Write-Host -ForegroundColor Green "Download Microsoft Teams 2 Bootstrapper finished!"
             Write-Output ""
@@ -24850,11 +24866,17 @@ If ($Install -eq "1") {
         If (!$WSA) {
             $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*Trolley*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
+        If (!$WSA) {
+            $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        If (!$WSA) {
+            $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
         If ($WSA) {
             $CurrentWSASplit = $WSA.split(".")
             $CurrentWSAStrings = ([regex]::Matches($WSA, "\." )).count
             $CurrentWSAStringTwo = ([regex]::Matches($CurrentWSASplit[1], "." )).count
-            $CurrentWSAStringLast = ([regex]::Matches($CurrentWSASplit[1], "." )).count
+            $CurrentWSAStringLast = ([regex]::Matches($CurrentWSASplit[3], "." )).count
             If ($CurrentWSAStringTwo -lt "2") {
                 $CurrentWSASplit[1] = "0" + $CurrentWSASplit[1]
             }
