@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.33
+  Version:          2.10.34
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -239,6 +239,7 @@ the script checks the version number and will update the package.
   2024-04-28        Correction of the Micrsooft Teams 2 install flow
   2024-05-03        Correction of Powershell Module Update
   2024-05-11        Correction first run Teams 2 download (Thx to chezzer64) / Corretion Workspace App typo / Correction Workspace App Version and download url
+  2024-05-13        Correction MS OneDrive download
 
 .PARAMETER ESfile
 
@@ -10042,12 +10043,12 @@ Else {
 If ($MSOneDrive_Architecture -ne "") {
     Switch ($MSOneDrive_Architecture) {
         1 { $MSOneDriveArchitectureClear = 'x86'}
-        2 { $MSOneDriveArchitectureClear = 'AMD64'}
+        2 { $MSOneDriveArchitectureClear = 'x64'}
     }
 }
 Else {
     Switch ($Architecture) {
-        0 { $MSOneDriveArchitectureClear = 'AMD64'}
+        0 { $MSOneDriveArchitectureClear = 'x64'}
         1 { $MSOneDriveArchitectureClear = 'x86'}
     }
 }
