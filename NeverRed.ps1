@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.34
+  Version:          2.10.35
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -240,6 +240,7 @@ the script checks the version number and will update the package.
   2024-05-03        Correction of Powershell Module Update
   2024-05-11        Correction first run Teams 2 download (Thx to chezzer64) / Corretion Workspace App typo / Correction Workspace App Version and download url
   2024-05-13        Correction MS OneDrive download
+  2024-05-23        Correction GoogleChrome Variables
 
 .PARAMETER ESfile
 
@@ -4154,7 +4155,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.34"
+$eVersion = "2.10.35"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -18499,13 +18500,13 @@ If ($Download -eq "1") {
         }
         Switch ($ChromeStrings) {
             1 {
-                $NewVersion = $ChromeSplit[0] + "." + $ChromeSplit[1]
+                $NewChromeVersion = $ChromeSplit[0] + "." + $ChromeSplit[1]
             }
             2 {
-                $NewVersion = $ChromeSplit[0] + "." + $ChromeSplit[1] + "." + $ChromeSplit[2]
+                $NewChromeVersion = $ChromeSplit[0] + "." + $ChromeSplit[1] + "." + $ChromeSplit[2]
             }
             3 {
-                $NewVersion = $ChromeSplit[0] + "." + $ChromeSplit[1] + "." + $ChromeSplit[2] + "." + $ChromeSplit[3]
+                $NewChromeVersion = $ChromeSplit[0] + "." + $ChromeSplit[1] + "." + $ChromeSplit[2] + "." + $ChromeSplit[3]
             }
         }
         $URL = $ChromeD.uri
@@ -18539,9 +18540,9 @@ If ($Download -eq "1") {
             }
         }
         Write-Host -ForegroundColor Magenta "Download $Product $GoogleChromeChannelClear channel $GoogleChromeArchitectureClear"
-        Write-Host "Download Version: $NewVersion"
+        Write-Host "Download Version: $NewChromeVersion"
         Write-Host "Current Version:  $NewCurrentVersion"
-        If ($NewCurrentVersion -lt $NewVersion) {
+        If ($NewCurrentVersion -lt $NewChromeVersion) {
             Write-Host -ForegroundColor Green "Update available"
             If ($WhatIf -eq '0') {
                 If (!(Test-Path -Path "$PSScriptRoot\$Product")) { New-Item -Path "$PSScriptRoot\$Product" -ItemType Directory | Out-Null }
@@ -18559,13 +18560,13 @@ If ($Download -eq "1") {
                 Start-Transcript $LogPS | Out-Null
                 Set-Content -Path "$VersionPath" -Value "$Version"
             }
-            Write-Host "Starting download of $Product $GoogleChromeChannelClear channel $GoogleChromeArchitectureClear version $Version"
+            Write-Host "Starting download of $Product $GoogleChromeChannelClear channel $GoogleChromeArchitectureClear version $NewChromeVersion"
             If ($WhatIf -eq '0') {
                 Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
                 Write-Verbose "Stop logging"
                 Stop-Transcript | Out-Null
             }
-            Write-Host -ForegroundColor Green "Download of the new version $Version finished!"
+            Write-Host -ForegroundColor Green "Download of the new version $NewChromeVersion finished!"
             Write-Output ""
             $PackageNameP = "Chrome-Templates"
             $ChromeDP = Get-GoogleChromeAdmx
@@ -28363,16 +28364,21 @@ If ($Install -eq "1") {
                         } else {
                             If ($OS -Like "*Windows Server 2022*") {
                                 Write-Host "Windows Server 2022 detected. Installation with teamsbootstrapper.exe"
+                                $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
+                                $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
                             }
                             If ($OS -Like "*Windows 10*") {
-                                Write-Host "Windows 10 detected. Installation with teamsbootstrapper.exe"
+                                Write-Host "Windows 10 detected. Installation without teamsbootstrapper.exe"
+                                Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"" /SkipLicense"
                             }
                             If ($OS -Like "*Windows 11*") {
                                 Write-Host "Windows 11 detected. Installation with teamsbootstrapper.exe"
+                                $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
+                                $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
                             }
-                            $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
-                            $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                            & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                            
                             #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
                             #Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
                             Start-Sleep 5
@@ -28392,7 +28398,7 @@ If ($Install -eq "1") {
                 Write-Host "Customize $Product"
                 reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe /f | Out-Null
                 reg add "HKLM\SOFTWARE\Microsoft\Teams" /v disableAutoUpdate /t REG_DWORD /d 1 /f | Out-Null
-                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
+                #New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
                 Write-Host "Install $Product Add-In for Outlook"
                 msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
