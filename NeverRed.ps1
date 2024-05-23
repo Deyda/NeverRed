@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.35
+  Version:          2.10.36
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -240,7 +240,7 @@ the script checks the version number and will update the package.
   2024-05-03        Correction of Powershell Module Update
   2024-05-11        Correction first run Teams 2 download (Thx to chezzer64) / Corretion Workspace App typo / Correction Workspace App Version and download url
   2024-05-13        Correction MS OneDrive download
-  2024-05-23        Correction GoogleChrome Variables
+  2024-05-23        Correction GoogleChrome Variables / Correction Citrix Workspace App download and install
 
 .PARAMETER ESfile
 
@@ -4155,7 +4155,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.35"
+$eVersion = "2.10.36"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17693,8 +17693,8 @@ If ($Download -eq "1") {
             3 {$PackageName = "CitrixWorkspaceAppWeb"}
         }
         If ($CitrixWorkspaceAppReleaseClear -eq "Current") {
-            $WSACD = Get-WorkspaceAppCurrent
-            #$WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
+            #$WSACD = Get-WorkspaceAppCurrent
+            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         } else {
             $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         }
@@ -24873,6 +24873,12 @@ If ($Install -eq "1") {
         }
         If (!$WSA) {
             $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        If (!$WSA) {
+            $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*bootstrapperhelper*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
+        If (!$WSA) {
+            $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*bootstrapperhelper*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($WSA) {
             $CurrentWSASplit = $WSA.split(".")
