@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.36
+  Version:          2.10.37
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -241,6 +241,7 @@ the script checks the version number and will update the package.
   2024-05-11        Correction first run Teams 2 download (Thx to chezzer64) / Corretion Workspace App typo / Correction Workspace App Version and download url
   2024-05-13        Correction MS OneDrive download
   2024-05-23        Correction GoogleChrome Variables / Correction Citrix Workspace App download and install
+  2024-06-05        Correction Firefox Channel download / Correction Gimp download
 
 .PARAMETER ESfile
 
@@ -1015,7 +1016,7 @@ Function Get-DWGTrueView() {
     [OutputType([System.Management.Automation.PSObject])]
     [CmdletBinding()]
     Param ()
-    $appURLVersion = "https://www.autodesk.de/viewers"
+    $appURLVersion = "https://www.autodesk.com/products/dwg-trueview/overview"
     Try {
         $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($appURLVersion) -SessionVariable websession
     }
@@ -4155,7 +4156,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.36"
+$eVersion = "2.10.37"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -10279,8 +10280,8 @@ Else {
 }
 
 Switch ($FirefoxChannel ) {
-    0 { $FirefoxChannelClear = 'LATEST'}
-    1 { $FirefoxChannelClear = 'ESR'}
+    0 { $FirefoxChannelClear = 'LATEST_FIREFOX_VERSION'}
+    1 { $FirefoxChannelClear = 'FIREFOX_ESR'}
 }
 
 If ($Firefox_Architecture -ne "") {
@@ -18395,7 +18396,7 @@ If ($Download -eq "1") {
     If ($GIMP -eq 1) {
         $Product = "GIMP"
         $PackageName = "gimp-setup"
-        $GIMPD = Get-EvergreenApp -Name GIMP
+        $GIMPD = Get-EvergreenApp -Name GIMP | Where-Object {$_.Channel -eq "Stable"}
         $Version = $GIMPD.Version
         $URL = $GIMPD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
