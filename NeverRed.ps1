@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.38
+  Version:          2.10.39
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -242,7 +242,7 @@ the script checks the version number and will update the package.
   2024-05-13        Correction MS OneDrive download
   2024-05-23        Correction GoogleChrome Variables / Correction Citrix Workspace App download and install
   2024-06-05        Correction Firefox Channel download / Correction Gimp download
-  2024-06-17        Correction download .Net Framework Current
+  2024-06-17        Correction download .Net Framework current / Correction Mozilla Firefox download and add Developer Channel / Correction Firefox Disable Auto Update / Correction Chrome Disable Auto Update
 
 .PARAMETER ESfile
 
@@ -4157,7 +4157,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.38"
+$eVersion = "2.10.39"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4637,6 +4637,7 @@ $inputXML = @"
                     <ComboBox x:Name="Box_Firefox" HorizontalAlignment="Left" Margin="214,427,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="1" Grid.Row="1">
                         <ListBoxItem Content="Current"/>
                         <ListBoxItem Content="ESR"/>
+                        <ListBoxItem Content="Developer"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_MozillaThunderbird" Content="Mozilla Thunderbird" HorizontalAlignment="Left" Margin="12,450,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_mRemoteNG" Content="mRemoteNG" HorizontalAlignment="Left" Margin="12,470,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
@@ -10281,8 +10282,9 @@ Else {
 }
 
 Switch ($FirefoxChannel ) {
-    0 { $FirefoxChannelClear = 'LATEST_FIREFOX_VERSION'}
-    1 { $FirefoxChannelClear = 'FIREFOX_ESR'}
+    0 { $FirefoxChannelClear = 'Current'}
+    1 { $FirefoxChannelClear = 'Extended Support'}
+    2 { $FirefoxChannelClear = 'Developer'}
 }
 
 If ($Firefox_Architecture -ne "") {
@@ -25871,7 +25873,21 @@ If ($Install -eq "1") {
             } Catch {
                 DS_WriteLog "E" "Error installing $Product $GoogleChromeChannelClear channel $GoogleChromeArchitectureClear (Error: $($Error[0]))" $LogFile
             }
+            Write-Host "Customize $Product"
             Try {
+                # Disable Google Chrome auto update
+                Write-Host "Customize $Product registry"
+                If ($WhatIf -eq '0') {
+                    If (!(Test-Path -Path HKLM:SOFTWARE\Policies\Google\Update)) {
+                        New-Item -Path HKLM:SOFTWARE\Policies\Google\Update -ErrorAction SilentlyContinue | Out-Null
+                        New-ItemProperty -Path HKLM:SOFTWARE\Policies\Google\Update -Name UpdateDefault -Value 0 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
+                    }
+                    Else {
+                        $ChromeUpdateState = Get-ItemProperty -path "HKLM:SOFTWARE\Policies\Google\Update" | Select-Object -Expandproperty "UpdateDefault"
+                        If ($ChromeUpdateState -ne "0") {Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Google\Update -Name UpdateDefault -Value 0 | Out-Null}
+                    }
+                }
+                Write-Host -ForegroundColor Green "Customize $Product registry finished!"
                 # Disable update service and scheduled task
                 $Service = Get-Service -Name gupdate -ErrorAction SilentlyContinue
                 If ($Service.Length -gt 0) {
@@ -29154,6 +29170,26 @@ If ($Install -eq "1") {
                 Remove-Item $FirefoxLog -ErrorAction SilentlyContinue
             } Catch {
                 DS_WriteLog "E" "Error installing $Product $FirefoxChannelClear $FFLanguageLongClear $FirefoxArchitectureClear (Error: $($Error[0]))" $LogFile
+            }
+            Write-Host "Customize $Product"
+            Try {
+                # Disable Microsoft Edge auto update
+                Write-Host "Customize $Product registry"
+                If ($WhatIf -eq '0') {
+                    If (!(Test-Path -Path HKLM:SOFTWARE\Policies\Mozilla\Firefox)) {
+                        New-Item -Path HKLM:SOFTWARE\Policies\Mozilla\Firefox -ErrorAction SilentlyContinue | Out-Null
+                        New-ItemProperty -Path HKLM:SOFTWARE\Policies\Mozilla\Firefox -Name DisableAppUpdate -Value 1 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
+                    }
+                    Else {
+                        $FFUpdateState = Get-ItemProperty -path "HKLM:SOFTWARE\Policies\Mozilla\Firefox" | Select-Object -Expandproperty "DisableAppUpdate"
+                        If ($FFUpdateState -ne "0") {Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Mozilla\Firefox -Name DisableAppUpdate -Value 1 | Out-Null}
+                    }
+                }
+                Write-Host -ForegroundColor Green "Customize $Product registry finished!"
+                Write-Host -ForegroundColor Green "Customize $Product finished!"
+            } Catch {
+                Write-Host -ForegroundColor Red "Error customizing (Error: $($Error[0]))"
+                DS_WriteLog "E" "Error customizing (Error: $($Error[0]))" $LogFile
             }
             DS_WriteLog "-" "" $LogFile
             Write-Output ""
