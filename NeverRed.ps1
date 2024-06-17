@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.37
+  Version:          2.10.38
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -242,6 +242,7 @@ the script checks the version number and will update the package.
   2024-05-13        Correction MS OneDrive download
   2024-05-23        Correction GoogleChrome Variables / Correction Citrix Workspace App download and install
   2024-06-05        Correction Firefox Channel download / Correction Gimp download
+  2024-06-17        Correction download .Net Framework Current
 
 .PARAMETER ESfile
 
@@ -4156,7 +4157,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.37"
+$eVersion = "2.10.38"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -9442,7 +9443,7 @@ Else {
 }
 
 Switch ($MSDotNetFrameworkChannel) {
-    0 { $MSDotNetFrameworkChannelClear = 'Current'}
+    0 { $MSDotNetFrameworkChannelClear = 'STS'}
     1 { $MSDotNetFrameworkChannelClear = 'LTS'}
 }
 
@@ -26474,9 +26475,16 @@ If ($Install -eq "1") {
                 }
             }
         }
-        $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime*" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
-        If (!$MSDotNetFrameworkV) {
-            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime*" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+        If ($MSDotNetFrameworkChannelClear -eq "LTS") {
+            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            If (!$MSDotNetFrameworkV) {
+                $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            }
+        } else {
+            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            If (!$MSDotNetFrameworkV) {
+                $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            }
         }
         If ($MSDotNetFrameworkV) {
             $CurrentSplit = $MSDotNetFrameworkV.split(".")
