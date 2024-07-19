@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.39
+  Version:          2.10.40
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -243,6 +243,8 @@ the script checks the version number and will update the package.
   2024-05-23        Correction GoogleChrome Variables / Correction Citrix Workspace App download and install
   2024-06-05        Correction Firefox Channel download / Correction Gimp download
   2024-06-17        Correction download .Net Framework current / Correction Mozilla Firefox download and add Developer Channel / Correction Firefox Disable Auto Update / Correction Chrome Disable Auto Update
+  2024-07-08        Correction Teams 2 Installation / Customize initials output
+  2024-07-19        Correction Citrix Workspace App
 
 .PARAMETER ESfile
 
@@ -4157,7 +4159,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.39"
+$eVersion = "2.10.40"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16670,6 +16672,7 @@ If ($Download -eq "1") {
             else {
                 Write-Host "Update Evergreen module."
                 Update-Module Evergreen -force | Import-Module Evergreen -force
+                Install-Module Evergreen -Force | Import-Module Evergreen
                 Write-Host -ForegroundColor Green "Update Evergreen module done."
                 Write-Output ""
             }
@@ -16677,7 +16680,7 @@ If ($Download -eq "1") {
 
         If (!(Get-Module -ListAvailable -Name Nevergreen)) {
             Write-Host "Install Nevergreen module."
-            Install-Module Nevergreen -Force | Import-Module Evergreen
+            Install-Module Nevergreen -Force | Import-Module Nevergreen
             Write-Host -ForegroundColor Green "Install Nevergreen module done."
             Write-Output ""
         }
@@ -16696,6 +16699,7 @@ If ($Download -eq "1") {
             else {
                 Write-Host "Update Nevergreen module."
                 Update-Module Nevergreen -force | Import-Module Nevergreen -force
+                Install-Module Nevergreen -Force | Import-Module Nevergreen
                 Write-Host -ForegroundColor Green "Update Nevergreen module done."
                 Write-Output ""
         }
@@ -16722,6 +16726,7 @@ If ($Download -eq "1") {
             else {
                 Write-Host "Update VcRedist module."
                 Update-Module VcRedist -force | Import-Module VcRedist -force
+                Install-Module VcRedist -Force | Import-Module VcRedist
                 Write-Host -ForegroundColor Green "Update VcRedist module done."
                 Write-Output ""
             }
@@ -16747,6 +16752,7 @@ If ($Download -eq "1") {
             else {
                 Write-Host "Update PSWindowsUpdate module."
                 Update-Module PSWindowsUpdate -force | Import-Module PSWindowsUpdate -force
+                Install-Module PSWindowsUpdate -Force | Import-Module PSWindowsUpdate
                 Write-Host -ForegroundColor Green "Update PSWindowsUpdate module done."
                 Write-Output ""
             }
@@ -17698,9 +17704,9 @@ If ($Download -eq "1") {
         }
         If ($CitrixWorkspaceAppReleaseClear -eq "Current") {
             #$WSACD = Get-WorkspaceAppCurrent
-            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
+            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         } else {
-            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Title -like "*Workspace*" -and $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
+            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         }
         $Version = $WSACD.version
         If ($Version -eq "0.0.0.0") {
@@ -27137,7 +27143,7 @@ If ($Install -eq "1") {
     #// Mark: Install Microsoft FSLogix
     If ($MSFSLogix -eq 1) {
         $Product = "Microsoft FSLogix"
-        $OS = (Get-WmiObject Win32_OperatingSystem).Caption
+        $OS = (Get-CimInstance win32_OperatingSystem).caption
         # Check, if a new version is available
         $VersionPath = "$PSScriptRoot\$Product\$MSFSLogixChannelClear\Version_" + "$MSFSLogixChannelClear" + ".txt"
         $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
@@ -28244,7 +28250,7 @@ If ($Install -eq "1") {
     #// Mark: Install Microsoft Teams 2
     If ($MSTeamsNew -eq 1) {
             $Product = "Microsoft Teams 2"
-            $OS = (Get-WmiObject Win32_OperatingSystem).Caption
+            $OS = (Get-CimInstance win32_OperatingSystem).caption
             # Check, if a new version is available
             $VersionPath = "$PSScriptRoot\$Product\Version_" + "$MSTeamsArchitectureClear" + ".txt"
             $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
