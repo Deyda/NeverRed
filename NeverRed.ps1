@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.40
+  Version:          2.10.41
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -245,6 +245,7 @@ the script checks the version number and will update the package.
   2024-06-17        Correction download .Net Framework current / Correction Mozilla Firefox download and add Developer Channel / Correction Firefox Disable Auto Update / Correction Chrome Disable Auto Update
   2024-07-08        Correction Teams 2 Installation / Customize initials output
   2024-07-19        Correction Citrix Workspace App
+  2024-08-01        Correction Adobe Reader DC
 
 .PARAMETER ESfile
 
@@ -4159,7 +4160,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.40"
+$eVersion = "2.10.41"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16600,6 +16601,8 @@ If ($MSTeams -eq 1) {
     }
 }
 
+#// Mark: End Test Zone
+
 If ($Download -eq "1") {
     # Logging
     # Global variables
@@ -16659,13 +16662,13 @@ If ($Download -eq "1") {
         }
         Else {
             Write-Host "Check Evergreen module version."
-            $version = (Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
-            $psgalleryversion = Find-Module -Name Evergreen | Sort-Object Version -Descending | Select-Object Version -First 1
-            $stringver = $version | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
-            $a = $stringver | Select-Object Moduleversion -ExpandProperty Moduleversion
-            $onlinever = $psgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
-            $b = $onlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
-            if ([version]"$a" -ge [version]"$b") {
+            $eversion = (Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $epsgalleryversion = Find-Module -Name Evergreen | Sort-Object Version -Descending | Select-Object Version -First 1
+            $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            $eonlinever = $epsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
+            $eb = $eonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            if ([version]"$ea" -ge [version]"$eb") {
                 Write-Host -ForegroundColor Green "Installed Evergreen module version is up to date."
                 Write-Output ""
             }
@@ -16686,13 +16689,13 @@ If ($Download -eq "1") {
         }
         Else {
             Write-Host "Check Nevergreen module version."
-            $version = (Get-Module -ListAvailable Nevergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
-            $psgalleryversion = Find-Module -Name Nevergreen | Sort-Object Version -Descending | Select-Object Version -First 1
-            $stringver = $version | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
-            $a = $stringver | Select-Object Moduleversion -ExpandProperty Moduleversion
-            $onlinever = $psgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
-            $b = $onlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
-            if ([version]"$a" -ge [version]"$b") {
+            $nversion = (Get-Module -ListAvailable Nevergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $npsgalleryversion = Find-Module -Name Nevergreen | Sort-Object Version -Descending | Select-Object Version -First 1
+            $nstringver = $nversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $na = $nstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            $nonlinever = $npsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
+            $nb = $nonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            if ([version]"$na" -ge [version]"$nb") {
                 Write-Host -ForegroundColor Green "Installed Nevergreen module version is up to date."
                 Write-Output ""
             }
@@ -16713,13 +16716,13 @@ If ($Download -eq "1") {
         }
         Else {
             Write-Host "Check VcRedist module version."
-            $version = (Get-Module -ListAvailable VcRedist) | Sort-Object Version -Descending  | Select-Object Version -First 1
-            $psgalleryversion = Find-Module -Name VcRedist | Sort-Object Version -Descending | Select-Object Version -First 1
-            $stringver = $version | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
-            $a = $stringver | Select-Object Moduleversion -ExpandProperty Moduleversion
-            $onlinever = $psgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
-            $b = $onlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
-            if ([version]"$a" -ge [version]"$b") {
+            $vversion = (Get-Module -ListAvailable VcRedist) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $vpsgalleryversion = Find-Module -Name VcRedist | Sort-Object Version -Descending | Select-Object Version -First 1
+            $vstringver = $vversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $va = $vstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            $vonlinever = $vpsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
+            $vb = $vonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            if ([version]"$va" -ge [version]"$vb") {
                 Write-Host -ForegroundColor Green "Installed VcRedist module version is up to date."
                 Write-Output ""
             }
@@ -16739,13 +16742,13 @@ If ($Download -eq "1") {
         }
         Else {
             Write-Host "Check PSWindowsUpdate module version."
-            $version = (Get-Module -ListAvailable PSWindowsUpdate) | Sort-Object Version -Descending  | Select-Object Version -First 1
-            $psgalleryversion = Find-Module -Name PSWindowsUpdate | Sort-Object Version -Descending | Select-Object Version -First 1
-            $stringver = $version | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
-            $a = $stringver | Select-Object Moduleversion -ExpandProperty Moduleversion
-            $onlinever = $psgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
-            $b = $onlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
-            if ([version]"$a" -ge [version]"$b") {
+            $pversion = (Get-Module -ListAvailable PSWindowsUpdate) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $ppsgalleryversion = Find-Module -Name PSWindowsUpdate | Sort-Object Version -Descending | Select-Object Version -First 1
+            $pstringver = $pversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $pa = $pstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            $ponlinever = $ppsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
+            $pb = $ponlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            if ([version]"$pa" -ge [version]"$pb") {
                 Write-Host -ForegroundColor Green "Installed PSWindowsUpdate module version is up to date."
                 Write-Output ""
             }
@@ -16999,7 +17002,7 @@ If ($Download -eq "1") {
         If ($AdobeLanguageClear -eq "MUI") {
             $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear" -and $_.Architecture -eq "$AdobeArchitectureClear"}
         } else {
-            $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear"}
+            $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear" -and $_.Architecture -eq "$AdobeArchitectureClear"}
         }
         $Version = $AdobeReaderD.Version
         $URL = $AdobeReaderD.uri
