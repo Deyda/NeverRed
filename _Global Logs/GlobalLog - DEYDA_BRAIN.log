@@ -1,0 +1,2135 @@
+﻿**********************
+nStart der Windows PowerShell-Aufzeichnung
+Startzeit: 20240807170213
+Benutzername: DEYDA_BRAIN\manuel
+RunAs-Benutzer: DEYDA_BRAIN\manuel
+Konfigurationsname: 
+Computer: DEYDA_BRAIN (Microsoft Windows NT 10.0.26120.0)
+Hostanwendung: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\manue\.vscode-insiders\extensions\ms-vscode.powershell-2024.3.2\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2024.3.2' -BundledModulesPath 'c:\Users\manue\.vscode-insiders\extensions\ms-vscode.powershell-2024.3.2\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2024.3.2
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Normal' -LogPath 'c:\Users\manue\AppData\Roaming\Code - Insiders\User\globalStorage\ms-vscode.powershell\logs\1723041903-70e2e723-4ce4-4e60-b628-1ac541eabd6a1723041899890' -SessionDetailsPath 'c:\Users\manue\AppData\Roaming\Code - Insiders\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-14264-488106.json' -FeatureFlags @() 
+Prozess-ID: 25840
+PSVersion: 5.1.26100.1252
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.1252
+BuildVersion: 10.0.26100.1252
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+
+       NeverRed - Update your Software, the lazy way
+      Manuel Winkel - Deyda Consulting (www.deyda.net)
+                      Version 2.10.41
+
+Is there a newer NeverRed version?
+OK, NeverRed is newest version!
+
+Does the script run under admin rights?
+Error! Script is NOT running with admin rights!
+PS>TerminatingError(): "Systemfehler"
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Write-Host "Check Evergreen module version."
+            $eversion = (Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $epsgalleryversion = Find-Module -Name Evergreen | Sort-Object Version -Descending | Select-Object Version -First 1
+            $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host "Installed Evergreen module version: " $ea
+            $eonlinever = $epsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
+            $eb = $eonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            Write-Host "Online available Evergreen module version: " $eb
+Check Evergreen module version.
+Installed Evergreen module version:  2406.1100
+Online available Evergreen module version:  2407.1289
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>([version]"$ea" -ge [version]"$eb")
+False
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>($ea -ge $eb)
+False
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>if ($ea -ge $eb) {
+                Write-Host -ForegroundColor Green "Installed Evergreen module version is up to date."
+                Write-Output ""
+            }
+            else {
+                Write-Host "Update Evergreen module."
+                Update-Module Evergreen -force | Import-Module Evergreen -force
+                Install-Module Evergreen -Force | Import-Module Evergreen
+                Write-Host -ForegroundColor Green "Update Evergreen module done."
+                Write-Output ""
+            }
+Update Evergreen module.
+PS>TerminatingError(): "Die Pipeline wurde beendet."
+>> TerminatingError(Install-Module): "Zur Installation von Modulen in "C:\Program Files\WindowsPowerShell\Modules" sind Administratorrechte erforderlich. Melden Sie sich unter einem Konto mit Administratorrechten beim Computer an, wiederholen Sie den Vorgang, oder installieren Sie "C:\Users\manue\Documents\WindowsPowerShell\Modules", indem Sie Ihrem Befehl "-Scope CurrentUser" hinzufügen. Sie können auch versuchen, die Windows PowerShell-Sitzung mit erhöhten Rechten (Als Administrator) auszuführen."
+Update Evergreen module done.
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>(Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+
+Version
+-------
+2406.1100
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Import-Module"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Cmdlet          Import-Module                                      3.0.0.0    Microsoft.PowerShell.Core
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Import-Module"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+
+NAME
+    Import-Module
+
+SYNTAX
+    Import-Module [-Name] <string[]>  [<CommonParameters>]
+
+    Import-Module [-Name] <string[]>  [<CommonParameters>]
+
+    Import-Module [-Name] <string[]>  [<CommonParameters>]
+
+    Import-Module [-FullyQualifiedName] <ModuleSpecification[]>  [<CommonParameters>]
+
+    Import-Module [-FullyQualifiedName] <ModuleSpecification[]>  [<CommonParameters>]
+
+    Import-Module [-Assembly] <Assembly[]>  [<CommonParameters>]
+
+    Import-Module [-ModuleInfo] <psmoduleinfo[]>  [<CommonParameters>]
+
+
+ALIASE
+    ipmo
+
+
+HINWEISE
+    Die Hilfedateien für dieses Cmdlet können von "Get-Help" auf diesem Computer nicht gefunden werden. Es wird nur ein Teil der Hilfe angezeigt.
+        -- Sie können die Hilfedateien für das Modul, das dieses Cmdlet enthält, herunterladen und installieren, indem Sie "Update-Help" verwenden.
+        -- Wenn Sie das Hilfethema für dieses Cmdlet online anzeigen möchten, geben Sie Folgendes ein: "Get-Help Import-Module -Online", oder
+           gehen Sie zu "https://go.microsoft.com/fwlink/?LinkID=141553".
+
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>                Update-Module Evergreen -force | Import-Module Evergreen -force
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-Module -ListAvailable Evergreen
+
+
+    Verzeichnis: C:\Program Files\WindowsPowerShell\Modules
+
+
+ModuleType Version    Name                                ExportedCommands
+---------- -------    ----                                ----------------
+Script     2406.1100  Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2404.928   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2305.795   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2303.789   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2303.788   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2212.704   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2210.661   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Get-Module -ListAvailable Evergreen
+
+
+    Verzeichnis: C:\Program Files\WindowsPowerShell\Modules
+
+
+ModuleType Version    Name                                ExportedCommands
+---------- -------    ----                                ----------------
+Script     2407.1289  Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2406.1100  Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2404.928   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2305.795   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2303.789   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2303.788   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2212.704   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+Script     2210.661   Evergreen                           {Export-EvergreenApp, Export-EvergreenManifest, Find-EvergreenApp, Get-EvergreenApp...}
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>TerminatingError(): "Die Pipeline wurde beendet."
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Update-Module Evergreen -UseWindowsPowerShell -force | Import-Module Evergreen -UseWindowsPowerShell -force
+>> TerminatingError(Update-Module): "Es wurde kein Parameter gefunden, der dem Parameternamen "UseWindowsPowerShell" entspricht."
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Update-Module Evergreen -UseWindowsPowerShell
+>> TerminatingError(Update-Module): "Es wurde kein Parameter gefunden, der dem Parameternamen "UseWindowsPowerShell" entspricht."
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Write-Host"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Cmdlet          Write-Host                                         3.1.0.0    Microsoft.PowerShell.Utility
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$eversion = (Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+                $epsgalleryversion = Find-Module -Name Evergreen | Sort-Object Version -Descending | Select-Object Version -First 1
+                $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+                $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+                Write-Host -ForegroundColor Green "Update Evergreen module done. Version("$ea")"
+Update Evergreen module done. Version( 2407.1289)
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Write-Host -ForegroundColor Green "Update Evergreen module done. Version("$ea" )"
+Update Evergreen module done. Version( 2407.1289 )
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>                Write-Host -ForegroundColor Green "Update Evergreen module done. Version ("$ea" )"
+Update Evergreen module done. Version ( 2407.1289 )
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>                Write-Host -ForegroundColor Green "Update Evergreen module done. Version"$ea
+Update Evergreen module done. Version 2407.1289
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Sort-Object"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Cmdlet          Sort-Object                                        3.1.0.0    Microsoft.PowerShell.Utility
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Write-Output"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Cmdlet          Write-Output                                       3.1.0.0    Microsoft.PowerShell.Utility
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Sort-Object"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+PS>TerminatingError(): "Die Pipeline wurde beendet."
+>> CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="select-object"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Cmdlet          Select-Object                                      3.1.0.0    Microsoft.PowerShell.Utility
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Get-VMwareTools"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Function        Get-VMwareTools
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Get-VMwareTools"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+
+NAME
+    Get-VMwareTools
+
+SYNTAX
+    Get-VMwareTools  [<CommonParameters>]
+
+
+ALIASE
+    Keine
+
+
+HINWEISE
+    Keine
+
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-VMwareTools
+
+Version Architecture URI
+------- ------------ ---
+12.4.5  x86          https://packages.VMware.com/tools/releases/latest/windows/x86/VMware-tools-12.4.5-23787635-i386.exe">VMware-tools-12.4.5-23787635-i386.exe
+12.4.5  x64          https://packages.VMware.com/tools/releases/latest/windows/x64/VMware-tools-12.4.5-23787635-x86_64.exe">VMware-tools-12.4.5-23787635-x86_64.exe
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Get-XCA"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Function        Get-XCA
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Get-XCA"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+
+NAME
+    Get-XCA
+
+SYNTAX
+    Get-XCA  [<CommonParameters>]
+
+
+ALIASE
+    Keine
+
+
+HINWEISE
+    Keine
+
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-XCA
+
+Version Channel URI
+------- ------- ---
+2.6.0   Stable  https://github.com/chris2511/xca/releases/download/RELEASE.2.6.0/xca-2.6.0.msi
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Get-XCA"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Function        Get-XCA
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Get-XCA"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+
+NAME
+    Get-XCA
+
+SYNTAX
+    Get-XCA  [<CommonParameters>]
+
+
+ALIASE
+    Keine
+
+
+HINWEISE
+    Keine
+
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Function Get-XCA {
+    [OutputType([System.Management.Automation.PSObject])]
+    [CmdletBinding()]
+    Param ()
+        $url = "https://github.com/chris2511/xca/releases/"
+    Try {
+        $webRequest = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
+    }
+    Catch {
+        Throw "Failed to connect to URL: $url with error $_."
+        Break
+    }
+    Finally {
+        $regexAppVersion = 'RELEASE.2....'
+        $webVersionXCA = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webSplit = $webVersionXCA.Split('.')
+        $Version = $webSplit[1] + "." + $webSplit[2] + "." + $webSplit[3]
+        $x32 = "https://github.com/chris2511/xca/releases/download/RELEASE." + $Version +  "/" + "xca-" + $Version + "-win64.msi"
+        
+        $PSObjectx32 = [PSCustomObject] @{
+            Version      = $Version
+            Channel      = "Stable"
+            URI          = $x32
+            }
+
+        Write-Output -InputObject $PSObjectx32
+    }
+}
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Get-XCA
+
+Version Channel URI
+------- ------- ---
+2.6.0   Stable  https://github.com/chris2511/xca/releases/download/RELEASE.2.6.0/xca-2.6.0-win64.msi
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-EvergreenApp -Name Wireshark
+
+Version Architecture Type URI
+------- ------------ ---- ---
+4.2.6   x64          msi  https://2.na.dl.wireshark.org/win64/Wireshark-4.2.6-x64.msi
+4.2.6   x64          exe  https://2.na.dl.wireshark.org/win64/Wireshark-4.2.6-x64.exe
+4.0.16  x64          exe  https://2.na.dl.wireshark.org/win64/Wireshark-win64-4.0.16.exe
+4.0.16  x64          msi  https://2.na.dl.wireshark.org/win64/Wireshark-win64-4.0.16.msi
+3.6.24  x86          exe  https://2.na.dl.wireshark.org/win32/Wireshark-win32-3.6.24.exe
+3.6.24  x86          msi  https://2.na.dl.wireshark.org/win32/Wireshark-win32-3.6.24.msi
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>$WiresharkArchitectureClear = "x64"
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"}
+
+Version Architecture Type URI
+------- ------------ ---- ---
+4.2.6   x64          exe  https://2.na.dl.wireshark.org/win64/Wireshark-4.2.6-x64.exe
+4.0.16  x64          exe  https://2.na.dl.wireshark.org/win64/Wireshark-win64-4.0.16.exe
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Select-ObjectVersion -First
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Select-ObjectVersion -First 1
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Sort-Object Descending Version |Select-ObjectVersion -First 1
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>$pversion = (Get-Module -ListAvailable PSWindowsUpdate) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $pstringver = $pversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $pa = $pstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Sort-Object Version -Descending |Select-Object Version -First 1
+
+Version
+-------
+4.2.6
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ListImported"; Wert="True"
+>> ParameterBinding(Get-Command): Name="CommandType"; Wert="Alias"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Alias           % -> ForEach-Object
+Alias           ? -> Where-Object
+Alias           ac -> Add-Content
+Alias           asnp -> Add-PSSnapin
+Alias           cat -> Get-Content
+Alias           cd -> Set-Location
+Alias           CFS -> ConvertFrom-String                          3.1.0.0    Microsoft.PowerShell.Utility
+Alias           chdir -> Set-Location
+Alias           clc -> Clear-Content
+Alias           clear -> Clear-Host
+Alias           clhy -> Clear-History
+Alias           cli -> Clear-Item
+Alias           clp -> Clear-ItemProperty
+Alias           cls -> Clear-Host
+Alias           clv -> Clear-Variable
+Alias           cnsn -> Connect-PSSession
+Alias           compare -> Compare-Object
+Alias           copy -> Copy-Item
+Alias           cp -> Copy-Item
+Alias           cpi -> Copy-Item
+Alias           cpp -> Copy-ItemProperty
+Alias           curl -> Invoke-WebRequest
+Alias           cvpa -> Convert-Path
+Alias           dbp -> Disable-PSBreakpoint
+Alias           del -> Remove-Item
+Alias           diff -> Compare-Object
+Alias           dir -> Get-ChildItem
+Alias           dnsn -> Disconnect-PSSession
+Alias           ebp -> Enable-PSBreakpoint
+Alias           echo -> Write-Output
+Alias           epal -> Export-Alias
+Alias           epcsv -> Export-Csv
+Alias           epsn -> Export-PSSession
+Alias           erase -> Remove-Item
+Alias           etsn -> Enter-PSSession
+Alias           exsn -> Exit-PSSession
+Alias           fc -> Format-Custom
+Alias           fea -> Find-EvergreenApp                           2407.1289  Evergreen
+Alias           fhx -> Format-Hex                                  3.1.0.0    Microsoft.PowerShell.Utility
+Alias           fimo -> Find-Module                                1.0.0.1    PowerShellGet
+Alias           fl -> Format-List
+Alias           foreach -> ForEach-Object
+Alias           ft -> Format-Table
+Alias           fw -> Format-Wide
+Alias           gal -> Get-Alias
+Alias           gbp -> Get-PSBreakpoint
+Alias           gc -> Get-Content
+Alias           gcb -> Get-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           gci -> Get-ChildItem
+Alias           gcm -> Get-Command
+Alias           gcs -> Get-PSCallStack
+Alias           gdr -> Get-PSDrive
+Alias           gea -> Get-EvergreenApp                            2407.1289  Evergreen
+Alias           Get-EvergreenEndpoint                              2407.1289  Evergreen
+Alias           Get-EvergreenLibraryApp                            2407.1289  Evergreen
+Alias           ghy -> Get-History
+Alias           gi -> Get-Item
+Alias           gin -> Get-ComputerInfo                            3.1.0.0    Microsoft.PowerShell.Management
+Alias           gjb -> Get-Job
+Alias           gl -> Get-Location
+Alias           gm -> Get-Member
+Alias           gmo -> Get-Module
+Alias           gp -> Get-ItemProperty
+Alias           gps -> Get-Process
+Alias           gpv -> Get-ItemPropertyValue
+Alias           group -> Group-Object
+Alias           gsn -> Get-PSSession
+Alias           gsnp -> Get-PSSnapin
+Alias           gsv -> Get-Service
+Alias           gtz -> Get-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           gu -> Get-Unique
+Alias           gv -> Get-Variable
+Alias           gwmi -> Get-WmiObject
+Alias           h -> Get-History
+Alias           history -> Get-History
+Alias           icm -> Invoke-Command
+Alias           iea -> Get-EvergreenAppFromApi                     2407.1289  Evergreen
+Alias           iex -> Invoke-Expression
+Alias           ihy -> Invoke-History
+Alias           ii -> Invoke-Item
+Alias           inmo -> Install-Module                             1.0.0.1    PowerShellGet
+Alias           Invoke-EvergreenApp                                2407.1289  Evergreen
+Alias           Invoke-EvergreenLibraryUpdate                      2407.1289  Evergreen
+Alias           ipal -> Import-Alias
+Alias           ipcsv -> Import-Csv
+Alias           ipmo -> Import-Module
+Alias           ipsn -> Import-PSSession
+Alias           irm -> Invoke-RestMethod
+Alias           ise -> powershell_ise.exe
+Alias           iwmi -> Invoke-WmiMethod
+Alias           iwr -> Invoke-WebRequest
+Alias           kill -> Stop-Process
+Alias           lp -> Out-Printer
+Alias           ls -> Get-ChildItem
+Alias           man -> help
+Alias           md -> mkdir
+Alias           measure -> Measure-Object
+Alias           mi -> Move-Item
+Alias           mount -> New-PSDrive
+Alias           move -> Move-Item
+Alias           mp -> Move-ItemProperty
+Alias           mv -> Move-Item
+Alias           nal -> New-Alias
+Alias           ndr -> New-PSDrive
+Alias           ni -> New-Item
+Alias           nmo -> New-Module
+Alias           npssc -> New-PSSessionConfigurationFile
+Alias           nsn -> New-PSSession
+Alias           nv -> New-Variable
+Alias           ogv -> Out-GridView
+Alias           oh -> Out-Host
+Alias           popd -> Pop-Location
+Alias           ps -> Get-Process
+Alias           psedit -> Open-EditorFile                          0.2.0      PowerShellEditorServices.Commands
+Alias           pumo -> Publish-Module                             1.0.0.1    PowerShellGet
+Alias           pushd -> Push-Location
+Alias           pwd -> Get-Location
+Alias           r -> Invoke-History
+Alias           rbp -> Remove-PSBreakpoint
+Alias           rcjb -> Receive-Job
+Alias           rcsn -> Receive-PSSession
+Alias           rd -> Remove-Item
+Alias           rdr -> Remove-PSDrive
+Alias           ren -> Rename-Item
+Alias           ri -> Remove-Item
+Alias           rjb -> Remove-Job
+Alias           rm -> Remove-Item
+Alias           rmdir -> Remove-Item
+Alias           rmo -> Remove-Module
+Alias           rni -> Rename-Item
+Alias           rnp -> Rename-ItemProperty
+Alias           rp -> Remove-ItemProperty
+Alias           rsn -> Remove-PSSession
+Alias           rsnp -> Remove-PSSnapin
+Alias           rujb -> Resume-Job
+Alias           rv -> Remove-Variable
+Alias           rvpa -> Resolve-Path
+Alias           rwmi -> Remove-WmiObject
+Alias           sajb -> Start-Job
+Alias           sal -> Set-Alias
+Alias           saps -> Start-Process
+Alias           sasv -> Start-Service
+Alias           sbp -> Set-PSBreakpoint
+Alias           sc -> Set-Content
+Alias           scb -> Set-Clipboard                               3.1.0.0    Microsoft.PowerShell.Management
+Alias           sea -> Save-EvergreenApp                           2407.1289  Evergreen
+Alias           select -> Select-Object
+Alias           set -> Set-Variable
+Alias           shcm -> Show-Command
+Alias           si -> Set-Item
+Alias           sl -> Set-Location
+Alias           sleep -> Start-Sleep
+Alias           sls -> Select-String
+Alias           sort -> Sort-Object
+Alias           sp -> Set-ItemProperty
+Alias           spjb -> Stop-Job
+Alias           spps -> Stop-Process
+Alias           spsv -> Stop-Service
+Alias           start -> Start-Process
+Alias           stz -> Set-TimeZone                                3.1.0.0    Microsoft.PowerShell.Management
+Alias           sujb -> Suspend-Job
+Alias           sv -> Set-Variable
+Alias           swmi -> Set-WmiInstance
+Alias           tea -> Test-EvergreenApp                           2407.1289  Evergreen
+Alias           tee -> Tee-Object
+Alias           trcm -> Trace-Command
+Alias           type -> Get-Content
+Alias           upmo -> Update-Module                              1.0.0.1    PowerShellGet
+Alias           wget -> Invoke-WebRequest
+Alias           where -> Where-Object
+Alias           wjb -> Wait-Job
+Alias           write -> Write-Output
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Sort-Object Version -Descending |Select-Object Version -First 1
+
+Version
+-------
+4.2.6
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Get-EvergreenApp"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Function        Get-EvergreenApp                                   2407.1289  Evergreen
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Get-EvergreenApp"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+
+NAME
+    Get-EvergreenApp
+
+ÜBERSICHT
+    Returns the latest version and download URL/s for an application supported by the Evergreen module.
+
+
+SYNTAX
+    Get-EvergreenApp [-Name] <String> [[-AppParams] <Hashtable>] [-Confirm] [-Proxy <String>] [-ProxyCredential <PSCredential>] [-WhatIf] [-SkipCertificateCheck] [<CommonParameters>]
+
+
+BESCHREIBUNG
+    Queries the internal application functions and manifests included in the module to find the latest version and download link/s for the specified application.
+
+    The output from this function can be passed to Where-Object to filter for a specific download based on properties including processor architecture, file type or other properties.
+
+    `Get-EvergreenApp` uses official vendor sources including update APIs, web queries, and code repository locations to return details of a target application at run time.
+
+
+VERWANDTE LINKS
+    Online Version: https://stealthpuppy.com/evergreen/help/en-US/Get-EvergreenApp/
+    Use Evergreen https://stealthpuppy.com/evergreen/use/
+
+HINWEISE
+    Zum Aufrufen der Beispiele geben Sie Folgendes ein: "get-help Get-EvergreenApp -examples".
+    Weitere Informationen erhalten Sie mit folgendem Befehl: "get-help Get-EvergreenApp -detailed".
+    Technische Informationen erhalten Sie mit folgendem Befehl: "get-help Get-EvergreenApp -full".
+    Geben Sie zum Abrufen der Onlinehilfe Folgendes ein: "get-help Get-EvergreenApp -online"
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS> Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Sort-Object Version -Descending |Select-Object -First 1
+        $Version = $WiresharkD.Version
+
+Version Architecture Type URI
+------- ------------ ---- ---
+4.2.6   x64          exe  https://2.na.dl.wireshark.org/win64/Wireshark-4.2.6-x64.exe
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Get-Command): "Get-Command"
+>> ParameterBinding(Get-Command): Name="ErrorAction"; Wert="Ignore"
+>> ParameterBinding(Get-Command): Name="Name"; Wert="Get-VMwareTools"
+
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Function        Get-VMwareTools
+
+
+PS>CommandInvocation(Get-Help): "Get-Help"
+>> ParameterBinding(Get-Help): Name="Name"; Wert="Get-VMwareTools"
+>> ParameterBinding(Get-Help): Name="Online"; Wert="False"
+>> ParameterBinding(Get-Help): Name="ErrorAction"; Wert="Ignore"
+
+NAME
+    Get-VMwareTools
+
+SYNTAX
+    Get-VMwareTools  [<CommonParameters>]
+
+
+ALIASE
+    Keine
+
+
+HINWEISE
+    Keine
+
+
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-VMwareTools 
+
+Version Architecture URI
+------- ------------ ---
+12.4.5  x86          https://packages.VMware.com/tools/releases/latest/windows/x86/VMware-tools-12.4.5-23787635-i386.exe">VMware-tools-12.4.5-23787635-i386.exe
+12.4.5  x64          https://packages.VMware.com/tools/releases/latest/windows/x64/VMware-tools-12.4.5-23787635-x86_64.exe">VMware-tools-12.4.5-23787635-x86_64.exe
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>$VMwareToolsArchitectureClear = "x64"
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMwareToolsArchitectureClear" }
+
+Version Architecture URI
+------- ------------ ---
+12.4.5  x64          https://packages.VMware.com/tools/releases/latest/windows/x64/VMware-tools-12.4.5-23787635-x86_64.exe">VMware-tools-12.4.5-23787635-x86_64.exe
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>        $VMwareToolsD = Get-VMwareTools | Where-Object { $_.Architecture -eq "$VMwareToolsArchitectureClear" }
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>$Split = $VMwareToolsD.Split(">")
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>$Split
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B
+PS>$global:__psEditorServices_userInput = $args[0]
+PS>$global:__psEditorServices_userInput = ""
+PS>$VMWareToolsD
+
+Version Architecture URI
+------- ------------ ---
+12.4.5  x64          https://packages.VMware.com/tools/releases/latest/windows/x64/VMware-tools-12.4.5-23787635-x86_64.exe">VMware-tools-12.4.5-23787635-x86_64.exe
+
+
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\Documents\VSCode\NeverRed> ]633;B

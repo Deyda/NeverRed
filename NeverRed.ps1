@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.41
+  Version:          2.10.42
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -246,6 +246,7 @@ the script checks the version number and will update the package.
   2024-07-08        Correction Teams 2 Installation / Customize initials output
   2024-07-19        Correction Citrix Workspace App
   2024-08-01        Correction Adobe Reader DC
+  2024-08-07        Extend Output for the PS Modules / Correction XCA Download / Correction Wireshark Download / Correction VMware Tools / Correction Adobe Reader DC
 
 .PARAMETER ESfile
 
@@ -518,12 +519,16 @@ Function Get-VMwareTools {
         $regexAppURL = 'VMware-tools-.*exe'
         $webVersionx64 = $webx64.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webURLx64 = $webx64.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webURLx64Split = $webURLx64.Split(">")
+        $webURLx64Split2 = $webURLx64Split[0].Replace('"','')
         $webVersionx64 = $webVersionx64.Replace('-','')
         $webVersionx86 = $webx86.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webURLx86 = $webx86.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webURLx86Split = $webURLx86.Split(">")
+        $webURLx86Split2 = $webURLx86Split[0].Replace('"','')
         $webVersionx86 = $webVersionx86.Replace('-','')
-        $x32 = "https://packages.VMware.com/tools/releases/latest/windows/x86/$webURLx86"
-        $x64 = "https://packages.VMware.com/tools/releases/latest/windows/x64/$webURLx64"
+        $x32 = "https://packages.VMware.com/tools/releases/latest/windows/x86/$webURLx86Split2"
+        $x64 = "https://packages.VMware.com/tools/releases/latest/windows/x64/$webURLx64Split2"
 
 
         $PSObjectx32 = [PSCustomObject] @{
@@ -3486,7 +3491,7 @@ Function Get-XCA {
         $webVersionXCA = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersionXCA.Split('.')
         $Version = $webSplit[1] + "." + $webSplit[2] + "." + $webSplit[3]
-        $x32 = "https://github.com/chris2511/xca/releases/download/RELEASE." + $Version +  "/" + "xca-" + $Version + ".msi"
+        $x32 = "https://github.com/chris2511/xca/releases/download/RELEASE." + $Version +  "/" + "xca-" + $Version + "-win64.msi"
         
         $PSObjectx32 = [PSCustomObject] @{
             Version      = $Version
@@ -4160,7 +4165,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.41"
+$eVersion = "2.10.42"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16657,7 +16662,10 @@ If ($Download -eq "1") {
         If (!(Get-Module -ListAvailable -Name Evergreen)) {
             Write-Host "Install Evergreen module."
             Install-Module Evergreen -Force | Import-Module Evergreen
-            Write-Host -ForegroundColor Green "Install Evergreen module done."
+            $eversion = (Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host -ForegroundColor Green "Install Evergreen module done. Version"$ea
             Write-Output ""
         }
         Else {
@@ -16666,8 +16674,10 @@ If ($Download -eq "1") {
             $epsgalleryversion = Find-Module -Name Evergreen | Sort-Object Version -Descending | Select-Object Version -First 1
             $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
             $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host "Installed Evergreen module version:" $ea
             $eonlinever = $epsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
             $eb = $eonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            Write-Host "Online available Evergreen module version:" $eb
             if ([version]"$ea" -ge [version]"$eb") {
                 Write-Host -ForegroundColor Green "Installed Evergreen module version is up to date."
                 Write-Output ""
@@ -16675,8 +16685,11 @@ If ($Download -eq "1") {
             else {
                 Write-Host "Update Evergreen module."
                 Update-Module Evergreen -force | Import-Module Evergreen -force
-                Install-Module Evergreen -Force | Import-Module Evergreen
-                Write-Host -ForegroundColor Green "Update Evergreen module done."
+                Install-Module Evergreen -Force | Import-Module Evergreen -force
+                $eversion = (Get-Module -ListAvailable Evergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+                $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+                $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+                Write-Host -ForegroundColor Green "Update Evergreen module done. Version"$ea
                 Write-Output ""
             }
         }
@@ -16684,7 +16697,10 @@ If ($Download -eq "1") {
         If (!(Get-Module -ListAvailable -Name Nevergreen)) {
             Write-Host "Install Nevergreen module."
             Install-Module Nevergreen -Force | Import-Module Nevergreen
-            Write-Host -ForegroundColor Green "Install Nevergreen module done."
+            $nversion = (Get-Module -ListAvailable Nevergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $nstringver = $nversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $na = $nstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host -ForegroundColor Green "Install Nevergreen module done. Version"$na
             Write-Output ""
         }
         Else {
@@ -16693,8 +16709,10 @@ If ($Download -eq "1") {
             $npsgalleryversion = Find-Module -Name Nevergreen | Sort-Object Version -Descending | Select-Object Version -First 1
             $nstringver = $nversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
             $na = $nstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host "Installed Nevergreen module version:" $na
             $nonlinever = $npsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
             $nb = $nonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            Write-Host "Online available Nevergreen module version:" $nb
             if ([version]"$na" -ge [version]"$nb") {
                 Write-Host -ForegroundColor Green "Installed Nevergreen module version is up to date."
                 Write-Output ""
@@ -16703,7 +16721,10 @@ If ($Download -eq "1") {
                 Write-Host "Update Nevergreen module."
                 Update-Module Nevergreen -force | Import-Module Nevergreen -force
                 Install-Module Nevergreen -Force | Import-Module Nevergreen
-                Write-Host -ForegroundColor Green "Update Nevergreen module done."
+                $nversion = (Get-Module -ListAvailable Nevergreen) | Sort-Object Version -Descending  | Select-Object Version -First 1
+                $nstringver = $nversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+                $na = $nstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+                Write-Host -ForegroundColor Green "Update Nevergreen module done. Version"$na
                 Write-Output ""
         }
         }
@@ -16711,7 +16732,10 @@ If ($Download -eq "1") {
         If (!(Get-Module -ListAvailable -Name VcRedist)) {
             Write-Host "Install VcRedist module."
             Install-Module VcRedist -Force | Import-Module VcRedist
-            Write-Host -ForegroundColor Green "Install VcRedist module done."
+            $vversion = (Get-Module -ListAvailable VcRedist) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $vstringver = $vversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $va = $vstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host -ForegroundColor Green "Install VcRedist module done. Version"$va
             Write-Output ""
         }
         Else {
@@ -16720,8 +16744,10 @@ If ($Download -eq "1") {
             $vpsgalleryversion = Find-Module -Name VcRedist | Sort-Object Version -Descending | Select-Object Version -First 1
             $vstringver = $vversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
             $va = $vstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host "Installed VcRedist module version:" $va
             $vonlinever = $vpsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
             $vb = $vonlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            Write-Host "Online available VcRedist module version:" $vb
             if ([version]"$va" -ge [version]"$vb") {
                 Write-Host -ForegroundColor Green "Installed VcRedist module version is up to date."
                 Write-Output ""
@@ -16730,14 +16756,20 @@ If ($Download -eq "1") {
                 Write-Host "Update VcRedist module."
                 Update-Module VcRedist -force | Import-Module VcRedist -force
                 Install-Module VcRedist -Force | Import-Module VcRedist
-                Write-Host -ForegroundColor Green "Update VcRedist module done."
+                $vversion = (Get-Module -ListAvailable VcRedist) | Sort-Object Version -Descending  | Select-Object Version -First 1
+                $vstringver = $vversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+                $va = $vstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+                Write-Host -ForegroundColor Green "Update VcRedist module done. Version"$va
                 Write-Output ""
             }
         }
         If (!(Get-Module -ListAvailable -Name PSWindowsUpdate)) {
             Write-Host "Install PSWindowsUpdate module."
             Install-Module PSWindowsUpdate -Force | Import-Module PSWindowsUpdate
-            Write-Host -ForegroundColor Green "Install PSWindowsUpdate module done."
+            $pversion = (Get-Module -ListAvailable PSWindowsUpdate) | Sort-Object Version -Descending  | Select-Object Version -First 1
+            $pstringver = $pversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+            $pa = $pstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host -ForegroundColor Green "Install PSWindowsUpdate module done. Version"$pa
             Write-Output ""
         }
         Else {
@@ -16746,8 +16778,10 @@ If ($Download -eq "1") {
             $ppsgalleryversion = Find-Module -Name PSWindowsUpdate | Sort-Object Version -Descending | Select-Object Version -First 1
             $pstringver = $pversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
             $pa = $pstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+            Write-Host "Installed PSWindowsUpdate module version:" $pa
             $ponlinever = $ppsgalleryversion | select-object @{n='OnlineVersion'; e={$_.Version -as [string]}}
             $pb = $ponlinever | Select-Object OnlineVersion -ExpandProperty OnlineVersion
+            Write-Host "Online available PSWindowsUpdate module version:" $pb
             if ([version]"$pa" -ge [version]"$pb") {
                 Write-Host -ForegroundColor Green "Installed PSWindowsUpdate module version is up to date."
                 Write-Output ""
@@ -16756,7 +16790,10 @@ If ($Download -eq "1") {
                 Write-Host "Update PSWindowsUpdate module."
                 Update-Module PSWindowsUpdate -force | Import-Module PSWindowsUpdate -force
                 Install-Module PSWindowsUpdate -Force | Import-Module PSWindowsUpdate
-                Write-Host -ForegroundColor Green "Update PSWindowsUpdate module done."
+                $pversion = (Get-Module -ListAvailable PSWindowsUpdate) | Sort-Object Version -Descending  | Select-Object Version -First 1
+                $pstringver = $pversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
+                $pa = $pstringver | Select-Object Moduleversion -ExpandProperty Moduleversion
+                Write-Host -ForegroundColor Green "Update PSWindowsUpdate module done. Version"$pa
                 Write-Output ""
             }
         }
@@ -16999,26 +17036,22 @@ If ($Download -eq "1") {
     If ($AdobeReaderDC -eq 1) {
         $Product = "Adobe Reader DC"
         $PackageName = "Adobe_Reader_DC_"
-        If ($AdobeLanguageClear -eq "MUI") {
-            $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear" -and $_.Architecture -eq "$AdobeArchitectureClear"}
-        } else {
-            $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear" -and $_.Architecture -eq "$AdobeArchitectureClear"}
-        }
+        $AdobeReaderD = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "$AdobeLanguageClear" -and $_.Architecture -eq "$AdobeArchitectureClear"}
         $Version = $AdobeReaderD.Version
         $URL = $AdobeReaderD.uri
-        If ($AdobeArchitectureClear -eq "x64" -and $AdobeLanguageClear -ne "MUI") {
-            If ($AdobeLanguageClear -eq "German" -or $AdobeLanguageClear -eq "English" -or $AdobeLanguageClear -eq "French" -or $AdobeLanguageClear -eq "Japanese" -or $AdobeLanguageClear -eq "Spanish") {
-                $Adobex64URL = $URL.Replace("reader", "acrobat")
-                $URL = $Adobex64URL.Replace("AcroRdrDC", "AcroRdrDCx64")
-            } else {
-                $AdobeReaderDx64 = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "MUI" -and $_.Architecture -eq "x64"}
-                $URLx64 = $AdobeReaderDx64.uri
-                $Version = $AdobeReaderDx64.Version
-                $URLsplit = $URL.Split("_")
-                $URLx64split = $URLx64.Split("_")[0]
-                $URL = $URLx64split + "_" + $URLsplit[1] + "_" + $URLsplit[2]
-            }
-        }
+        #If ($AdobeArchitectureClear -eq "x64" -and $AdobeLanguageClear -ne "MUI") {
+        #    If ($AdobeLanguageClear -eq "German" -or $AdobeLanguageClear -eq "English" -or $AdobeLanguageClear -eq "French" -or $AdobeLanguageClear -eq "Japanese" -or $AdobeLanguageClear -eq "Spanish") {
+        #        $Adobex64URL = $URL.Replace("reader", "acrobat")
+        #        $URL = $Adobex64URL.Replace("AcroRdrDC", "AcroRdrDCx64")
+        #    } else {
+        #        $AdobeReaderDx64 = Get-EvergreenApp -Name AdobeAcrobatReaderDC | Where-Object {$_.Language -eq "MUI" -and $_.Architecture -eq "x64"}
+        #        $URLx64 = $AdobeReaderDx64.uri
+        #        $Version = $AdobeReaderDx64.Version
+        #        $URLsplit = $URL.Split("_")
+        #        $URLx64split = $URLx64.Split("_")[0]
+        #        $URL = $URLx64split + "_" + $URLsplit[1] + "_" + $URLsplit[2]
+        #    }
+        #}
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "$AdobeArchitectureClear" + "$AdobeLanguageClear" + "." + "$InstallerType"
@@ -23483,7 +23516,7 @@ If ($Download -eq "1") {
     If ($Wireshark -eq 1) {
         $Product = "Wireshark"
         $PackageName = "Wireshark-" + "$WiresharkArchitectureClear"
-        $WiresharkD = Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"}
+        $WiresharkD = Get-EvergreenApp -Name Wireshark | Where-Object { $_.Architecture -eq "$WiresharkArchitectureClear" -and $_.Type -eq "exe"} | Sort-Object Version -Descending |Select-Object -First 1
         $Version = $WiresharkD.Version
         $URL = $WiresharkD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
