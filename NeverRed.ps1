@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.42
+  Version:          2.10.43
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -247,6 +247,7 @@ the script checks the version number and will update the package.
   2024-07-19        Correction Citrix Workspace App
   2024-08-01        Correction Adobe Reader DC
   2024-08-07        Extend Output for the PS Modules / Correction XCA Download / Correction Wireshark Download / Correction VMware Tools / Correction Adobe Reader DC
+  2024-08-12        Correction Microsoft Teams uninstall in Microsoft Teams 2 Installation routine
 
 .PARAMETER ESfile
 
@@ -4165,7 +4166,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.42"
+$eVersion = "2.10.43"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28331,7 +28332,17 @@ If ($Install -eq "1") {
                                 $UninstallTeams = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Teams Machine*"}).UninstallString
                             }
                         }
+                        If ($UninstallTeams){
+                            Write-Host -ForegroundColor Green "Old Teams detected. Uninstall Old Teams."
+                        }
                         $UninstallTeams = $UninstallTeams -Replace("MsiExec.exe /I","")
+                        If ($WhatIf -eq '0') {
+                            Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /L*V $TeamsLog"
+                            Start-Sleep 20
+                        }
+                        If ($UninstallTeams){
+                            Write-Host -ForegroundColor Green "Uninstall Old Teams finished!"
+                        }
                         If (Test-Path -Path "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\") {
                             $UninstallTeamsMeeting = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Teams Meeting*"}).UninstallString
                         }
