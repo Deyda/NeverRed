@@ -23280,7 +23280,7 @@ If ($Download -eq "1") {
     If ($VLCPlayer -eq 1) {
         $Product = "VLC Player"
         $PackageName = "VLC-Player_" + "$VLCPlayerArchitectureClear"
-        $VLCD = 3 | Where-Object { $_.Platform -eq "Windows" -and $_.Architecture -eq "$VLCPlayerArchitectureClear" -and $_.Type -eq "MSI" }
+        $VLCD = Get-EvergreenApp -Name VideoLanVlcPlayer -WarningAction:SilentlyContinue | Where-Object { $_.Architecture -eq "$VLCPlayerArchitectureClear" -and $_.Type -eq "MSI" }
         $Version = $VLCD.Version
         $URL = $VLCD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
@@ -28470,7 +28470,7 @@ If ($Install -eq "1") {
                             
                             #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
                             #Add-AppProvisionedPackage -online -packagepath "$PSScriptRoot\$Product\$TeamsNewInstaller" -skiplicense | Out-Null
-                            Start-Sleep 5
+                            #Start-Sleep 5
                         }
                     }
                     Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
