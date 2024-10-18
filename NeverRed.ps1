@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.45
+  Version:          2.10.466
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -249,7 +249,8 @@ the script checks the version number and will update the package.
   2024-08-07        Extend Output for the PS Modules / Correction XCA Download / Correction Wireshark Download / Correction VMware Tools / Correction Adobe Reader DC
   2024-08-12        Correction Microsoft Teams uninstall in Microsoft Teams 2 Installation routine
   2024-08-14        Correction Microsoft Teams 2 PS7 Bug
-  2024-09-16        Correction Install Micrsofot Teams 2 Meeting AddIn for x86
+  2024-09-16        Correction Install Microsoft Teams 2 Meeting AddIn for x86 (Thx Markus :-*)
+  2024-10-18        Correction VLC Player download
 
 .PARAMETER ESfile
 
@@ -4168,7 +4169,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.44"
+$eVersion = "2.10.46"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
