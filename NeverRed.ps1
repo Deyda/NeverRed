@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.466
+  Version:          2.10.46
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
