@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.48
+  Version:          2.10.49
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -253,6 +253,7 @@ the script checks the version number and will update the package.
   2024-10-18        Correction VLC Player download
   2024-10-25        Correction Teams Meeting AddIn registration
   2024-10-26        Correction of the correction ^^
+  2024-11-06        Reverse the Microsoft Teams AddIn Installation
 
 .PARAMETER ESfile
 
@@ -4171,7 +4172,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.48"
+$eVersion = "2.10.49"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28494,11 +28495,9 @@ If ($Install -eq "1") {
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
                 Write-Host "Install $Product Add-In for Outlook"
                 If ($MSTeamsNewArchitectureClear = "x86"){
-                    $installerPath = Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | Select-Object -First 1
-                    Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$($installerPath.FullName)\MicrosoftTeamsMeetingAddinInstallerx86.msi`" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR=`"C:\Windows\Microsoft\TeamsMeetingAddin`" /quiet" -Wait
+                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstallerx86.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 } Elseif ($MSTeamsNewArchitectureClear = "x64"){
-                    $installerPath = Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | Select-Object -First 1
-                    Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$($installerPath.FullName)\MicrosoftTeamsMeetingAddinInstaller.msi`" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR=`"C:\Windows\Microsoft\TeamsMeetingAddin`" /quiet" -Wait
+                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 }
                 Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
                 Write-Host "Register $Product Add-In for Outlook"
