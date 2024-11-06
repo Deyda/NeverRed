@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.49
+  Version:          2.10.50
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -253,7 +253,7 @@ the script checks the version number and will update the package.
   2024-10-18        Correction VLC Player download
   2024-10-25        Correction Teams Meeting AddIn registration
   2024-10-26        Correction of the correction ^^
-  2024-11-06        Reverse the Microsoft Teams AddIn Installation
+  2024-11-06        Reverse the Microsoft Teams AddIn Installation / Correction of the Microsoft Teams Meeting AddIn Loop
 
 .PARAMETER ESfile
 
@@ -4172,7 +4172,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.49"
+$eVersion = "2.10.50"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28295,7 +28295,7 @@ If ($Install -eq "1") {
             $Product = "Microsoft Teams 2"
             $OS = (Get-CimInstance win32_OperatingSystem).caption
             # Check, if a new version is available
-            $VersionPath = "$PSScriptRoot\$Product\Version_" + "$MSTeamsArchitectureClear" + ".txt"
+            $VersionPath = "$PSScriptRoot\$Product\Version_" + "$MSTeamsNewArchitectureClear" + ".txt"
             $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
             If ($Version) {
                 $TeamsSplit = $Version.split(".")
@@ -28322,9 +28322,9 @@ If ($Install -eq "1") {
                 }
                 $TeamsNew = $TeamsSplit[0] + "." + $TeamsSplit[1] + "." + $TeamsSplit[2] + "." + $TeamsSplit[3]
             }
-            $TeamsNewInstaller = "Teams_" + "$MSTeamsArchitectureClear" + ".msix"
+            $TeamsNewInstaller = "Teams_" + "$MSTeamsNewArchitectureClear" + ".msix"
             $TeamsLog = "$LogTemp\MSTeams2.log"
-            Write-Host -ForegroundColor Magenta "Install $Product $MSTeamsArchitectureClear"
+            Write-Host -ForegroundColor Magenta "Install $Product $MSTeamsNewArchitectureClear"
             Write-Host "Download Version: $Version"
             Write-Host "Current Version:  $TeamsNew"
             If ($TeamsNew -ne $Version) {
@@ -28442,8 +28442,8 @@ If ($Install -eq "1") {
                     $null = Start-Process "$PSScriptRoot\$Product\$Source" -ArgumentList $Options -NoNewWindow -PassThru
                 }
                 Try {
-                    Write-Host "Starting install of $Product $MSTeamsArchitectureClear version $Version"
-                    DS_WriteLog "I" "Install $Product $MSTeamsArchitectureClear" $LogFile
+                    Write-Host "Starting install of $Product $MSTeamsNewArchitectureClear version $Version"
+                    DS_WriteLog "I" "Install $Product $MSTeamsNewArchitectureClear" $LogFile
                     New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowAllTrustedApps -Value 1 -PropertyType DWORD -Force | Out-Null
                     New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name AllowDevelopmentWithoutDevLicense -Value 1 -PropertyType DWORD -Force | Out-Null
                     New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Appx -Name BlockNonAdminUserInstall -Value 0 -PropertyType DWORD -Force | Out-Null
@@ -28486,7 +28486,7 @@ If ($Install -eq "1") {
                         }
                     }
                 } Catch {
-                    DS_WriteLog "E" "Error installing $Product $MSTeamsArchitectureClear (Error: $($Error[0]))" $LogFile
+                    DS_WriteLog "E" "Error installing $Product $MSTeamsNewArchitectureClear (Error: $($Error[0]))" $LogFile
                 }
                 Write-Host "Customize $Product"
                 reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe /f | Out-Null
@@ -28494,9 +28494,9 @@ If ($Install -eq "1") {
                 #New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
                 Write-Host "Install $Product Add-In for Outlook"
-                If ($MSTeamsNewArchitectureClear = "x86"){
+                If ($MSTeamsNewArchitectureClear -eq "x86"){
                     msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstallerx86.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
-                } Elseif ($MSTeamsNewArchitectureClear = "x64"){
+                } Elseif ($MSTeamsNewArchitectureClear -eq "x64"){
                     msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 }
                 Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
