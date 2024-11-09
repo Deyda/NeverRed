@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.50
+  Version:          2.10.51
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -254,6 +254,7 @@ the script checks the version number and will update the package.
   2024-10-25        Correction Teams Meeting AddIn registration
   2024-10-26        Correction of the correction ^^
   2024-11-06        Reverse the Microsoft Teams AddIn Installation / Correction of the Microsoft Teams Meeting AddIn Loop
+  2024-11-09        Correction Uninstall Microsoft Teams 2
 
 .PARAMETER ESfile
 
@@ -4172,7 +4173,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.50"
+$eVersion = "2.10.51"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28340,18 +28341,14 @@ If ($Install -eq "1") {
                             If (Test-Path -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\") {
                                 $UninstallTeams = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Teams Machine*"}).UninstallString
                             }
-                        }
-                        If ($UninstallTeams){
-                            Write-Host -ForegroundColor Green "Old Teams detected. Uninstall Old Teams."
-                        }
+                        }                    
+                        Write-Host -ForegroundColor Green "Old Teams detected. Uninstall Old Teams."
                         $UninstallTeams = $UninstallTeams -Replace("MsiExec.exe /I","")
                         If ($WhatIf -eq '0') {
                             Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /L*V $TeamsLog"
                             Start-Sleep 20
                         }
-                        If ($UninstallTeams){
-                            Write-Host -ForegroundColor Green "Uninstall Old Teams finished!"
-                        }
+                        Write-Host -ForegroundColor Green "Uninstall Old Teams finished!"
                         If (Test-Path -Path "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\") {
                             $UninstallTeamsMeeting = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Teams Meeting*"}).UninstallString
                         }
@@ -28360,15 +28357,19 @@ If ($Install -eq "1") {
                                 $UninstallTeamsMeeting = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Teams Meeting*"}).UninstallString
                             }
                         }
-                        $UninstallTeamsMeeting = $UninstallTeamsMeeting -Replace("MsiExec.exe /I","")
-                        If ($WhatIf -eq '0') {
-                            Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeamsMeeting /qn /L*V $TeamsLog"
-                            Start-Sleep 20
-                        }
-                        Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
-                        Remove-Item $TeamsLog -ErrorAction SilentlyContinue
-                        #Write-Host -ForegroundColor Green "Uninstall old Teams finished!" -Verbose
-                        DS_WriteLog "I" "Uninstall old Teams finished!" $LogFile
+                        If ($UninstallTeamsMeeting){
+                            Write-Host -ForegroundColor Green "Old Teams Meeting AddIn detected. Uninstall Old Teams Meeting AddIn."
+                            If ($WhatIf -eq '0') {
+                                $UninstallTeamsMeeting = $UninstallTeamsMeeting -Replace("MsiExec.exe /I","")
+                                Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeamsMeeting /qn /L*V $TeamsLog"
+                                Start-Sleep 20
+                            }
+                            Write-Host -ForegroundColor Green "Uninstall Old Teams Meeting AddIn finished!"
+                            Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
+                            Remove-Item $TeamsLog -ErrorAction SilentlyContinue
+                            #Write-Host -ForegroundColor Green "Uninstall old Teams finished!" -Verbose
+                            DS_WriteLog "I" "Uninstall Old Teams finished!" $LogFile
+                        }    
                     } Catch {
                         Write-Host -ForegroundColor Red "Error uninstalling old Teams (Error: $($Error[0]))"
                         DS_WriteLog "E" "Error uninstalling old Teams (Error: $($Error[0]))" $LogFile       
@@ -28378,9 +28379,27 @@ If ($Install -eq "1") {
                     DS_WriteLog "I" "Uninstall $Product" $LogFile
                     Try {
                         If ($WhatIf -eq '0') {
-                            Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
-                            Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
-                            Start-Sleep 20
+                            If ($OS -Like "*Windows Server 2019*") {
+                                Write-Host "Windows Server 2019 detected. Uninstall Teams 2 manually."
+                                #Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"" /SkipLicense"
+                            } else {
+                                If ($OS -Like "*Windows Server 2022*") {
+                                    Write-Host "Windows Server 2022 detected. Uninstallation with teamsbootstrapper.exe"
+                                    Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
+                                    Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
+                                    Start-Sleep 20
+                                }
+                                If ($OS -Like "*Windows 10*") {
+                                    Write-Host "Windows 10 detected. Uninstall Teams 2 manually."
+                                    #Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Remove-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"""
+                                }
+                                If ($OS -Like "*Windows 11*") {
+                                    Write-Host "Windows 11 detected. Uninstallation with teamsbootstrapper.exe"
+                                    Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
+                                    Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
+                                    Start-Sleep 20
+                                }
+                            }
                         }
                         Get-Content $TeamsLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
                         Remove-Item $TeamsLog -ErrorAction SilentlyContinue
