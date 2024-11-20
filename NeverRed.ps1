@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.51
+  Version:          2.10.52
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -255,6 +255,7 @@ the script checks the version number and will update the package.
   2024-10-26        Correction of the correction ^^
   2024-11-06        Reverse the Microsoft Teams AddIn Installation / Correction of the Microsoft Teams Meeting AddIn Loop
   2024-11-09        Correction Uninstall Microsoft Teams 2
+  2024-11-20        Change EdgeWebView2 detection in Microsoft Teams 2 installation
 
 .PARAMETER ESfile
 
@@ -4173,7 +4174,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.51"
+$eVersion = "2.10.52"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -27120,6 +27121,7 @@ If ($Install -eq "1") {
         If (!$EdgeWebView2) {
             $EdgeWebView2 = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft Edge WebView2*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
+        $NewCurrentVersion1 = ""
         If ($EdgeWebView2) {
             $CurrentEdgeWebView2Split1 = $EdgeWebView2.split(".")
             $CurrentEdgeWebView2Strings1 = ([regex]::Matches($EdgeWebView2, "\." )).count
@@ -28341,14 +28343,16 @@ If ($Install -eq "1") {
                             If (Test-Path -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\") {
                                 $UninstallTeams = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Teams Machine*"}).UninstallString
                             }
-                        }                    
-                        Write-Host -ForegroundColor Green "Old Teams detected. Uninstall Old Teams."
-                        $UninstallTeams = $UninstallTeams -Replace("MsiExec.exe /I","")
-                        If ($WhatIf -eq '0') {
-                            Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /L*V $TeamsLog"
-                            Start-Sleep 20
                         }
-                        Write-Host -ForegroundColor Green "Uninstall Old Teams finished!"
+                        If ($UninstallTeams) {                   
+                            Write-Host -ForegroundColor Green "Old Teams detected. Uninstall Old Teams."
+                            $UninstallTeams = $UninstallTeams -Replace("MsiExec.exe /I","")
+                            If ($WhatIf -eq '0') {
+                                Start-Process -FilePath msiexec.exe -ArgumentList "/X $UninstallTeams /qn /L*V $TeamsLog"
+                                Start-Sleep 20
+                            }
+                            Write-Host -ForegroundColor Green "Uninstall Old Teams finished!"
+                        }
                         If (Test-Path -Path "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\") {
                             $UninstallTeamsMeeting = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Teams Meeting*"}).UninstallString
                         }
@@ -28438,6 +28442,9 @@ If ($Install -eq "1") {
                     $EdgeWebView2 = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "Microsoft Edge WebView2*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
                 If (!$EdgeWebView2) {
+                    $EdgeWebView2 = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayIcon -like "*EdgeWebView*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+                If (!$EdgeWebView2) {
                     Write-Host -ForegroundColor Red "Microsoft Edge WebView2 is not installed."
                     Write-Host -ForegroundColor Red "No Installation of $Product possible."
                     Write-Host -ForegroundColor Red "Please install Microsoft Edge WebView2."
@@ -28514,9 +28521,9 @@ If ($Install -eq "1") {
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
                 Write-Host "Install $Product Add-In for Outlook"
                 If ($MSTeamsNewArchitectureClear -eq "x86"){
-                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstallerx86.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
+                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | sort-object LastWriteTime -Descending | Select-Object -First 1).FullName)\MicrosoftTeamsMeetingAddinInstallerx86.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 } Elseif ($MSTeamsNewArchitectureClear -eq "x64"){
-                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*').FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
+                    msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | sort-object LastWriteTime -Descending | Select-Object -First 1).FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 }
                 Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
                 Write-Host "Register $Product Add-In for Outlook"
