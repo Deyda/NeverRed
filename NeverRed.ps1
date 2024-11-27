@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.53
+  Version:          2.10.54
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -257,6 +257,7 @@ the script checks the version number and will update the package.
   2024-11-09        Correction Uninstall Microsoft Teams 2
   2024-11-20        Change EdgeWebView2 detection in Microsoft Teams 2 installation
   2024-11-22        Change FileZilla DL to hardcoded address / Correction of teamsbootstrapper dl
+  2024-11-27        Correction Microsoft 365 Apps download and install
 
 .PARAMETER ESfile
 
@@ -4209,7 +4210,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.53"
+$eVersion = "2.10.54"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -19309,7 +19310,7 @@ If ($Download -eq "1") {
     #// Mark: Download Microsoft 365 Apps
     If ($MS365Apps -eq 1) {
         $Product = "Microsoft 365 Apps"
-        $PackageName = "setup_" + "$MS365AppsChannelClear"
+        $PackageName = "setup"
         $MS365AppsD = Get-EvergreenApp -Name Microsoft365Apps | Where-Object {$_.Channel -eq "$MS365AppsChannelClearDL"}
         $Version = $MS365AppsD.Version
         $URL = $MS365AppsD.uri
@@ -26700,7 +26701,7 @@ If ($Install -eq "1") {
         If (!$MS365AppsV) {
             $MS365AppsV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft 365*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
-        $MS365AppsInstaller = "setup_" + "$MS365AppsChannelClear" + ".exe"
+        $MS365AppsInstaller = "setup.exe"
         Write-Host -ForegroundColor Magenta "Install $Product $MS365AppsChannelClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $MS365AppsV"
