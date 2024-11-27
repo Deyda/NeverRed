@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.52
+  Version:          2.10.53
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -256,6 +256,7 @@ the script checks the version number and will update the package.
   2024-11-06        Reverse the Microsoft Teams AddIn Installation / Correction of the Microsoft Teams Meeting AddIn Loop
   2024-11-09        Correction Uninstall Microsoft Teams 2
   2024-11-20        Change EdgeWebView2 detection in Microsoft Teams 2 installation
+  2024-11-22        Change FileZilla DL to hardcoded address / Correction of teamsbootstrapper dl
 
 .PARAMETER ESfile
 
@@ -3512,6 +3513,38 @@ Function Get-XCA {
     }
 }
 
+# Function Filezilla Download
+#========================================================================================================================================
+Function Get-FileZilla {
+    [OutputType([System.Management.Automation.PSObject])]
+    [CmdletBinding()]
+    Param ()
+        $url = "https://www.deyda.net/wp-content/uploads/"
+    Try {
+        $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+        $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
+        $webRequest = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue -WebSession $session
+    }
+    Catch {
+        Throw "Failed to connect to URL: $url with error $_."
+        Break
+    }
+    Finally {
+        $regexAppVersion = 'FileZilla_*_win64-setup.exe'
+        $webVersionCO = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $webSplit = $webVersionCO.Split('-')
+        $Version = $webSplit[2].TrimEnd('.zip')
+        $x32 = "https://www.deyda.net/wp-content/uploads/CitrixOptimizerTool-" + $Version + ".zip"
+        
+        $PSObjectx32 = [PSCustomObject] @{
+            Version      = $Version
+            URI          = $x32
+            }
+
+        Write-Output -InputObject $PSObjectx32
+    }
+}
+
 # Function Citrix Optimizer Download
 #========================================================================================================================================
 Function Get-CitrixOptimizer {
@@ -3560,7 +3593,9 @@ Function Get-SDelete {
         $regexAppVersion = 'SDelete v.*\<'
         $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersion.Split('v')
-        $Version = $webSplit[1].TrimEnd('<')
+        $webSplit1 = $webSplit[1].TrimEnd('<')
+        $Version = $webSplit1.Split('<')
+        $Version = $Version[0]
         $x32 = "https://download.sysinternals.com/files/SDelete.zip"
         
         $PSObjectx32 = [PSCustomObject] @{
@@ -4174,7 +4209,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.52"
+$eVersion = "2.10.53"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17349,7 +17384,7 @@ If ($Download -eq "1") {
             #$Version1 = $CitrixOptimizerD.Version
             #$URL1 = $CitrixOptimizerD.uri
             $URL1 = "https://www.deyda.net/wp-content/uploads/2023/12/CitrixOptimizerTool.zip"
-            $Version1 = "3.2.1.1"
+            $Version1 = "3.3.0.1"
             Add-Content -Path "$FWFile" -Value "$URL1"
             $InstallerType1 = "zip"
             $Source1 = "$PackageName1" + "." + "$InstallerType1"
@@ -18307,9 +18342,11 @@ If ($Download -eq "1") {
     If ($Filezilla -eq 1) {
         $Product = "Filezilla"
         $PackageName = "Filezilla-win64"
-        $FilezillaD = Get-EvergreenApp -Name Filezilla | Where-Object { $_.URI -like "*win64*"}
-        $Version = $FilezillaD.Version
-        $URL = $FilezillaD.uri
+        #$FilezillaD = Get-EvergreenApp -Name Filezilla | Where-Object { $_.URI -like "*win64*"}
+        #$Version = $FilezillaD.Version
+        #$URL = $FilezillaD.uri
+        $URL = "https://www.deyda.net/wp-content/uploads/2023/12/FileZilla_3.68.1_win64-setup.exe"
+        $Version = "3.68.1"
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
@@ -20946,6 +20983,34 @@ If ($Download -eq "1") {
         $PackageName = "Teams_" + "$MSTeamsNewArchitectureClear"
         $Product = "Microsoft Teams 2"
         $TeamsNewD = Get-EvergreenApp -Name MicrosoftTeams -WarningAction silentlyContinue | Where-Object { $_.Architecture -eq "$MSTeamsNewArchitectureClear" -and $_.Release -eq "Enterprise" -and $_.Type -eq "msix"}
+        If ($OS -Like "*Windows Server 2019*") {
+            Write-Host "Windows Server 2019 detected. Installation without teamsbootstrapper.exe"
+        } else {
+            If ($OS -Like "*Windows Server 2022*") {
+                If (!(Test-Path -Path "$PSScriptRoot\$Product\teamsbootstrapper.exe")) {
+                    Write-Host -ForegroundColor Magenta "Download Microsoft Teams 2 Bootstrapper"
+                    If ($WhatIf -eq '0') {
+                        If (!(Test-Path -Path "$PSScriptRoot\$Product")) { New-Item -Path "$PSScriptRoot\$Product" -ItemType Directory | Out-Null }
+                        Get-Download "https://go.microsoft.com/fwlink/?linkid=2243204&clcid=0x409" "$PSScriptRoot\$Product\" teamsbootstrapper.exe -includeStats
+                    }
+                    Write-Host -ForegroundColor Green "Download Microsoft Teams 2 Bootstrapper finished!"
+                    Write-Output ""
+                }
+            }
+            If ($OS -Like "*Windows 10*") {
+            }
+            If ($OS -Like "*Windows 11*") {
+                If (!(Test-Path -Path "$PSScriptRoot\$Product\teamsbootstrapper.exe")) {
+                    Write-Host -ForegroundColor Magenta "Download Microsoft Teams 2 Bootstrapper"
+                    If ($WhatIf -eq '0') {
+                        If (!(Test-Path -Path "$PSScriptRoot\$Product")) { New-Item -Path "$PSScriptRoot\$Product" -ItemType Directory | Out-Null }
+                        Get-Download "https://go.microsoft.com/fwlink/?linkid=2243204&clcid=0x409" "$PSScriptRoot\$Product\" teamsbootstrapper.exe -includeStats
+                    }
+                    Write-Host -ForegroundColor Green "Download Microsoft Teams 2 Bootstrapper finished!"
+                    Write-Output ""
+                }
+            }
+        }
         If (!(Test-Path -Path "$PSScriptRoot\$Product\teamsbootstrapper.exe")) {
             Write-Host -ForegroundColor Magenta "Download Microsoft Teams 2 Bootstrapper"
             If ($WhatIf -eq '0') {
