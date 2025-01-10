@@ -1039,20 +1039,20 @@ Function Get-DWGTrueView() {
     Param ()
     $appURLVersion = "https://www.autodesk.com/products/dwg-trueview/overview"
     Try {
-        $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($appURLVersion) -SessionVariable websession
+        #$webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($appURLVersion) -SessionVariable websession
     }
     Catch {
         Throw "Failed to connect to URL: $appURLVersion with error $_."
         Break
     }
     Finally {
-        $regexAppVersion = "DWGTrueView_.{4}"
-        $webVersionDWG = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        #$regexAppVersion = "DWGTrueView_.{4}"
+        #$webVersionDWG = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         #$appVersion = $webVersionDWG.Split("_")[1]
         $appVersion = "2025"
 
-        $regexAppURL = "https://efulfillment.*DWGTrueView_" + "$appVersion" + ".*_English_64bit_dlm.sfx.exe"
-        $webURL = $webRequest.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        #$regexAppURL = "https://efulfillment.*DWGTrueView_" + "$appVersion" + ".*_English_64bit_dlm.sfx.exe"
+        #$webURL = $webRequest.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         #$appx64URL = ""$webURL.Split('"')[0]""
         $appx64URL = "https://upload2.delivery.autodesk.com/WebInstall3StubGUI-1736516951798.exe?response-content-disposition=attachment%3B%20filename%20%3D%22Autodesk_DWG_TrueView_2025_en-US_setup_webinstall.exe%22%20%3B%20filename%2A%3DUTF-8%27%27Autodesk_DWG_TrueView_2025_en-US_setup_webinstall.exe"
 
