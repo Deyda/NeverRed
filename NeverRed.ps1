@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.54
+  Version:          2.10.55
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -258,6 +258,7 @@ the script checks the version number and will update the package.
   2024-11-20        Change EdgeWebView2 detection in Microsoft Teams 2 installation
   2024-11-22        Change FileZilla DL to hardcoded address / Correction of teamsbootstrapper dl
   2024-11-27        Correction Microsoft 365 Apps download and install
+  2025-01-10        Add new Teams 2 Reg Keys / Correct the DWG Download
 
 .PARAMETER ESfile
 
@@ -1047,11 +1048,13 @@ Function Get-DWGTrueView() {
     Finally {
         $regexAppVersion = "DWGTrueView_.{4}"
         $webVersionDWG = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $appVersion = $webVersionDWG.Split("_")[1]
-        
+        #$appVersion = $webVersionDWG.Split("_")[1]
+        $appVersion = "2025"
+
         $regexAppURL = "https://efulfillment.*DWGTrueView_" + "$appVersion" + ".*_English_64bit_dlm.sfx.exe"
         $webURL = $webRequest.RawContent | Select-String -Pattern $regexAppURL -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $appx64URL = $webURL.Split('"')[0]
+        #$appx64URL = ""$webURL.Split('"')[0]""
+        $appx64URL = "https://upload2.delivery.autodesk.com/WebInstall3StubGUI-1736516951798.exe?response-content-disposition=attachment%3B%20filename%20%3D%22Autodesk_DWG_TrueView_2025_en-US_setup_webinstall.exe%22%20%3B%20filename%2A%3DUTF-8%27%27Autodesk_DWG_TrueView_2025_en-US_setup_webinstall.exe"
 
         $PSObjectx64 = [PSCustomObject] @{
             Version      = $appVersion
@@ -4210,7 +4213,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.54"
+$eVersion = "2.10.55"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28583,7 +28586,9 @@ If ($Install -eq "1") {
                 Write-Host "Customize $Product"
                 reg add "HKLM\SOFTWARE\WOW6432Node\Citrix\WebSocketService" /v ProcessWhitelist /t REG_Multi_SZ /d msedgewebview2.exe /f | Out-Null
                 reg add "HKLM\SOFTWARE\Microsoft\Teams" /v disableAutoUpdate /t REG_DWORD /d 1 /f | Out-Null
-                #New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Teams" -Name disableAutoUpdate -PropertyType DWORD -Value 1 -Force | Out-Null
+                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name DisableAppInstallsOnFirstLogon -PropertyType DWORD -Value 0 -Force | Out-Null
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
                 Write-Host "Install $Product Add-In for Outlook"
                 If ($MSTeamsNewArchitectureClear -eq "x86"){
