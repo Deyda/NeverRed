@@ -20091,7 +20091,8 @@ If ($Download -eq "1") {
                 $MSFSLogixD = Get-EvergreenApp -Name MicrosoftFSLogixApps -ea silentlyContinue -WarningAction silentlyContinue | Where-Object { $_.Channel -eq "Production"}
             }
         }
-        $Version = $MSFSLogixD.Version
+        #$Version = $MSFSLogixD.Version
+        $Version = "3.25.202.4223"
         $URL = $MSFSLogixD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "zip"
