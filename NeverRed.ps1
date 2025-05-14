@@ -260,7 +260,7 @@ the script checks the version number and will update the package.
   2024-11-27        Correction Microsoft 365 Apps download and install
   2025-01-10        Add new Teams 2 Reg Keys / Correct the DWG Download
   2025-02-20        Correction Microsoft FSLogix missing Version in newest dl
-  2025-05-14        Correction Microsoft FSLogix dl
+  2025-05-14        Correction Microsoft FSLogix dl / Correction Firefox (Thx to Eugenio)
 
 .PARAMETER ESfile
 
@@ -14593,7 +14593,7 @@ If ($MSTeams -eq 1) {
 
     If ($Firefox -eq 1) {
         $Product = "Mozilla Firefox"
-        $FirefoxD = Get-EvergreenApp -Name MozillaFirefox -AppParams @{Language="$FFLanguageClear"} -WarningAction silentlyContinue -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "msi" -and $_.Architecture -eq "$FirefoxArchitectureClear" -and $_.Channel -like "*$FirefoxChannelClear*"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $FirefoxD = Get-EvergreenApp -Name MozillaFirefox -AppParams @{Language="$FFLanguageClear"} -WarningAction silentlyContinue -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "msi" -and $_.Architecture -eq "$FirefoxArchitectureClear" -and $_.Channel -like "$FirefoxChannelClear"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         $Version = $FirefoxD.Version
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$FirefoxChannelClear" + "$FirefoxArchitectureClear" + "$FFLanguageClear" + ".txt"
         $CurrentVersionFF = Get-Content -Path "$VersionPath" -EA SilentlyContinue
@@ -21609,8 +21609,9 @@ If ($Download -eq "1") {
     If ($Firefox -eq 1) {
         $Product = "Mozilla Firefox"
         $PackageName = "Firefox_Setup_" + "$FirefoxChannelClear" + "$FirefoxArchitectureClear" + "_$FFLanguageClear"
-        $FirefoxD = Get-EvergreenApp -Name MozillaFirefox -AppParams @{Language="$FFLanguageClear"} -WarningAction silentlyContinue -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "msi" -and $_.Architecture -eq "$FirefoxArchitectureClear" -and $_.Channel -like "*$FirefoxChannelClear*"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $FirefoxD = Get-EvergreenApp -Name MozillaFirefox -AppParams @{Language="$FFLanguageClear"} -WarningAction silentlyContinue -ErrorAction SilentlyContinue | Where-Object { $_.Type -eq "msi" -and $_.Architecture -eq "$FirefoxArchitectureClear" -and $_.Channel -like "$FirefoxChannelClear"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         $Version = $FirefoxD.Version
+        $NewCurrentVersion = ""
         $URL = $FirefoxD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "msi"
