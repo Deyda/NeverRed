@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.56
+  Version:          2.10.57
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -259,6 +259,8 @@ the script checks the version number and will update the package.
   2024-11-22        Change FileZilla DL to hardcoded address / Correction of teamsbootstrapper dl
   2024-11-27        Correction Microsoft 365 Apps download and install
   2025-01-10        Add new Teams 2 Reg Keys / Correct the DWG Download
+  2025-02-20        Correction Microsoft FSLogix missing Version in newest dl
+  2025-05-14        Correction Microsoft FSLogix dl
 
 .PARAMETER ESfile
 
@@ -4213,7 +4215,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.56"
+$eVersion = "2.10.57"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -13347,8 +13349,11 @@ If ($Report -eq "1") {
                 $MSFSLogixD = Get-EvergreenApp -Name MicrosoftFSLogixApps -ea silentlyContinue -WarningAction silentlyContinue | Where-Object { $_.Channel -eq "Production"}
             }
         }
-        #$Version = $MSFSLogixD.Version
-        $Version = "3.25.202.4223"
+        If ($MSFSLogixD.Date -eq "11.02.2025") {
+            $Version = "3.25.202.4223"
+        } else {
+            $Version = $MSFSLogixD.Version
+        }        
         $VersionPath = "$PSScriptRoot\$Product\$MSFSLogixChannelClear\Version_"+ "$MSFSLogixChannelClear" + ".txt"
         $CurrentVersionMF = Get-Content -Path "$VersionPath" -EA SilentlyContinue
         $MSFSLogixV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -eq "Microsoft FSLogix Apps"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
@@ -20091,8 +20096,11 @@ If ($Download -eq "1") {
                 $MSFSLogixD = Get-EvergreenApp -Name MicrosoftFSLogixApps -ea silentlyContinue -WarningAction silentlyContinue | Where-Object { $_.Channel -eq "Production"}
             }
         }
-        #$Version = $MSFSLogixD.Version
-        $Version = "3.25.202.4223"
+        If ($MSFSLogixD.Date -eq "07.04.2025") {
+            $Version = "3.25.401.15305"
+        } else {
+            $Version = $MSFSLogixD.Version
+        } 
         $URL = $MSFSLogixD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "zip"
