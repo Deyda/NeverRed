@@ -31929,7 +31929,7 @@ If ($Install -eq "1") {
     }
 }
 #// Mark: Install Windows Update
-# Logging
+# Logging-
 # Global variables
 $WUFileName = ("Windows Update - $Date.log")
 $WUFile = Join-path $LogDir $WUFileName
