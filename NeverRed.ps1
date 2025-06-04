@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.57
+  Version:          2.10.58
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -261,6 +261,7 @@ the script checks the version number and will update the package.
   2025-01-10        Add new Teams 2 Reg Keys / Correct the DWG Download
   2025-02-20        Correction Microsoft FSLogix missing Version in newest dl
   2025-05-14        Correction Microsoft FSLogix dl / Correction Firefox (Thx to Eugenio)
+  2025-06-04        Correction 1Password Download and Install to msi package (Thx Bernhard)
 
 .PARAMETER ESfile
 
@@ -4215,7 +4216,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.57"
+$eVersion = "2.10.58"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16868,7 +16869,7 @@ If ($Download -eq "1") {
     If ($1Password -eq 1) {
         $Product = "1Password"
         $PackageName = "1Password-Setup"
-        $1PasswordD = Get-EvergreenApp -Name 1Password | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $1PasswordD = Get-EvergreenApp -Name 1Password  | Where-Object "type" -eq "msi"  | Sort-Object -Property Version -Descending | Select-Object -First 1
         $Version = $1PasswordD.Version
         $1PWSplit = $Version.split(".")
         $1PWStringSecond = ([regex]::Matches($1PWSplit[1], "." )).count
@@ -16878,7 +16879,7 @@ If ($Download -eq "1") {
         $Version = $1PWSplit[0] + "." + $1PWSplit[1] + "." + $1PWSplit[2]
         $URL = $1PasswordD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
-        $InstallerType = "exe"
+        $InstallerType = "msi"
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version.txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
@@ -16901,7 +16902,7 @@ If ($Download -eq "1") {
                         Write-Host "Copy $Product installer version $CurrentVersion to repository folder"
                         If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product")) { New-Item -Path "$PSScriptRoot\_Repository\$Product" -ItemType Directory | Out-Null }
                         If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product\$CurrentVersion")) { New-Item -Path "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ItemType Directory | Out-Null }
-                        Copy-Item -Path "$PSScriptRoot\$Product\*.exe" -Destination "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ErrorAction SilentlyContinue
+                        Copy-Item -Path "$PSScriptRoot\$Product\*.msi" -Destination "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ErrorAction SilentlyContinue
                         Write-Host -ForegroundColor Green "Copy of the current version $CurrentVersion finished!"
                     }
                 }
@@ -23956,7 +23957,7 @@ If ($Install -eq "1") {
         If (!$1PasswordV) {
             $1PasswordV = (Get-ItemProperty HKCU:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* -ErrorAction SilentlyContinue | Where-Object {$_.DisplayName -like "*1Password*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
-        $1PasswordInstaller = "1Password-Setup.exe"
+        $PackageName= "1Password-Setup.msi"
         Write-Host -ForegroundColor Magenta "Install $Product"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $1PasswordV"
@@ -23966,15 +23967,14 @@ If ($Install -eq "1") {
             Try {
                 Write-Host "Starting install of $Product version $Version"
                 If ($WhatIf -eq '0') {
-                    Start-Process "$PSScriptRoot\$Product\$1PasswordInstaller"
-                }
-                $p = Get-Process 1Password-Setup -ErrorAction SilentlyContinue
-                If ($p) {
-                    $p.WaitForExit()
-                    Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
-                    DS_WriteLog "I" "Installation $Product finished!" $LogFile
-                }
-                If ($WhatIf -eq '0') {
+                    $Arguments = @(
+                        "/i"
+                        "`"$InstallMSI`""
+                    "/qn"
+                    "/norestart"
+                        )
+                    $InstallMSI = "$PSScriptRoot\$Product\$PackageName"
+                    Install-MSI $InstallMSI $Arguments
                     If ($CleanUpStartMenu) {
                         If (Test-Path -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\1Password.lnk") {Remove-Item -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\1Password.lnk" -Force}
                     }
