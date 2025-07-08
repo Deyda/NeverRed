@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.58
+  Version:          2.10.59
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -262,6 +262,8 @@ the script checks the version number and will update the package.
   2025-02-20        Correction Microsoft FSLogix missing Version in newest dl
   2025-05-14        Correction Microsoft FSLogix dl / Correction Firefox (Thx to Eugenio)
   2025-06-04        Correction 1Password Download and Install to msi package (Thx Bernhard)
+  2025-06-24        Correction Microsoft Edge download / Correction Citrix WSA download
+  2025-07-08        Correction IrfanView download
 
 .PARAMETER ESfile
 
@@ -583,7 +585,7 @@ Function Get-IrfanView {
         $Version = $m -replace "Version"
         #$FileI = $Version -replace "\.",""
         $x32 = "https://www.techspot.com/downloads/downloadnow/299/?evp=893edf43f99033113608d9a805221b92&file=372"
-        $x64 = "https://www.techspot.com/downloads/downloadnow/299/?evp=2bc137b9206e4001fbe10993002f0fb0&file=371"
+        $x64 = "https://dl1.netzwelt.de/files/iview472_x64_setup.exe?iwt6IgtQseoTkwXbi9/jaRHM6UCd8QR5D4rjBslqp38=&file=iview472_x64_setup.exe"
 
 
         $PSObjectx32 = [PSCustomObject] @{
@@ -4216,7 +4218,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.58"
+$eVersion = "2.10.59"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -19728,7 +19730,7 @@ If ($Download -eq "1") {
     If ($MSEdge -eq 1) {
         $Product = "Microsoft Edge"
         $PackageName = "MicrosoftEdgeEnterprise_" + "$MSEdgeArchitectureClear" + "_$MSEdgeChannelClear"
-        $EdgeD = Get-EvergreenApp -Name MicrosoftEdge | Where-Object { $_.Platform -eq "Windows" -and $_.Release -eq "Consumer" -and $_.Channel -eq "$MSEdgeChannelClear" -and $_.Architecture -eq "$MSEdgeArchitectureClear" }
+        $EdgeD = Get-EvergreenApp -Name MicrosoftEdge | Where-Object {$_.Release -eq "Enterprise" -and $_.Channel -eq "$MSEdgeChannelClear" -and $_.Architecture -eq "$MSEdgeArchitectureClear" }
         $Version = $EdgeD.Version
         $EdgeSplit = $Version.split(".")
         $EdgeStrings = ([regex]::Matches($Version, "\." )).count
@@ -31929,7 +31931,7 @@ If ($Install -eq "1") {
     }
 }
 #// Mark: Install Windows Update
-# Logging-
+# Logging
 # Global variables
 $WUFileName = ("Windows Update - $Date.log")
 $WUFile = Join-path $LogDir $WUFileName
