@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.61
+  Version:          2.10.62
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -265,6 +265,7 @@ the script checks the version number and will update the package.
   2025-06-24        Correction Microsoft Edge download / Correction Citrix WSA download
   2025-07-08        Correction IrfanView download
   2025-07-11        Correction Microsoft Azure Data Studio download / Correction version of FSLogix download
+  2025-07-29        Correction Greenhsot install
 
 .PARAMETER ESfile
 
@@ -4247,7 +4248,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.61"
+$eVersion = "2.10.62"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26175,7 +26176,7 @@ If ($Install -eq "1") {
                 "/NORESTARTAPPLICATIONS"
                 "/SUPPRESSMSGBOXES"
                 "/CLOSEAPPLICATIONS"
-		"/ALLUSERS"
+		        "/ALLUSERS"
             )
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
