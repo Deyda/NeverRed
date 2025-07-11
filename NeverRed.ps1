@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.60
+  Version:          2.10.61
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -264,7 +264,7 @@ the script checks the version number and will update the package.
   2025-06-04        Correction 1Password Download and Install to msi package (Thx Bernhard)
   2025-06-24        Correction Microsoft Edge download / Correction Citrix WSA download
   2025-07-08        Correction IrfanView download
-  2025-07-11        Correction Microsoft Azure Data Studio download
+  2025-07-11        Correction Microsoft Azure Data Studio download / Correction version of FSLogix download
 
 .PARAMETER ESfile
 
@@ -4247,7 +4247,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.60"
+$eVersion = "2.10.61"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20130,6 +20130,8 @@ If ($Download -eq "1") {
         }
         If ($MSFSLogixD.Date -eq "07.04.2025") {
             $Version = "3.25.401.15305"
+        } elseif (($MSFSLogixD.Version -eq "25.06") ) {
+            $Version = "3.25.626.21064"
         } else {
             $Version = $MSFSLogixD.Version
         } 
@@ -20177,7 +20179,7 @@ If ($Download -eq "1") {
                     }
                 }
                 Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\Win32" -Force -Recurse
-                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\x64" -Force -Recurse
+                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\x64" -Force -Recurse
                 Write-Verbose "Stop logging"
                 Stop-Transcript | Out-Null
             }
@@ -20189,12 +20191,13 @@ If ($Download -eq "1") {
                 If ((Test-Path "$PSScriptRoot\_ADMX\$Product\fslogix.admx" -PathType leaf)) {
                     Remove-Item -Path "$PSScriptRoot\_ADMX\$Product\fslogix.admx" -ErrorAction SilentlyContinue
                 }
-                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\fslogix.admx" -Destination "$PSScriptRoot\_ADMX\$Product" -ErrorAction SilentlyContinue
+                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\fslogix.admx" -Destination "$PSScriptRoot\_ADMX\$Product" -ErrorAction SilentlyContinue
                 If (!(Test-Path -Path "$PSScriptRoot\_ADMX\$Product\en-US")) { New-Item -Path "$PSScriptRoot\_ADMX\$Product\en-US" -ItemType Directory | Out-Null }
                 If ((Test-Path "$PSScriptRoot\_ADMX\$Product\en-US\fslogix.adml" -PathType leaf)) {
                     Remove-Item -Path "$PSScriptRoot\_ADMX\$Product\en-US\fslogix.adml" -ErrorAction SilentlyContinue
                 }
-                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath\fslogix.adml" -Destination "$PSScriptRoot\_ADMX\$Product\en-US" -ErrorAction SilentlyContinue
+                Move-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\fslogix.adml" -Destination "$PSScriptRoot\_ADMX\$Product\en-US" -ErrorAction SilentlyContinue
+                Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\README.txt" -Force -Recurse
                 Remove-Item -Path "$PSScriptRoot\$Product\$MSFSLogixChannelClear\$FolderPath" -Force -Recurse
             }
             Write-Host -ForegroundColor Green "Copy of the new ADMX files version $Version finished!"
