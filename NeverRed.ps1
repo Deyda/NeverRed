@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.56
+  Version:          2.10.60
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -259,6 +259,12 @@ the script checks the version number and will update the package.
   2024-11-22        Change FileZilla DL to hardcoded address / Correction of teamsbootstrapper dl
   2024-11-27        Correction Microsoft 365 Apps download and install
   2025-01-10        Add new Teams 2 Reg Keys / Correct the DWG Download
+  2025-02-20        Correction Microsoft FSLogix missing Version in newest dl
+  2025-05-14        Correction Microsoft FSLogix dl / Correction Firefox (Thx to Eugenio)
+  2025-06-04        Correction 1Password Download and Install to msi package (Thx Bernhard)
+  2025-06-24        Correction Microsoft Edge download / Correction Citrix WSA download
+  2025-07-08        Correction IrfanView download
+  2025-07-11        Correction Microsoft Azure Data Studio download
 
 .PARAMETER ESfile
 
@@ -4241,7 +4247,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.56"
+$eVersion = "2.10.60"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
