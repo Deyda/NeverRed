@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.59
+  Version:          2.10.56
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -259,11 +259,6 @@ the script checks the version number and will update the package.
   2024-11-22        Change FileZilla DL to hardcoded address / Correction of teamsbootstrapper dl
   2024-11-27        Correction Microsoft 365 Apps download and install
   2025-01-10        Add new Teams 2 Reg Keys / Correct the DWG Download
-  2025-02-20        Correction Microsoft FSLogix missing Version in newest dl
-  2025-05-14        Correction Microsoft FSLogix dl / Correction Firefox (Thx to Eugenio)
-  2025-06-04        Correction 1Password Download and Install to msi package (Thx Bernhard)
-  2025-06-24        Correction Microsoft Edge download / Correction Citrix WSA download
-  2025-07-08        Correction IrfanView download
 
 .PARAMETER ESfile
 
@@ -506,6 +501,34 @@ Function Get-IISCrypto {
         $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $appVersion = $webVersion.Split(" ")[1]
         $x64 = "https://www.nartac.com/Downloads/IISCrypto/IISCrypto.exe"
+
+        $PSObjectx64 = [PSCustomObject] @{
+        Version      = $appVersion
+        URI          = $x64
+        }
+        Write-Output -InputObject $PSObjectx64
+    }
+}
+
+# Function Microsoft Azure Data Studio Download
+#========================================================================================================================================
+Function Get-MicrosoftAzureDataStudio {
+    [OutputType([System.Management.Automation.PSObject])]
+    [CmdletBinding()]
+    Param ()
+        $url = "https://learn.microsoft.com/en-us/azure-data-studio/download-azure-data-studio"
+    Try {
+        $webRequest = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
+    }
+    Catch {
+        Throw "Failed to connect to URL: $url with error $_."
+        Break
+    }
+    Finally {
+        $regexAppVersion = 'Release number:.....'
+        $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $appVersion = $webVersion.Split(" ")[2]
+        $x64 = "https://download.microsoft.com/download/6b2bfeac-9c1b-4182-9a2f-ce86ff8cc371/azuredatastudio-windows-setup-1.52.0.exe"
 
         $PSObjectx64 = [PSCustomObject] @{
         Version      = $appVersion
@@ -4218,7 +4241,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.59"
+$eVersion = "2.10.56"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -19682,7 +19705,7 @@ If ($Download -eq "1") {
     If ($MSAzureDataStudio -eq 1) {
         $Product = "Microsoft Azure Data Studio"
         $PackageName = "AzureDataStudio-Setup-"
-        $MSAzureDataStudioD = Get-EvergreenApp -Name microsoftazuredatastudio | Where-Object { $_.Channel -eq "$MSAzureDataStudioChannelClear" -and $_.Platform -eq "$MSAzureDataStudioPlatformClear"}
+        $MSAzureDataStudioD = Get-MicrosoftAzureDataStudio
         $Version = $MSAzureDataStudioD.Version
         $URL = $MSAzureDataStudioD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
