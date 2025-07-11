@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.61
+  Version:          2.10.63
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -265,6 +265,8 @@ the script checks the version number and will update the package.
   2025-06-24        Correction Microsoft Edge download / Correction Citrix WSA download
   2025-07-08        Correction IrfanView download
   2025-07-11        Correction Microsoft Azure Data Studio download / Correction version of FSLogix download
+  2025-07-29        Correction Greenhsot install
+  2025-08-20        Correction MS Teams 2 install
 
 .PARAMETER ESfile
 
@@ -4247,7 +4249,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.61"
+$eVersion = "2.10.63"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4828,6 +4830,7 @@ $inputXML = @"
                     <CheckBox x:Name="Checkbox_Report" Content="Report Mode" HorizontalAlignment="Left" Margin="54,34,0,0" VerticalAlignment="Top" Grid.Column="2" ToolTip="Only report generation, no download or install." Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_NoDesktopIcon" Content="Disable NeverRed Icon" HorizontalAlignment="Left" Margin="152,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_WindowsUpdate" Content="Install Windows Update" HorizontalAlignment="Left" Margin="299,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="Checkbox_Download365" Content="Download MS Apps 365 Direct" HorizontalAlignment="Left" Margin="340,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <Label x:Name="Label_Software_Detail" Content="Select Software" HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
                     <Label x:Name="Label_Architecture_Detail" Content="Architecture" HorizontalAlignment="Left" Margin="177,0,0,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1" Grid.Column="1"/>
                     <Label x:Name="Label_Language_Detail" Content="Language" HorizontalAlignment="Left" Margin="249,0,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="10" Grid.Row="1"/>
@@ -26175,7 +26178,7 @@ If ($Install -eq "1") {
                 "/NORESTARTAPPLICATIONS"
                 "/SUPPRESSMSGBOXES"
                 "/CLOSEAPPLICATIONS"
-		"/ALLUSERS"
+		        "/ALLUSERS"
             )
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
@@ -26658,9 +26661,9 @@ If ($Install -eq "1") {
             }
         }
         If ($MSDotNetFrameworkChannelClear -eq "LTS") {
-            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
             If (!$MSDotNetFrameworkV) {
-                $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
             }
         } else {
             $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
@@ -28600,7 +28603,8 @@ If ($Install -eq "1") {
                                 Write-Host "Windows Server 2022 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             If ($OS -Like "*Windows 10*") {
                                 Write-Host "Windows 10 detected. Installation without teamsbootstrapper.exe"
@@ -28610,7 +28614,8 @@ If ($Install -eq "1") {
                                 Write-Host "Windows 11 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             
                             #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
