@@ -26175,6 +26175,7 @@ If ($Install -eq "1") {
                 "/NORESTARTAPPLICATIONS"
                 "/SUPPRESSMSGBOXES"
                 "/CLOSEAPPLICATIONS"
+		"/ALLUSERS"
             )
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
