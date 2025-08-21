@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.63
+  Version:          2.10.64
   Author:           Manuel Winkel <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -267,6 +267,7 @@ the script checks the version number and will update the package.
   2025-07-11        Correction Microsoft Azure Data Studio download / Correction version of FSLogix download
   2025-07-29        Correction Greenhsot install
   2025-08-20        Correction MS Teams 2 install
+  2025-08-21        Add Windows Server 2025 to Teams 2 install
 
 .PARAMETER ESfile
 
@@ -4249,7 +4250,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.63"
+$eVersion = "2.10.64"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -28511,6 +28512,12 @@ If ($Install -eq "1") {
                                     Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
                                     Start-Sleep 20
                                 }
+                                If ($OS -Like "*Windows Server 2025*") {
+                                    Write-Host "Windows Server 2025 detected. Uninstallation with teamsbootstrapper.exe"
+                                    Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
+                                    Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
+                                    Start-Sleep 20
+                                }
                                 If ($OS -Like "*Windows 10*") {
                                     Write-Host "Windows 10 detected. Uninstall Teams 2 manually."
                                     #Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Remove-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"""
@@ -28601,6 +28608,13 @@ If ($Install -eq "1") {
                         } else {
                             If ($OS -Like "*Windows Server 2022*") {
                                 Write-Host "Windows Server 2022 detected. Installation with teamsbootstrapper.exe"
+                                $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
+                                $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                                #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                            }
+                            If ($OS -Like "*Windows Server 2025*") {
+                                Write-Host "Windows Server 2025 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
                                 #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
