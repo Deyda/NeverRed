@@ -8,8 +8,8 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.64
-  Author:           Manuel Winkel <www.deyda.net>
+  Version:          2.10.65
+  Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
   // NOTE: Purpose/Change
@@ -267,7 +267,8 @@ the script checks the version number and will update the package.
   2025-07-11        Correction Microsoft Azure Data Studio download / Correction version of FSLogix download
   2025-07-29        Correction Greenhsot install
   2025-08-20        Correction MS Teams 2 install
-  2025-08-21        Add Windows Server 2025 to Teams 2 install
+  2025-08-21        Add Windows Server 2025 to Teams 2 install / Correction GUI / Add Exclude of Outlook New in M365 Install
+  2025-09-01        Correct Teams 2 install and OpenJDK dl and install
 
 .PARAMETER ESfile
 
@@ -4250,7 +4251,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.64"
+$eVersion = "2.10.65"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4569,11 +4570,17 @@ $inputXML = @"
                     <CheckBox x:Name="Checkbox_7Zip" Content="7 Zip" HorizontalAlignment="Left" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_AdobeProDC" Content="Adobe Pro DC" HorizontalAlignment="Left" Margin="12,70,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_AdobeReaderDC" Content="Adobe Reader DC" HorizontalAlignment="Left" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
-                    <CheckBox x:Name="Checkbox_AdoptOpenJDK" Content="Adopt Open JDK" HorizontalAlignment="Left" Margin="12,110,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
+                    <CheckBox x:Name="Checkbox_AdoptOpenJDK" Content="Adoptium Temurin Open JDK" HorizontalAlignment="Left" Margin="12,110,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <ComboBox x:Name="Box_AdoptOpenJDK" HorizontalAlignment="Left" Margin="214,107,0,0" VerticalAlignment="Top" SelectedIndex="1" Grid.Column="0" Grid.Row="1">
                         <ListBoxItem Content="8 (LTS)"/>
                         <ListBoxItem Content="11 (LTS)"/>
-                        <ListBoxItem Content="16 (Latest)"/>
+                        <ListBoxItem Content="16"/>
+                        <ListBoxItem Content="17 (LTS)"/>
+                        <ListBoxItem Content="18"/>
+                        <ListBoxItem Content="19"/>
+                        <ListBoxItem Content="20"/>
+                        <ListBoxItem Content="21 (LTS)"/>
+                        <ListBoxItem Content="22"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_AdoptOpenJDKIcedTeaWeb" Content="Add Iced Tea Web" HorizontalAlignment="Left" Margin="325,110,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_AutodeskDWGTrueView" Content="Autodesk DWG TrueView" HorizontalAlignment="Left" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
@@ -4805,7 +4812,7 @@ $inputXML = @"
                     <Button x:Name="Button_Start" Content="Start" Margin="0,0,218,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" Grid.Row="1"/>
                     <Button x:Name="Button_Cancel" Content="Cancel" Margin="0,0,128,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" Grid.Row="1"/>
                     <Button x:Name="Button_Save" Content="Save" Margin="0,0,38,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" ToolTip="Save Selected Software in LastSetting.txt or -GUIFile Parameter file" Grid.Row="1"/>
-                    <Label x:Name="Label_author" Content="Manuel Winkel / @deyda84 / Deyda Consulting / www.deyda.net / 2024 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,-20" VerticalAlignment="Bottom" FontSize="10" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="Label_author" Content="Manuel Winkel / @deyda84 / Deyda Consulting / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,-20" VerticalAlignment="Bottom" FontSize="10" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
                 </Grid>
             </ScrollViewer>
         </TabItem>
@@ -4831,7 +4838,7 @@ $inputXML = @"
                     <CheckBox x:Name="Checkbox_Report" Content="Report Mode" HorizontalAlignment="Left" Margin="54,34,0,0" VerticalAlignment="Top" Grid.Column="2" ToolTip="Only report generation, no download or install." Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_NoDesktopIcon" Content="Disable NeverRed Icon" HorizontalAlignment="Left" Margin="152,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0"/>
                     <CheckBox x:Name="Checkbox_WindowsUpdate" Content="Install Windows Update" HorizontalAlignment="Left" Margin="299,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
-                    <CheckBox x:Name="Checkbox_Download365" Content="Download MS Apps 365 Direct" HorizontalAlignment="Left" Margin="340,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="Checkbox_Download365" Content="Download MS Apps 365 Direct" HorizontalAlignment="Left" Margin="453,34,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <Label x:Name="Label_Software_Detail" Content="Select Software" HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
                     <Label x:Name="Label_Architecture_Detail" Content="Architecture" HorizontalAlignment="Left" Margin="177,0,0,0" VerticalAlignment="Top" FontSize="10" Grid.Row="1" Grid.Column="1"/>
                     <Label x:Name="Label_Language_Detail" Content="Language" HorizontalAlignment="Left" Margin="249,0,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="10" Grid.Row="1"/>
@@ -4882,7 +4889,7 @@ $inputXML = @"
                         <ListBoxItem Content="Ukrainian"/>
                         <ListBoxItem Content="MUI"/>
                     </ComboBox>
-                    <CheckBox x:Name="Checkbox_AdoptOpenJDK_Detail" Content="Adopt Open JDK" HorizontalAlignment="Left" Margin="12,105,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="Checkbox_AdoptOpenJDK_Detail" Content="Adoptium Temurin Open JDK" HorizontalAlignment="Left" Margin="12,105,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
                     <ComboBox x:Name="Box_AdoptOpenJDK_Architecture" HorizontalAlignment="Left" Margin="194,102,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="1" Grid.Row="1">
                         <ListBoxItem Content="-"/>
                         <ListBoxItem Content="x86"/>
@@ -5592,7 +5599,7 @@ $inputXML = @"
                     <Button x:Name="Button_Start_Detail" Content="Start" HorizontalAlignment="Right" Margin="0,0,218,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button x:Name="Button_Cancel_Detail" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,128,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button x:Name="Button_Save_Detail" Content="Save" HorizontalAlignment="Right" Margin="0,0,38,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" ToolTip="Save Selected Software in LastSetting.txt or -GUIFile Parameter file" Grid.Row="1"/>
-                    <Label x:Name="Label_author_Detail" Content="Manuel Winkel / @deyda84 / Deyda Consulting / www.deyda.net / 2024 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Bottom" FontSize="10" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="Label_author_Detail" Content="Manuel Winkel / @deyda84 / Deyda Consulting / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Bottom" FontSize="10" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2"/>
                 </Grid>
             </ScrollViewer>
         </TabItem>
@@ -9162,6 +9169,12 @@ Switch ($AdoptOpenJDKVersion) {
     0 { $AdoptOpenJDKVersionClear = '8'}
     1 { $AdoptOpenJDKVersionClear = '11'}
     2 { $AdoptOpenJDKVersionClear = '16'}
+    3 { $AdoptOpenJDKVersionClear = '17'}
+    4 { $AdoptOpenJDKVersionClear = '18'}
+    5 { $AdoptOpenJDKVersionClear = '19'}
+    6 { $AdoptOpenJDKVersionClear = '20'}
+    7 { $AdoptOpenJDKVersionClear = '21'}
+    8 { $AdoptOpenJDKVersionClear = '22'}
 }
 
 If ($CiscoWebexTeams_Architecture -ne "") {
@@ -17209,31 +17222,59 @@ If ($Download -eq "1") {
         }
     }
 
-    #// Mark: Download Adopt Open JDK
+    #// Mark: Download Adoptium Temurin Open JDK
     If ($AdoptOpenJDK -eq 1) {
-        $Product = "Adopt Open JDK"
-        $PackageName = "AdoptOpenJDK_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear"
+        $Product = "Adoptium Temurin Open JDK"
+        $PackageName = "AdoptiumTemurin_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear"
         Switch ($AdoptOpenJDKVersionClear) {
-            8 { $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptOpenJDK8 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.URI -like "*-jdk*"}
-                $regexVersion = "openj9_8u.*"
-                $webVersion = $AdoptOpenJDKD.uri | Select-String -Pattern $regexVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-                $appVersion = $webVersion.Split("_")[1]
-                $Version = $appVersion -replace('u','.0.')
-                $Version = $Version -replace('b','.')
+            8 { $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin8 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $appVersion = $AdoptOpenJDKD.Version
+                #$regexVersion = "openj9_8u.*"
+                #$webVersion = $AdoptOpenJDKD.uri | Select-String -Pattern $regexVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+                $appVersion = $appVersion.Split("1.")[1]
+                $appVersion = $appVersion -replace('_','.')
+                $Version = $appVersion -replace('-b','.')
             }
-            11 { 
-                $AdoptOpenJDKArchitectureClear = "x64"
-                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptOpenJDK11 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.URI -like "*-jdk*"
-                $Version = $AdoptOpenJDKD.Version
-                $Version = $Version -replace('.','.')
-            }
+            11 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin11 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $appVersion = $AdoptOpenJDKD.Version
+                $Version = $appVersion -replace('\+','.')
             }
             16 {
-                $AdoptOpenJDKArchitectureClear = "x64"
-                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptOpenJDK16 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.URI -like "*-jdk*"}
-                $regexVersion = "openj9_16.*"
-                $webVersion = $AdoptOpenJDKD.uri | Select-String -Pattern $regexVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-                $Version = $webVersion.Split("_")[1] + "." + $webVersion.Split("_")[2]
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin16 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $appVersion = $AdoptOpenJDKD.Version
+                $Version = $appVersion -replace('\+','.')
+            }
+            17 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin17 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $appVersion = $AdoptOpenJDKD.Version
+                $Version = $appVersion -replace('\+','.')
+            }
+            18 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin18 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $Version = $AdoptOpenJDKD.Version
+													 
+            }
+            19 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin19 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $Version = $AdoptOpenJDKD.Version
+            }
+            20 {
+													  
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin20 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+											 
+                $Version = $AdoptOpenJDKD.Version
+																					  
+            }
+            21 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin21 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $appVersion = $AdoptOpenJDKD.Version
+                $appVersion = $appVersion -replace('\+','.')
+                $Version = $appVersion.Split("-")[0]
+            }
+            22 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin22 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $Version = $AdoptOpenJDKD.Version
             }
         }
         $URL = $AdoptOpenJDKD.uri
@@ -19422,6 +19463,8 @@ If ($Download -eq "1") {
                         $Node3.SetAttribute("ID","Groove")
                     [System.XML.XMLElement]$Node3 = $Node2.AppendChild($XML.CreateElement("ExcludeApp"))
                         $Node3.SetAttribute("ID","OneDrive")
+						[System.XML.XMLElement]$Node3 = $Node2.AppendChild($XML.CreateElement("ExcludeApp"))
+                        $Node3.SetAttribute("ID","OutlookForWindows")									
                     If ($MS365Apps_Visio -eq '1') {
                         Write-Host "Add Microsoft Visio to install.xml for Machine Based Install"
                         [System.XML.XMLElement]$Node2 = $Node1.AppendChild($XML.CreateElement("Product"))
@@ -24287,7 +24330,7 @@ If ($Install -eq "1") {
         }
         If ($CleanUp -eq '1') {
             If ($WhatIf -eq '0') {
-                Remove-Item "$PSScriptRoot\$Product\*" -Recurse
+                Remove-Item "$PSScriptRoot\$Product\*" -Recurse(Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
             }
             Write-Host -ForegroundColor Green "CleanUp for $Product install files successfully."
             DS_WriteLog "-" "" $LogFile
@@ -24295,9 +24338,9 @@ If ($Install -eq "1") {
         }
     }
 
-    #// Mark: Install Adopt Open JDK
+    #// Mark: Install Adoptium Temurin Open JDK
     If ($AdoptOpenJDK -eq 1) {
-        $Product = "Adopt Open JDK"
+        $Product = "Adoptium Temurin Open JDK"
         # Check, if a new version is available
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear" + ".txt"
         $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
@@ -24306,26 +24349,68 @@ If ($Install -eq "1") {
         }
         Switch ($AdoptOpenJDKVersionClear) {
             8 { 
-                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Adopt*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
                 If (!$AdoptOpenJDKV) {
-                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Adopt*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
                 }
+                $AdoptOpenJDKVSplit = $AdoptOpenJDKV.split(".")
+                $AdoptOpenJDKVMiddle = $AdoptOpenJDKVSplit[3]
+                If ($AdoptOpenJDKVMiddle -lt "2") {
+                $AdoptOpenJDKVSplit[3] = "0" + $AdoptOpenJDKVSplit[3]
+                $Version = $AdoptOpenJDKVSplit[0] + "." + $AdoptOpenJDKVSplit[1] + "." + $AdoptOpenJDKVSplit[2] + "." + $AdoptOpenJDKVSplit[3]
+            }
              }
             11 { 
-                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Adopt11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
-                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Adopt*11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
             }
             16 {
-                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Adopt*16*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*16*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
-                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Adopt*16*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*16*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+            }
+            17 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*17*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*17*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+            }
+            18 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*18*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*18*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+            }
+            19 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*19*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*19*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+            }
+            20 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*20*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*20*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+            }
+            21 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*21*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*21*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+            }
+            22 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*22*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*22*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
             }
         }
         $AdoptOpenJDKLog = "$LogTemp\AdoptOpenJDK.log"
-        $PackageName = "AdoptOpenJDK_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear" + ".msi"
+        $PackageName = "AdoptiumTemurin_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear" + ".msi"
         $InstallMSI = "$PSScriptRoot\$Product\$PackageName"
         Write-Host -ForegroundColor Magenta "Install $Product $AdoptOpenJDKVersionClear $AdoptOpenJDKArchitectureClear"
         Write-Host "Download Version: $Version"
@@ -28610,15 +28695,15 @@ If ($Install -eq "1") {
                                 Write-Host "Windows Server 2022 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
-                                Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                #Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             If ($OS -Like "*Windows Server 2025*") {
                                 Write-Host "Windows Server 2025 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
-                                Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                #Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             If ($OS -Like "*Windows 10*") {
                                 Write-Host "Windows 10 detected. Installation without teamsbootstrapper.exe"
@@ -28628,8 +28713,8 @@ If ($Install -eq "1") {
                                 Write-Host "Windows 11 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                #& $Teams_bootstraper_exe -p -o $New_Teams_MSIX
-                                Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                #Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             
                             #& "'$PSScriptRoot\$Product\teamsbootstrapper.exe' -p -o '$PSScriptRoot\$Product\$TeamsNewInstaller'"
