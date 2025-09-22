@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.65
+  Version:          2.10.66
   Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -269,6 +269,8 @@ the script checks the version number and will update the package.
   2025-08-20        Correction MS Teams 2 install
   2025-08-21        Add Windows Server 2025 to Teams 2 install / Correction GUI / Add Exclude of Outlook New in M365 Install
   2025-09-01        Correct Teams 2 install and OpenJDK dl and install
+  2025-09-18        Read ControlUp Auth Key for PS7 / Correction ControlUp Remote DX download
+  2025-09-19        Greenshot disable auto update for machine based install / Correction Teams 2 uninstall
 
 .PARAMETER ESfile
 
@@ -922,10 +924,9 @@ Function Get-ControlUpRemoteDX() {
         Break
     }
     Finally {
-        $regexAppVersion = "Windows.*\(.*\)"
-        $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webVersion = $webVersion.Split("(")[1].Trim(")")
-        $appVersion = $webVersion.Split("version ")[1]
+        $regexAppVersion = "MSI version\s+([\d\.]+)"
+        $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -Last 1
+        $appVersion = $webVersion.Split(" ")[2]
 
         $appxURLCitrix = "https://downloads.controlup.com/RemoteDX/citrix/windows/curdx_windows_citrix.exe"
         $appxURLVMware = "https://downloads.controlup.com/RemoteDX/VMware/windows/curdx_windows_VMware.exe"
@@ -4251,7 +4252,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.65"
+$eVersion = "2.10.66"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -6267,16 +6268,18 @@ $inputXML = @"
     }
 
     # Read local ControlUp files to get the settings of the last session.
-    If (Test-Path "$PSScriptRoot\ControlUp Agent\AuthKey.txt" -PathType leaf) {
-        $ControlUpAgentAuthKey = Get-Content "$PSScriptRoot\ControlUp Agent\AuthKey.txt"
+    $ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
+
+    if (Test-Path "$ScriptRoot\ControlUp Agent\AuthKey.txt" -PathType Leaf) {
+        $ControlUpAgentAuthKey = Get-Content "$ScriptRoot\ControlUp Agent\AuthKey.txt" -Raw
         $WPFTextBox_ControlUpAgentAuthKey.Text = $ControlUpAgentAuthKey
     }
-    If (Test-Path "$PSScriptRoot\ControlUp Edge DX Agent Manager\DevRegCode.txt" -PathType leaf) {
-        $ControlUpEdgeDXDevRegCode = Get-Content "$PSScriptRoot\ControlUp Edge DX Agent Manager\DevRegCode.txt"
+    if (Test-Path "$ScriptRoot\ControlUp Edge DX Agent Manager\DevRegCode.txt" -PathType Leaf) {
+        $ControlUpEdgeDXDevRegCode = Get-Content "$ScriptRoot\ControlUp Edge DX Agent Manager\DevRegCode.txt" -Raw
         $WPFTextBox_ControlUpEdgeDXDevRegCode.Text = $ControlUpEdgeDXDevRegCode
     }
-    If (Test-Path "$PSScriptRoot\ControlUp Edge DX Agent Manager\TenantName.txt" -PathType leaf) {
-        $ControlUpEdgeDXTenantName = Get-Content "$PSScriptRoot\ControlUp Edge DX Agent Manager\TenantName.txt"
+    if (Test-Path "$ScriptRoot\ControlUp Edge DX Agent Manager\TenantName.txt" -PathType Leaf) {
+        $ControlUpEdgeDXTenantName = Get-Content "$ScriptRoot\ControlUp Edge DX Agent Manager\TenantName.txt" -Raw
         $WPFTextBox_ControlUpEdgeDXTenantName.Text = $ControlUpEdgeDXTenantName
     }
 
@@ -17253,18 +17256,14 @@ If ($Download -eq "1") {
             18 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin18 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $Version = $AdoptOpenJDKD.Version
-													 
             }
             19 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin19 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $Version = $AdoptOpenJDKD.Version
             }
             20 {
-													  
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin20 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
-											 
                 $Version = $AdoptOpenJDKD.Version
-																					  
             }
             21 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin21 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
@@ -19463,8 +19462,6 @@ If ($Download -eq "1") {
                         $Node3.SetAttribute("ID","Groove")
                     [System.XML.XMLElement]$Node3 = $Node2.AppendChild($XML.CreateElement("ExcludeApp"))
                         $Node3.SetAttribute("ID","OneDrive")
-						[System.XML.XMLElement]$Node3 = $Node2.AppendChild($XML.CreateElement("ExcludeApp"))
-                        $Node3.SetAttribute("ID","OutlookForWindows")									
                     If ($MS365Apps_Visio -eq '1') {
                         Write-Host "Add Microsoft Visio to install.xml for Machine Based Install"
                         [System.XML.XMLElement]$Node2 = $Node1.AppendChild($XML.CreateElement("Product"))
@@ -26288,6 +26285,14 @@ If ($Install -eq "1") {
                     If ($CleanUpStartMenu) {
                         If (Test-Path -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Greenshot") {Remove-Item -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Greenshot" -Recurse -Force}
                     }
+                    if (-not (Test-Path "HKLM:\SOFTWARE\Greenshot")) {
+                        New-Item -Path "HKLM:\SOFTWARE\Greenshot" -Force | Out-Null
+                    }
+                    if (Get-ItemProperty -Path "HKLM:\SOFTWARE\Greenshot" -Name "CheckForUpdates" -ErrorAction SilentlyContinue) {
+                        Set-ItemProperty -Path "HKLM:\SOFTWARE\Greenshot" -Name "CheckForUpdates" -Value 0
+                    } else {
+                        New-ItemProperty -Path "HKLM:\SOFTWARE\Greenshot" -Name "CheckForUpdates" -Value 0 -PropertyType DWord -Force | Out-Null
+                    }
                 }
             } Catch {
                 Write-Host -ForegroundColor Red "Error installing $Product (Error: $($Error[0]))"
@@ -28594,13 +28599,14 @@ If ($Install -eq "1") {
                                 If ($OS -Like "*Windows Server 2022*") {
                                     Write-Host "Windows Server 2022 detected. Uninstallation with teamsbootstrapper.exe"
                                     Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
-                                    Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
+                                    Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*MSTeams*" } | Remove-AppxProvisionedPackage -Online -AllUsers -ErrorAction SilentlyContinue
                                     Start-Sleep 20
                                 }
                                 If ($OS -Like "*Windows Server 2025*") {
                                     Write-Host "Windows Server 2025 detected. Uninstallation with teamsbootstrapper.exe"
                                     Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
-                                    Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
+                                    Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*MSTeams*" } | Remove-AppxProvisionedPackage -Online -AllUsers -ErrorAction SilentlyContinue
+
                                     Start-Sleep 20
                                 }
                                 If ($OS -Like "*Windows 10*") {
@@ -28610,7 +28616,7 @@ If ($Install -eq "1") {
                                 If ($OS -Like "*Windows 11*") {
                                     Write-Host "Windows 11 detected. Uninstallation with teamsbootstrapper.exe"
                                     Start-Process -FilePath "$PSScriptRoot\$Product\teamsbootstrapper.exe" -ArgumentList "-x"
-                                    Get-AppxPackage *MSTeams* -AllUsers | Remove-AppxPackage -AllUsers | Out-Null
+                                    Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like "*MSTeams*" } | Remove-AppxProvisionedPackage -Online -AllUsers -ErrorAction SilentlyContinue
                                     Start-Sleep 20
                                 }
                             }
