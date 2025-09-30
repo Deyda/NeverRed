@@ -273,7 +273,7 @@ the script checks the version number and will update the package.
   2025-09-19        Greenshot disable auto update for machine based install / Correction Teams 2 uninstall
   2025-09-22        Correction Teams 2 install
   2025-09-23        Correction .Net install / Parameter für Citrix Workspace App
-  2025-09-30        Correction Powershell download
+  2025-09-30        Correction Powershell download /Correction Zoom VDI Client
 
 .PARAMETER ESfile
 
@@ -3423,7 +3423,7 @@ Function Get-ZoomVDI {
     [OutputType([System.Management.Automation.PSObject])]
     [CmdletBinding()]
     Param ()
-        $url = "https://support.zoom.us/hc/en-us/articles/4415057249549"
+        $url = "https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0063810"
     Try {
         $webRequest = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
     }
@@ -23863,7 +23863,7 @@ If ($Download -eq "1") {
             If ($ZoomInstallerClear -eq 'Machine Based') {
                 $Product = "Zoom VDI"
                 $PackageName = "ZoomInstallerVDI"
-                $ZoomD = Get-ZoomVDI
+                $ZoomD = Get-NevergreenApp -Name Zoom -WarningAction:SilentlyContinue | Where-Object {$_.Name -eq "Zoom VDI Client" -and $_.Architecture -eq "$ZoomArchitectureClear" -and $_.Type -eq "Msi"}
                 $Version = $ZoomD.Version
                 $VersionApps = $ZoomD.VersionApps
                 $URL = $ZoomD.uri
