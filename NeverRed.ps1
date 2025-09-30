@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.66
+  Version:          2.10.68
   Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -271,6 +271,9 @@ the script checks the version number and will update the package.
   2025-09-01        Correct Teams 2 install and OpenJDK dl and install
   2025-09-18        Read ControlUp Auth Key for PS7 / Correction ControlUp Remote DX download
   2025-09-19        Greenshot disable auto update for machine based install / Correction Teams 2 uninstall
+  2025-09-22        Correction Teams 2 install
+  2025-09-23        Correction .Net install / Parameter für Citrix Workspace App
+  2025-09-30        Correction Powershell download
 
 .PARAMETER ESfile
 
@@ -4252,7 +4255,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.66"
+$eVersion = "2.10.68"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20660,9 +20663,9 @@ If ($Download -eq "1") {
     If ($MSPowerShell -eq 1) {
         $Product = "Microsoft PowerShell"
         $PackageName = "PowerShell" + "$MSPowerShellArchitectureClear" + "_$MSPowerShellReleaseClear"
-        $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "$MSPowerShellReleaseClear"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "$MSPowerShellReleaseClear" -and $_.Type -eq "msi"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!($MSPowershellD)) {
-            $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "Stable"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+            $MSPowershellD = Get-EvergreenApp -Name MicrosoftPowerShell -WarningAction SilentlyContinue | Where-Object {$_.Architecture -eq "$MSPowerShellArchitectureClear" -and $_.Release -eq "Stable" -and $_.Type -eq "msi"} | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         $Version = $MSPowershellD.Version
         $PSSplit = $Version.split(".")
@@ -26752,9 +26755,9 @@ If ($Install -eq "1") {
             }
         }
         If ($MSDotNetFrameworkChannelClear -eq "LTS") {
-            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
+            $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
             If (!$MSDotNetFrameworkV) {
-                $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
+                $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime - 8*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
             }
         } else {
             $MSDotNetFrameworkV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Windows Desktop Runtime*" -and $_.DisplayName -notlike "*Windows Desktop Runtime - 6*(x64)" -and $_.URLInfoAbout -like "https://dot.net/core"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
@@ -28696,30 +28699,40 @@ If ($Install -eq "1") {
                         If ($OS -Like "*Windows Server 2019*") {
                             Write-Host "Windows Server 2019 detected. Installation without teamsbootstrapper.exe"
                             Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"" /SkipLicense"
+                            Add-AppxPackage -MainPackage "MSTeams_8wekyb3d8bbwe" -RegisterByFamilyName
+                            Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                         } else {
                             If ($OS -Like "*Windows Server 2022*") {
                                 Write-Host "Windows Server 2022 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX *> $null
+                                Add-AppxPackage -MainPackage "MSTeams_8wekyb3d8bbwe" -RegisterByFamilyName
+                                Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                                 #Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             If ($OS -Like "*Windows Server 2025*") {
                                 Write-Host "Windows Server 2025 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX *> $null
+                                Add-AppxPackage -MainPackage "MSTeams_8wekyb3d8bbwe" -RegisterByFamilyName
+                                Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                                 #Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             If ($OS -Like "*Windows 10*") {
                                 Write-Host "Windows 10 detected. Installation without teamsbootstrapper.exe"
                                 Start-Process -wait -NoNewWindow -FilePath DISM.exe -Args "/Online /Add-ProvisionedAppxPackage /PackagePath:""$PSScriptRoot\$Product\$TeamsNewInstaller"" /SkipLicense"
+                                Add-AppxPackage -MainPackage "MSTeams_8wekyb3d8bbwe" -RegisterByFamilyName
+                                Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                             }
                             If ($OS -Like "*Windows 11*") {
                                 Write-Host "Windows 11 detected. Installation with teamsbootstrapper.exe"
                                 $Teams_bootstraper_exe = "$PSScriptRoot\$Product\teamsbootstrapper.exe"
                                 $New_Teams_MSIX = "$PSScriptRoot\$Product\$TeamsNewInstaller"
-                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX
+                                & $Teams_bootstraper_exe -p -o $New_Teams_MSIX *> $null
+                                Add-AppxPackage -MainPackage "MSTeams_8wekyb3d8bbwe" -RegisterByFamilyName
+                                Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                                 #Add-AppxPackage -Path "$PSScriptRoot\$Product\$TeamsNewInstaller"
                             }
                             
