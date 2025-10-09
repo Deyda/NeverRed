@@ -26276,8 +26276,8 @@ If ($Install -eq "1") {
                     DS_WriteLog "W" "No valid UninstallString found for $Product" $LogFile
                 }
             } catch {
-                Write-Host -ForegroundColor Red "Error uninstalling $Product: $($_.Exception.Message)"
-                DS_WriteLog "E" "Error uninstalling $Product: $($_.Exception.Message)" $LogFile
+                Write-Host -ForegroundColor Red "Error uninstalling $Product : $($_.Exception.Message)"
+                DS_WriteLog "E" "Error uninstalling $Product : $($_.Exception.Message)" $LogFile
             }
             Write-Output ""
         }
