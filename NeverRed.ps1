@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.69
+  Version:          2.10.70
   Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -4256,7 +4256,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.69"
+$eVersion = "2.10.70"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26262,25 +26262,6 @@ If ($Install -eq "1") {
         Write-Host -ForegroundColor Magenta "Install $Product"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $GreenshotV"
-        # Uninstall 
-        if ($GreenshotUN -and $GreenshotV) {
-            Write-Host -ForegroundColor Yellow "Existing installation found, uninstalling old version $GreenshotV ..."
-            DS_WriteLog "I" "Uninstall old $Product version $GreenshotV" $LogFile
-            try {
-                if ($GreenshotUN) {
-                    Start-Process -FilePath $GreenshotUN -ArgumentList "/VERYSILENT", "/NORESTART" -Wait -ErrorAction Stop
-                    Write-Host -ForegroundColor Green "$Product successfully uninstalled."
-                    DS_WriteLog "I" "$Product successfully uninstalled." $LogFile
-                } else {
-                    Write-Host -ForegroundColor Yellow "No valid UninstallString found for $Product. Skipping uninstall."
-                    DS_WriteLog "W" "No valid UninstallString found for $Product" $LogFile
-                }
-            } catch {
-                Write-Host -ForegroundColor Red "Error uninstalling $Product : $($_.Exception.Message)"
-                DS_WriteLog "E" "Error uninstalling $Product : $($_.Exception.Message)" $LogFile
-            }
-            Write-Output ""
-        }
         If ($GreenshotV -lt $Version) {
             $Options = @(
                 "/VERYSILENT"
@@ -26292,6 +26273,25 @@ If ($Install -eq "1") {
             )
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
+            # Uninstall 
+            if ($GreenshotUN -and $GreenshotV) {
+                Write-Host -ForegroundColor Yellow "Existing installation found, uninstalling old version $GreenshotV ..."
+                DS_WriteLog "I" "Uninstall old $Product version $GreenshotV" $LogFile
+                try {
+                    if ($GreenshotUN) {
+                        Start-Process -FilePath $GreenshotUN -ArgumentList "/VERYSILENT", "/NORESTART" -Wait -ErrorAction Stop
+                        Write-Host -ForegroundColor Green "$Product successfully uninstalled."
+                        DS_WriteLog "I" "$Product successfully uninstalled." $LogFile
+                    } else {
+                        Write-Host -ForegroundColor Yellow "No valid UninstallString found for $Product. Skipping uninstall."
+                        DS_WriteLog "W" "No valid UninstallString found for $Product" $LogFile
+                    }
+                } catch {
+                    Write-Host -ForegroundColor Red "Error uninstalling $Product : $($_.Exception.Message)"
+                    DS_WriteLog "E" "Error uninstalling $Product : $($_.Exception.Message)" $LogFile
+                }
+                Write-Output ""
+            }
             Try {
                 Write-Host "Starting install of $Product version $Version"
                 If ($WhatIf -eq '0') {
