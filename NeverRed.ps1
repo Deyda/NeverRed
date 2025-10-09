@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.68
+  Version:          2.10.69
   Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -273,7 +273,8 @@ the script checks the version number and will update the package.
   2025-09-19        Greenshot disable auto update for machine based install / Correction Teams 2 uninstall
   2025-09-22        Correction Teams 2 install
   2025-09-23        Correction .Net install / Parameter für Citrix Workspace App
-  2025-09-30        Correction Powershell download /Correction Zoom VDI Client
+  2025-09-30        Correction Powershell download / Correction Zoom VDI Client
+  2025-10-09        Add Greenshot Uninstall before Update / Correction Download MS Edge and Edge WebView2
 
 .PARAMETER ESfile
 
@@ -4255,7 +4256,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.68"
+$eVersion = "2.10.69"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26254,9 +26255,32 @@ If ($Install -eq "1") {
         If (!$GreenshotV) {
             $GreenshotV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Greenshot*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
+        $GreenshotUN = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Greenshot*"}).UninstallString | Sort-Object -Property Version -Descending | Select-Object -First 1
+        If (!$GreenshotUN) {
+            $GreenshotUN = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Greenshot*"}).UninstallString | Sort-Object -Property Version -Descending | Select-Object -First 1
+        }
         Write-Host -ForegroundColor Magenta "Install $Product"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $GreenshotV"
+        # Uninstall 
+        if ($GreenshotUN -and $GreenshotV) {
+            Write-Host -ForegroundColor Yellow "Existing installation found, uninstalling old version $GreenshotV ..."
+            DS_WriteLog "I" "Uninstall old $Product version $GreenshotV" $LogFile
+            try {
+                if ($GreenshotUN) {
+                    Start-Process -FilePath $GreenshotUN -ArgumentList "/VERYSILENT", "/NORESTART" -Wait -ErrorAction Stop
+                    Write-Host -ForegroundColor Green "$Product successfully uninstalled."
+                    DS_WriteLog "I" "$Product successfully uninstalled." $LogFile
+                } else {
+                    Write-Host -ForegroundColor Yellow "No valid UninstallString found for $Product. Skipping uninstall."
+                    DS_WriteLog "W" "No valid UninstallString found for $Product" $LogFile
+                }
+            } catch {
+                Write-Host -ForegroundColor Red "Error uninstalling $Product: $($_.Exception.Message)"
+                DS_WriteLog "E" "Error uninstalling $Product: $($_.Exception.Message)" $LogFile
+            }
+            Write-Output ""
+        }
         If ($GreenshotV -lt $Version) {
             $Options = @(
                 "/VERYSILENT"
