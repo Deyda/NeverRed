@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.70
+  Version:          2.10.71
   Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -4256,7 +4256,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.70"
+$eVersion = "2.10.71"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26273,7 +26273,29 @@ If ($Install -eq "1") {
             )
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
-            # Uninstall 
+            # Uninstall
+            # Kill running greenshot processes
+            try {
+                $processes = Get-Process -Name "Greenshot" -ErrorAction SilentlyContinue
+                if ($processes) {
+                    Write-Host -ForegroundColor Yellow "Stopping running $Product processes..."
+                    DS_WriteLog "I" "Stopping running $Product processes" $LogFile
+                    foreach ($proc in $processes) {
+                        try {
+                            Stop-Process -Id $proc.Id -Force -ErrorAction Stop
+                            Write-Host -ForegroundColor Gray " -> Stopped process $($proc.ProcessName) (PID: $($proc.Id))"
+                        } catch {
+                            Write-Host -ForegroundColor Red " -> Failed to stop process $($proc.ProcessName): $($_.Exception.Message)"
+                            DS_WriteLog "W" "Failed to stop process $($proc.ProcessName): $($_.Exception.Message)" $LogFile
+                        }
+                    }
+                } else {
+                    Write-Host -ForegroundColor Cyan "No running $Product processes found."
+                }
+            } catch {
+                Write-Host -ForegroundColor Red "Error while stopping $Product processes: $($_.Exception.Message)"
+                DS_WriteLog "E" "Error while stopping $Product processes: $($_.Exception.Message)" $LogFile
+            }
             if ($GreenshotUN -and $GreenshotV) {
                 Write-Host -ForegroundColor Yellow "Existing installation found, uninstalling old version $GreenshotV ..."
                 DS_WriteLog "I" "Uninstall old $Product version $GreenshotV" $LogFile
