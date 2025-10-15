@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.71
+  Version:          2.10.72
   Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -275,6 +275,7 @@ the script checks the version number and will update the package.
   2025-09-23        Correction .Net install / Parameter für Citrix Workspace App
   2025-09-30        Correction Powershell download / Correction Zoom VDI Client
   2025-10-09        Add Greenshot Uninstall before Update / Correction Download MS Edge and Edge WebView2
+  2025-10-15        Update-EvgreenModule added
 
 .PARAMETER ESfile
 
@@ -4256,7 +4257,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.71"
+$eVersion = "2.10.72"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -16777,6 +16778,9 @@ If ($Download -eq "1") {
             $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
             Write-Host -ForegroundColor Green "Install Evergreen module done. Version"$ea
             Write-Output ""
+            update-evergreen
+            Write-Host -ForegroundColor Green "Evergreen module initialized"
+            Write-Output ""
         }
         Else {
             Write-Host "Check Evergreen module version."
@@ -16791,6 +16795,9 @@ If ($Download -eq "1") {
             if ([version]"$ea" -ge [version]"$eb") {
                 Write-Host -ForegroundColor Green "Installed Evergreen module version is up to date."
                 Write-Output ""
+                update-evergreen
+                Write-Host -ForegroundColor Green "Evergreen module initialized"
+                Write-Output ""
             }
             else {
                 Write-Host "Update Evergreen module."
@@ -16800,6 +16807,9 @@ If ($Download -eq "1") {
                 $estringver = $eversion | Select-Object @{n='ModuleVersion'; e={$_.Version -as [string]}}
                 $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
                 Write-Host -ForegroundColor Green "Update Evergreen module done. Version"$ea
+                Write-Output ""
+                update-evergreen
+                Write-Host -ForegroundColor Green "Evergreen module initialized"
                 Write-Output ""
             }
         }
