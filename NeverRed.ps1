@@ -8,8 +8,8 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.72
-  Author:           Manuel Winkel / Deyda Consulting <www.deyda.net>
+  Version:          2.10.73
+  Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
   // NOTE: Purpose/Change
@@ -276,6 +276,7 @@ the script checks the version number and will update the package.
   2025-09-30        Correction Powershell download / Correction Zoom VDI Client
   2025-10-09        Add Greenshot Uninstall before Update / Correction Download MS Edge and Edge WebView2
   2025-10-15        Update-EvgreenModule added
+  2025-11-21        Update Default Browser behavior with Greenshot install
 
 .PARAMETER ESfile
 
@@ -4257,7 +4258,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.72"
+$eVersion = "2.10.73"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26330,13 +26331,19 @@ If ($Install -eq "1") {
                     $inst = Start-Process -FilePath "$PSScriptRoot\$Product\Greenshot-INSTALLER-x86.exe" -ArgumentList $Options -PassThru -ErrorAction Stop
                 }
                 else {
-                    Stop-Process -Name "$DefaultBrowser" -Force -ErrorAction SilentlyContinue
+                    if (-not [string]::IsNullOrWhiteSpace($DefaultBrowser)) {
+                        Stop-Process -Name $DefaultBrowser -Force -ErrorAction SilentlyContinue
+                    } else {
+                        Write-Host -ForegroundColor Yellow "DefaultBrowser ist leer – Stop-Process übersprungen."
+                    }
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     DS_WriteLog "I" "Installation $Product finished!" $LogFile
                 }
                 If ($inst) {
                     Wait-Process -InputObject $inst
-                    Stop-Process -Name "$DefaultBrowser" -Force -ErrorAction SilentlyContinue
+                    if (-not [string]::IsNullOrWhiteSpace($DefaultBrowser)) {
+                        Stop-Process -Name $DefaultBrowser -Force -ErrorAction SilentlyContinue
+                    }
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     DS_WriteLog "I" "Installation $Product finished!" $LogFile
                 }
