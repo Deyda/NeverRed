@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.73
+  Version:          2.10.74
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -277,6 +277,7 @@ the script checks the version number and will update the package.
   2025-10-09        Add Greenshot Uninstall before Update / Correction Download MS Edge and Edge WebView2
   2025-10-15        Update-EvgreenModule added
   2025-11-21        Update Default Browser behavior with Greenshot install
+  2025-11-24        Correction Unicode topic
 
 .PARAMETER ESfile
 
@@ -4258,7 +4259,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.73"
+$eVersion = "2.10.74"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26334,7 +26335,7 @@ If ($Install -eq "1") {
                     if (-not [string]::IsNullOrWhiteSpace($DefaultBrowser)) {
                         Stop-Process -Name $DefaultBrowser -Force -ErrorAction SilentlyContinue
                     } else {
-                        Write-Host -ForegroundColor Yellow "DefaultBrowser ist leer – Stop-Process übersprungen."
+                        Write-Host -ForegroundColor Yellow "DefaultBrowser ist leer Stop-Process übersprungen."
                     }
                     Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                     DS_WriteLog "I" "Installation $Product finished!" $LogFile
@@ -27306,19 +27307,28 @@ If ($Install -eq "1") {
                         If ($EdgeUpdateState -ne "0") {Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -Name UpdateDefault -Value 0 | Out-Null}
                     }
                     # Disable Citrix API Hooks (MS Edge) on Citrix VDA
-                    $(
-                        $RegPath = "HKLM:SYSTEM\CurrentControlSet\services\CtxUvi"
-                        If (Test-Path $RegPath) {
-                            $RegName = "UviProcessExcludes"
-                            # Get current values in UviProcessExcludes
-                            $CurrentValues = Get-ItemProperty -Path $RegPath -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $RegName
-                            If ($CurrentValues -like "*msedge.exe*") {
-                                $NewValues = $CurrentValues.replace("msedge.exe;","")
-                                Set-ItemProperty -Path $RegPath -Name $RegName -Value "$NewValues" -ErrorAction SilentlyContinue
-                            }
-                            # Add the msedge.exe value to existing values in UviProcessExcludes
+                    $RegPath = "HKLM:SYSTEM\CurrentControlSet\Services\CtxUvi"
+                    $RegName = "UviProcessExcludes"
+
+                    If (Test-Path $RegPath) {
+                        Try {
+                            $CurrentValues = (Get-ItemProperty -Path $RegPath -ErrorAction SilentlyContinue).$RegName
+                        } Catch {
+                            $CurrentValues = ""
                         }
-                    ) | Out-Null
+
+                        # Wenn msedge.exe drinsteht → rauswerfen
+                        If ($CurrentValues -and $CurrentValues -like "*msedge.exe*") {
+                            $NewValues = $CurrentValues -replace "msedge\.exe;?", ""
+                            Set-ItemProperty -Path $RegPath -Name $RegName -Value $NewValues -ErrorAction SilentlyContinue
+                        }
+
+                        # msedge.exe hinzufügen (wenn noch nicht drin)
+                        If ($CurrentValues -notlike "*msedge.exe*") {
+                            $NewValues = "$CurrentValues" + "msedge.exe;"
+                            Set-ItemProperty -Path $RegPath -Name $RegName -Value $NewValues -ErrorAction SilentlyContinue
+                        }
+                    }
                 }
                 Write-Host -ForegroundColor Green "Customize $Product registry finished!"
                 $Service = Get-Service -Name edgeupdate -ErrorAction SilentlyContinue
