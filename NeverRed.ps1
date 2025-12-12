@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.74
+  Version:          2.10.75
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -278,6 +278,7 @@ the script checks the version number and will update the package.
   2025-10-15        Update-EvgreenModule added
   2025-11-21        Update Default Browser behavior with Greenshot install
   2025-11-24        Correction Unicode topic
+  2025-12-12        Correction download link for Citrix Optimizer, Receiver Clean Up and Filezilla
 
 .PARAMETER ESfile
 
@@ -4259,7 +4260,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.74"
+$eVersion = "2.10.75"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4335,7 +4336,7 @@ Start-Transcript $LogGlobal | Out-Null
 # ========================================================================================================================================
 Write-Output ""
 Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "       NeverRed - Update your Software, the lazy way        "
-Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "      Manuel Winkel - Deyda Consulting (www.deyda.net)      "
+Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "      Manuel Winkel - Deyda Consulting GmbH (www.deyda.net)      "
 Write-Host -BackgroundColor DarkGreen -ForegroundColor Yellow "                      Version $eVersion                       "
 $host.ui.RawUI.WindowTitle ="NeverRed - Update your Software, the lazy way - Manuel Winkel (www.deyda.net) - Version $eVersion"
 
@@ -4820,7 +4821,7 @@ $inputXML = @"
                     <Button x:Name="Button_Start" Content="Start" Margin="0,0,218,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" Grid.Row="1"/>
                     <Button x:Name="Button_Cancel" Content="Cancel" Margin="0,0,128,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" Grid.Row="1"/>
                     <Button x:Name="Button_Save" Content="Save" Margin="0,0,38,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" ToolTip="Save Selected Software in LastSetting.txt or -GUIFile Parameter file" Grid.Row="1"/>
-                    <Label x:Name="Label_author" Content="Manuel Winkel / @deyda84 / Deyda Consulting / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,-20" VerticalAlignment="Bottom" FontSize="10" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="Label_author" Content="Manuel Winkel / @deyda84 / Deyda Consulting GmbH / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,-20" VerticalAlignment="Bottom" FontSize="10" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
                 </Grid>
             </ScrollViewer>
         </TabItem>
@@ -5607,7 +5608,7 @@ $inputXML = @"
                     <Button x:Name="Button_Start_Detail" Content="Start" HorizontalAlignment="Right" Margin="0,0,218,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button x:Name="Button_Cancel_Detail" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,128,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button x:Name="Button_Save_Detail" Content="Save" HorizontalAlignment="Right" Margin="0,0,38,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" ToolTip="Save Selected Software in LastSetting.txt or -GUIFile Parameter file" Grid.Row="1"/>
-                    <Label x:Name="Label_author_Detail" Content="Manuel Winkel / @deyda84 / Deyda Consulting / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Bottom" FontSize="10" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="Label_author_Detail" Content="Manuel Winkel / @deyda84 / Deyda Consulting GmbH / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Bottom" FontSize="10" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2"/>
                 </Grid>
             </ScrollViewer>
         </TabItem>
@@ -17485,8 +17486,8 @@ If ($Download -eq "1") {
             $CitrixOptimizerD = Get-CitrixOptimizer
             #$Version1 = $CitrixOptimizerD.Version
             #$URL1 = $CitrixOptimizerD.uri
-            $URL1 = "https://www.deyda.net/wp-content/uploads/2023/12/CitrixOptimizerTool.zip"
-            $Version1 = "3.3.0.1"
+            $URL1 = "https://www.deyda.net/wp-content/uploads/Share/CitrixOptimizerTool-CTX224676.zip"
+            $Version1 = "3.5.0.1"
             Add-Content -Path "$FWFile" -Value "$URL1"
             $InstallerType1 = "zip"
             $Source1 = "$PackageName1" + "." + "$InstallerType1"
@@ -17955,7 +17956,7 @@ If ($Download -eq "1") {
         If (!(Test-Path -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility\ReceiverCleanupUtility.exe")) {
             Write-Host -ForegroundColor Magenta "Download Citrix Receiver Cleanup Utility"
             If ($WhatIf -eq '0') {
-                Get-Download https://fileservice.citrix.com/downloadspecial/support/article/CTX137494/downloads/ReceiverCleanupUtility.zip "$PSScriptRoot\Citrix\ReceiverCleanupUtility\" ReceiverCleanupUtility.zip
+                Get-Download https://www.deyda.net/wp-content/uploads/Share/ReceiverCleanupUtility-CTX137494.zip "$PSScriptRoot\Citrix\ReceiverCleanupUtility\" ReceiverCleanupUtility.zip
                 Expand-Archive -path "$PSScriptRoot\Citrix\ReceiverCleanupUtility\ReceiverCleanupUtility.zip" -destinationpath "$PSScriptRoot\Citrix\ReceiverCleanupUtility\"
                 Remove-Item -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility\ReceiverCleanupUtility.zip" -Force
             }
@@ -18447,8 +18448,8 @@ If ($Download -eq "1") {
         #$FilezillaD = Get-EvergreenApp -Name Filezilla | Where-Object { $_.URI -like "*win64*"}
         #$Version = $FilezillaD.Version
         #$URL = $FilezillaD.uri
-        $URL = "https://www.deyda.net/wp-content/uploads/2023/12/FileZilla_3.68.1_win64-setup.exe"
-        $Version = "3.68.1"
+        $URL = "https://www.deyda.net/wp-content/uploads/Share/FileZilla_3.69.5_win64_sponsored2-setup.exe"
+        $Version = "3.69.5"
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
