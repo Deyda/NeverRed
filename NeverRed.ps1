@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.76
+  Version:          2.10.77
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -280,6 +280,7 @@ the script checks the version number and will update the package.
   2025-11-24        Correction Unicode topic
   2025-12-12        Correction download link for Citrix Optimizer, Receiver Clean Up and Filezilla
   2025-12-14        Correction MS Visual C++ Runtime
+  2026-01-12        Correction MS FSlogix download
 
 .PARAMETER ESfile
 
@@ -4261,7 +4262,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.76"
+$eVersion = "2.10.77"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20186,6 +20187,8 @@ If ($Download -eq "1") {
             $Version = "3.25.401.15305"
         } elseif (($MSFSLogixD.Version -eq "25.06") ) {
             $Version = "3.25.626.21064"
+        } elseif (($MSFSLogixD.Version -eq "25.09") ) {
+            $Version = "3.25.822.19044"
         } else {
             $Version = $MSFSLogixD.Version
         } 
