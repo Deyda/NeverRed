@@ -15549,7 +15549,7 @@ If ($MSTeams -eq 1) {
         Switch ($RemoteDesktopManagerType) {
             0 {
                 $Product = "Remote Desktop Manager Free"
-            	$URLVersion = "https://devolutions.net/remote-desktop-manager/de/release-notes/free"
+            	$URLVersion = "https://devolutions.net/remote-desktop-manager/release-notes/free"
                 $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($URLVersion) -SessionVariable websession
                 $regexAppVersion = "\d\d\d\d\.\d\.\d\d\.\d+"
                 $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
@@ -15599,7 +15599,7 @@ If ($MSTeams -eq 1) {
             }
             1 {
                 $Product = "Remote Desktop Manager Enterprise"
-            	$URLVersion = "https://devolutions.net/remote-desktop-manager/de/release-notes"
+            	$URLVersion = "https://devolutions.net/remote-desktop-manager/release-notes"
                 $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($URLVersion) -SessionVariable websession
                 $regexAppVersion = "\d\d\d\d\.\d\.\d\d\.\d+"
                 $webVersionRDM = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
@@ -22473,13 +22473,13 @@ If ($Download -eq "1") {
             0 {
                 $Product = "Remote Desktop Manager Free"
                 $PackageName = "Setup.RemoteDesktopManagerFree"
-                $URLVersion = "https://devolutions.net/remote-desktop-manager/de/release-notes/free"
+                $URLVersion = "https://devolutions.net/remote-desktop-manager/release-notes/free"
                 $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($URLVersion) -SessionVariable websession
                 $regexAppVersion = "\d\d\d\d\.\d\.\d\d\.\d+"
                 $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
                 $Version = $webVersion.Trim("</td>").Trim("</td>")
                 $RemoteDesktopManagerFreeD = $Version
-                $URL = "https://cdn.devolutions.net/download/Setup.RemoteDesktopManagerFree.$Version.msi"
+                $URL = "https://cdn.devolutions.net/download/Setup.RemoteDesktopManager.win-x64.$Version.msi"
                 Add-Content -Path "$FWFile" -Value "$URL"
                 $InstallerType = "msi"
                 $Source = "$PackageName" + "." + "$InstallerType"
@@ -22522,13 +22522,13 @@ If ($Download -eq "1") {
             1 {
                 $Product = "Remote Desktop Manager Enterprise"
                 $PackageName = "Setup.RemoteDesktopManagerEnterprise"
-                $URLVersion = "https://devolutions.net/remote-desktop-manager/de/release-notes"
+                $URLVersion = "https://devolutions.net/remote-desktop-manager/release-notes"
                 $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($URLVersion) -SessionVariable websession
                 $regexAppVersion = "\d\d\d\d\.\d\.\d\d\.\d+"
                 $webVersionRDM = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
                 $Version = $webVersionRDM.Trim("</td>").Trim("</td>")
                 $RemoteDesktopManagerEnterpriseD = $Version
-                $URL = "https://cdn.devolutions.net/download/Setup.RemoteDesktopManager.$Version.msi"
+                $URL = "https://cdn.devolutions.net/download/Setup.RemoteDesktopManager.win-x64.$Version.msi"
                 Add-Content -Path "$FWFile" -Value "$URL"
                 $InstallerType = "msi"
                 $Source = "$PackageName" + "." + "$InstallerType"
