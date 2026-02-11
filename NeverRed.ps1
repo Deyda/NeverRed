@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.78
+  Version:          2.10.79
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -282,6 +282,7 @@ the script checks the version number and will update the package.
   2025-12-14        Correction MS Visual C++ Runtime
   2026-01-12        Correction MS FSlogix download
   2026-01-19        Correction MS FSlogix download again
+  2026-02-04        Correction DelProf2 & Bloomberg download
 
 .PARAMETER ESfile
 
@@ -1165,28 +1166,28 @@ Function Get-Bloomberg() {
     [OutputType([System.Management.Automation.PSObject])]
     [CmdletBinding()]
     Param ()
-    $appURLVersion = "https://www.bloomberg.com/professional/support/software-updates/"
+    <#$appURLVersion = "https://www.bloomberg.com/professional/support/documentation/release-notes/"
     Try {
         $webRequest = Invoke-WebRequest -UseBasicParsing -Uri ($appURLVersion) -SessionVariable websession
     }
     Catch {
         Throw "Failed to connect to URL: $appURLVersion with error $_."
         Break
-    }
-    Finally {
-        $regexAppVersion = "sotr.{12}"
-        $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $appVersion = $webVersion.Replace("_", ".").Trim("sotr").Trim(".exe")
+    }#>
+    #Finally {
+        #$regexAppVersion = "sotr.{12}"
+        #$webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        #$appVersion = $webVersion.Replace("_", ".").Trim("sotr").Trim(".exe")
         
-        $appURL = "https://bdn-ak-ssl.bloomberg.com/software/trv/" + "$webVersion"
+        #$appURL = "https://bdn-ak-ssl.bloomberg.com/software/trv/" + "$webVersion"
         
         $PSObject = [PSCustomObject] @{
-            Version      = $appVersion
-            URI          = $appURL
+            Version      = "187.3.81"
+            URI          = "https://bdn-ak-ssl.bloomberg.com/software/trv/sotr187_3_81.exe"
         }
 
         Write-Output -InputObject $PSObject
-    }
+    #}
 }
 
 # Function Jabra Direct Download
@@ -3676,11 +3677,11 @@ Function Get-DelProf2 {
         Break
     }
     Finally {
-        $regexAppVersion = 'DelProf2 .*zip'
+        $regexAppVersion = 'DelProf2 1....'
         $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
         $webSplit = $webVersion.Split(' ')
         $Version = $webSplit[1].TrimEnd('.zip')
-        $x32 = "https://helgeklein.com/downloads/DelProf2/current/Delprof2 " + $Version + ".zip"
+        $x32 = "https://helgeklein.com/files/DelProf2/current/Delprof2%20" + $Version + ".zip"
         
         $PSObjectx32 = [PSCustomObject] @{
             Version      = $Version
@@ -4263,7 +4264,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.78"
+$eVersion = "2.10.79"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -26786,6 +26787,20 @@ If ($Install -eq "1") {
         If (!($Version)) {
             $Version = $MSAzureDataStudioD.Version
         }
+        $ADSSplit1 = $Version.split(".")
+        $ADSStrings1 = ([regex]::Matches($Version, "\." )).count
+        Switch ($ADSStrings1) {
+            1 {
+                $NewVersion1 = $ADSSplit1[0] + "." + $ADSSplit1[1]
+            }
+            2 {
+                $NewVersion1 = $ChromeSplit1[0] + "." + $ChromeSplit1[1] + "." + $ChromeSplit1[2]
+            }
+            3 {
+                $NewVersion1 = $ChromeSplit1[0] + "." + $ChromeSplit1[1] + "." + $ChromeSplit1[2] + "." + $ChromeSplit1[3]
+            }
+        }
+        $Version = $NewVersion1
         $MSAzureDataStudioV = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Azure Data Studio*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         If (!$MSAzureDataStudioV) {
             $MSAzureDataStudioV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Azure Data Studio*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1

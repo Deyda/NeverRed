@@ -1,0 +1,80 @@
+**********************
+PowerShell transcript start
+Start time: 20260204155750
+Username: DEYDA-BRAIN\manue
+RunAs User: DEYDA-BRAIN\manue
+Configuration Name: 
+Machine: DEYDA-BRAIN (Microsoft Windows NT 10.0.26300.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoProfile -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\manue\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2025.4.0' -BundledModulesPath 'c:\Users\manue\.vscode\extensions\ms-vscode.powershell-2025.4.0\modules' -EnableConsoleRepl -StartupBanner "PowerShell Extension v2025.4.0
+Copyright (c) Microsoft Corporation.
+
+https://aka.ms/vscode-powershell
+Type 'help' to get help.
+" -LogLevel 'Warning' -LogPath 'c:\Users\manue\AppData\Roaming\Code\logs\20260204T130419\window1\exthost\ms-vscode.powershell' -SessionDetailsPath 'c:\Users\manue\AppData\Roaming\Code\User\globalStorage\ms-vscode.powershell\sessions\PSES-VSCode-39920-657958.json' -FeatureFlags @() -UseLegacyReadLine
+Process ID: 40612
+PSVersion: 7.5.4
+PSEdition: Core
+GitCommitId: 7.5.4
+OS: Microsoft Windows 10.0.26300
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+
+       NeverRed - Update your Software, the lazy way
+      Manuel Winkel - Deyda Consulting GmbH (www.deyda.net)
+                      Version 2.10.78
+
+Is there a newer NeverRed version?
+OK, NeverRed is newest version!
+
+Does the script run under admin rights?
+Error! Script is NOT running with admin rights!
+PS>TerminatingError(): "System error."
+]633;D;1]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>CommandInvocation(Remove-Variable): "Remove-Variable"
+>> ParameterBinding(Remove-Variable): name="Name"; value="__psEditorServices_DebugServer"
+>> ParameterBinding(Remove-Variable): name="Force"; value="True"
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$Version
+1.52
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$Version
+1.52
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$ADSSplit1 = $Version.split(".")
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$ADSSplit1
+1
+52
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>([regex]::Matches($Version, "\." )).count
+1
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>If ($ADSStringLast1 -lt "2")
+Missing statement block after If ( condition ).
+PS>TerminatingError(): "You cannot call a method on a null-valued expression."
+
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$ADSStrings1
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$ADSStrings1 = ([regex]::Matches($Version, "\." )).count
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$ADSStrings1
+1
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+]633;D]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
+PS>$Version
+1.52
+]633;D;0]633;A]633;P;Cwd=C:\x5cUsers\x5cmanue\x5cOneDrive - Deyda Consulting\x5cDocuments\x5cVSCode\x5cNeverRedPS C:\Users\manue\OneDrive - Deyda Consulting\Documents\VSCode\NeverRed> ]633;B
