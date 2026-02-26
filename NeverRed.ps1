@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.79
+  Version:          2.10.80
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -283,6 +283,8 @@ the script checks the version number and will update the package.
   2026-01-12        Correction MS FSlogix download
   2026-01-19        Correction MS FSlogix download again
   2026-02-04        Correction DelProf2 & Bloomberg download
+  2026-02-11        Correction Citrix Workspace App Current download and ADMX
+  2026-02-26        Correction MS Fslogix Version download
 
 .PARAMETER ESfile
 
@@ -877,14 +879,13 @@ Function Get-WorkspaceAppCurrent() {
     }
     Finally {
         $regexAppVersion = "Version:.*\(.*\)"
-        $webVersionCWA = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -Last 1
-        $appDLVersion = $webVersionCWA.Split()[1]
-        $appDLVersion = $appDLVersion.Split("(")[0]
+        $webVersionCWA = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
+        $version = [regex]::Match($webVersionCWA, '\d+\.\d+\.\d+\.\d+').Value
         #$appURL = "https://downloadplugins.citrix.com/ReceiverUpdates/Prod/Receiver/Win/CitrixWorkspaceApp$appDLVersion.exe"
-        $appURL = "https://downloads.citrix.com/22681/CitrixWorkspaceApp.exe?__gda__=exp=1715472841~acl=/*~hmac=d66687ace98d8fef5c93aa5ee0e55340795cd1263bf4091372f24c0f27a0f807"
+        $appURL = "https://downloads.citrix.com/25778/CitrixWorkspaceApp.exe?__gda__=exp=1770829177~acl=/*~hmac=fdfd9f7cdd654c234f775272c4baf3ffa35ff80261ffcce79ffda47c0de50137"
 
         $PSObject = [PSCustomObject] @{
-            Version      = $appDLVersion
+            Version      = $version
             Stream      = "Current"
             URI          = $appURL
         }
@@ -4148,15 +4149,13 @@ function Get-AdobeAcrobatReaderDCAdmx {
 function Get-CitrixWorkspaceAppCurrentAdmx {
     try {
         $ProgressPreference = 'SilentlyContinue'
-        $url = "https://www.citrix.com/downloads/workspace-app/windows/workspace-app-for-windows-latest.html"
-        $web = Invoke-WebRequest -Uri $url -UseBasicParsing -ErrorAction Ignore
-        $str = ($web.Content -split "`r`n" | Select-String -Pattern "_ADMX_")[0].ToString().Trim()
+        $url = 'https://www.citrix.com/downloads/workspace-app/windows/workspace-app-for-windows-latest.html'
+        $web = (Invoke-WebRequest -UseDefaultCredentials -Uri $url -UseBasicParsing -DisableKeepAlive).RawContent
+        $str = ($web -split "`r`n" | Select-String -Pattern '_ADMX_')[0].ToString().Trim()
         $URI = "https:$(((Select-String '(\/\/)([^\s,]+)(?=")' -Input $str).Matches.Value))"
-        $filename = $URI.Split("/")[4].Split('?')[0].Split('_')[3]
-        $Version = $filename.Replace(".zip", "") #($filename | Select-String -Pattern "(\d+(\.\d+){1,4})" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value }).ToString()
-        $Path = $Version
+        $Version = [regex]::Match($web,'(?s)CitrixWorkspace_ADMX_Files\.zip.*?Version:\s*(\d+\.\d+\.\d+\.\d+)').Groups[1].Value
         if ($Version -notcontains '.') { $Version += ".0" }
-        return @{ Version = $Version; URI = $URI; Path = $Path }
+        return @{ Version = $Version; URI = $URI; }
     }
     catch {
         Throw $_
@@ -4264,7 +4263,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.79"
+$eVersion = "2.10.80"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -17882,8 +17881,8 @@ If ($Download -eq "1") {
             3 {$PackageName = "CitrixWorkspaceAppWeb"}
         }
         If ($CitrixWorkspaceAppReleaseClear -eq "Current") {
-            #$WSACD = Get-WorkspaceAppCurrent
-            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
+            $WSACD = Get-WorkspaceAppCurrent
+            #$WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         } else {
             $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         }
@@ -20191,8 +20190,8 @@ If ($Download -eq "1") {
             $Version = "3.25.626.21064"
         } elseif (($MSFSLogixD.Version -eq "25.09") ) {
             $Version = "3.25.822.19044"
-        } elseif (($MSFSLogixD.Version -eq "26.01") ) {
-            $Version = "3.26.102.18413"
+        } elseif (($MSFSLogixD.Date -eq "04.02.2026") ) {
+            $Version = "3.26.126.19110"
         } else {
             $Version = $MSFSLogixD.Version
         } 
