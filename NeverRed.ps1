@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.81
+  Version:          2.10.82
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -4272,7 +4272,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.81"
+$eVersion = "2.10.82"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -12889,15 +12889,7 @@ If ($Download -eq "1") {
             }
             Write-Host "Starting download of $Product $FoxitReaderLanguageClear version $Version"
             If ($WhatIf -eq '0') {
-                #Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
-                # Local source file
-                $LocalZip = "C:\Users\manue\Downloads\FoxitPDFReader202611_L10N_Setup_Prom_x64.zip"
-                $TargetZip = Join-Path "$PSScriptRoot\$Product" $Source
-                If (!(Test-Path $LocalZip)) {
-                    Throw "Source file not found: $LocalZip"
-                }
-                Copy-Item -Path $LocalZip -Destination $TargetZip -Force
-                Write-Host -ForegroundColor Green "Copy finished"
+                Get-Download $URL "$PSScriptRoot\$Product\" $Source -includeStats
                 # Extract ZIP
                 $ZipFile = Join-Path "$PSScriptRoot\$Product" $Source
                 $ExtractPath = Join-Path "$PSScriptRoot\$Product" "Extracted"
