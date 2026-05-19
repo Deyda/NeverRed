@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.82
+  Version:          2.10.83
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -287,6 +287,7 @@ the script checks the version number and will update the package.
   2026-02-26        Correction MS Fslogix Version download
   2026-02-27        Correction MS Office / 365 Apps ADMX download / Correction 365 Apps xml usage
   2026-04-29        Correction Foxit Reader download and install / Correction Firefox version for download and install
+  2026-05-19        Correction Adopt Open JDK download / install and add version 25
 
 .PARAMETER ESfile
 
@@ -4272,7 +4273,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.82"
+$eVersion = "2.10.83"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4602,6 +4603,7 @@ $inputXML = @"
                         <ListBoxItem Content="20"/>
                         <ListBoxItem Content="21 (LTS)"/>
                         <ListBoxItem Content="22"/>
+                        <ListBoxItem Content="25 (LTS)"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_AdoptOpenJDKIcedTeaWeb" Content="Add Iced Tea Web" HorizontalAlignment="Left" Margin="325,110,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_AutodeskDWGTrueView" Content="Autodesk DWG TrueView" HorizontalAlignment="Left" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1"/>
@@ -9195,6 +9197,7 @@ Switch ($AdoptOpenJDKVersion) {
     6 { $AdoptOpenJDKVersionClear = '20'}
     7 { $AdoptOpenJDKVersionClear = '21'}
     8 { $AdoptOpenJDKVersionClear = '22'}
+    9 { $AdoptOpenJDKVersionClear = '25'}
 }
 
 If ($CiscoWebexTeams_Architecture -ne "") {
@@ -11565,48 +11568,131 @@ If ($Download -eq "1") {
         Switch ($AdoptOpenJDKVersionClear) {
             8 { $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin8 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $appVersion = $AdoptOpenJDKD.Version
-                #$regexVersion = "openj9_8u.*"
-                #$webVersion = $AdoptOpenJDKD.uri | Select-String -Pattern $regexVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
                 $appVersion = $appVersion.Split("1.")[1]
                 $appVersion = $appVersion -replace('_','.')
                 $Version = $appVersion -replace('-b','.')
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             11 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin11 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $appVersion = $AdoptOpenJDKD.Version
                 $Version = $appVersion -replace('\+','.')
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             16 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin16 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $appVersion = $AdoptOpenJDKD.Version
                 $Version = $appVersion -replace('\+','.')
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             17 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin17 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $appVersion = $AdoptOpenJDKD.Version
                 $Version = $appVersion -replace('\+','.')
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             18 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin18 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $Version = $AdoptOpenJDKD.Version
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             19 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin19 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $Version = $AdoptOpenJDKD.Version
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             20 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin20 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $Version = $AdoptOpenJDKD.Version
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             21 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin21 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $appVersion = $AdoptOpenJDKD.Version
                 $appVersion = $appVersion -replace('\+','.')
                 $Version = $appVersion.Split("-")[0]
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             22 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin22 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
                 $Version = $AdoptOpenJDKD.Version
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
+            }
+            25 {
+                $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin25 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+                $Version = $AdoptOpenJDKD.Version
+                $Version = $Version -replace '\+','.' -replace '-LTS',''
+                $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
         }
         $URL = $AdoptOpenJDKD.uri
@@ -11615,6 +11701,14 @@ If ($Download -eq "1") {
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear" + ".txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
+        $CurrentVersion = ($CurrentVersion.Split('.') | ForEach-Object {
+            if ($_ -match '^\d$') {
+                $_.PadLeft(2,'0')
+            }
+            else {
+                $_
+            }
+        }) -join '.'
         Write-Host -ForegroundColor Magenta "Download $Product $AdoptOpenJDKVersionClear $AdoptOpenJDKArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CurrentVersion"
@@ -18377,6 +18471,14 @@ If ($Install -eq "1") {
         $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
         If (!($Version)) {
             $Version = $AdoptOpenJDKD.Version
+            $Version = ($Version.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
         }
         Switch ($AdoptOpenJDKVersionClear) {
             8 { 
@@ -18384,60 +18486,140 @@ If ($Install -eq "1") {
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
                 }
-                $AdoptOpenJDKVSplit = $AdoptOpenJDKV.split(".")
-                $AdoptOpenJDKVMiddle = $AdoptOpenJDKVSplit[3]
-                If ($AdoptOpenJDKVMiddle -lt "2") {
-                $AdoptOpenJDKVSplit[3] = "0" + $AdoptOpenJDKVSplit[3]
-                $Version = $AdoptOpenJDKVSplit[0] + "." + $AdoptOpenJDKVSplit[1] + "." + $AdoptOpenJDKVSplit[2] + "." + $AdoptOpenJDKVSplit[3]
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
-             }
             11 { 
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             16 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*16*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*16*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             17 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*17*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*17*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             18 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*18*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*18*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             19 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*19*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*19*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             20 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*20*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*20*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             21 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*21*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*21*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
             22 {
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*22*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*22*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
                 }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
+            }
+            25 {
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*25*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                If (!$AdoptOpenJDKV) {
+                    $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*25*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+                }
+                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
+                    if ($_ -match '^\d$') {
+                        $_.PadLeft(2,'0')
+                    }
+                    else {
+                        $_
+                    }
+                }) -join '.'
             }
         }
         $AdoptOpenJDKLog = "$LogTemp\AdoptOpenJDK.log"
