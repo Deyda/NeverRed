@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.83
+  Version:          2.10.84
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -288,6 +288,8 @@ the script checks the version number and will update the package.
   2026-02-27        Correction MS Office / 365 Apps ADMX download / Correction 365 Apps xml usage
   2026-04-29        Correction Foxit Reader download and install / Correction Firefox version for download and install
   2026-05-19        Correction Adopt Open JDK download / install and add version 25
+  2026-05-26        Correction Ditto download / Correction Citrix Workspace App Current download
+  2026-05-27        Correction Microsoft SysInternals download / Correction ControlUp RemoteDX download & install / Correction IrfanView download
 
 .PARAMETER ESfile
 
@@ -636,8 +638,8 @@ Function Get-IrfanView {
         $m = $m.Replace(' ','')
         $Version = $m -replace "Version"
         #$FileI = $Version -replace "\.",""
-        $x32 = "https://www.techspot.com/downloads/downloadnow/299/?evp=893edf43f99033113608d9a805221b92&file=372"
-        $x64 = "https://dl1.netzwelt.de/files/iview472_x64_setup.exe?iwt6IgtQseoTkwXbi9/jaRHM6UCd8QR5D4rjBslqp38=&file=iview472_x64_setup.exe"
+        $x32 = "https://download.fileforum.com/download/967963863-1/iview475_setup.exe"
+        $x64 = "https://download.fileforum.com/download/967963863-1/iview475_x64_setup.exe"
 
 
         $PSObjectx32 = [PSCustomObject] @{
@@ -944,9 +946,9 @@ Function Get-ControlUpRemoteDX() {
         $webVersion = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -Last 1
         $appVersion = $webVersion.Split(" ")[2]
 
-        $appxURLCitrix = "https://downloads.controlup.com/RemoteDX/citrix/windows/curdx_windows_citrix.exe"
-        $appxURLVMware = "https://downloads.controlup.com/RemoteDX/VMware/windows/curdx_windows_VMware.exe"
-        $appxURLMicrosoft = "https://downloads.controlup.com/RemoteDX/microsoft/windows/curdx_windows_microsoft.exe"
+        $appxURLCitrix = "https://downloads.controlup.com/RemoteDX/citrix/windows/curdx-windows-citrix.msi"
+        $appxURLVMware = "https://downloads.controlup.com/RemoteDX/VMware/windows/curdx-windows-VMware.msi"
+        $appxURLMicrosoft = "https://downloads.controlup.com/RemoteDX/microsoft/windows/curdx-windows-microsoft.msi"
 
         $PSObjectctx = [PSCustomObject] @{
             Environment  = "Citrix CVAD"
@@ -3476,62 +3478,59 @@ Function Get-Ditto {
     [OutputType([System.Management.Automation.PSObject])]
     [CmdletBinding()]
     Param ()
-        $url = "https://ditto-cp.sourceforge.io/"
-        $urlbeta = "https://ditto-cp.sourceforge.io/beta/"
+        $url = "https://sabrogden.github.io/Ditto/"
+        $urlbeta = "https://api.github.com/repos/sabrogden/Ditto/releases/tags/nightly"
     Try {
-        $webRequest = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
-        $webRequestbeta = Invoke-WebRequest -UseBasicParsing -Uri $urlbeta -ErrorAction SilentlyContinue
+        $webRequest = Invoke-WebRequest -Uri $url -UseBasicParsing -ErrorAction SilentlyContinue
+        $release = Invoke-RestMethod -Uri $urlbeta -Headers @{
+            "User-Agent" = "PowerShell"
+        }
     }
     Catch {
         Throw "Failed to connect to URL: $url with error $_."
         Break
     }
     Finally {
-        $regexAppVersion = 'versionDots=".*'
-        $regexAppVersionD = 'versionUnder=".*'
-        $regexAppVersionBeta = 'version .*'
-        $webVersionDitto = $webRequest.RawContent | Select-String -Pattern $regexAppVersion -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webVersionDittoD = $webRequest.RawContent | Select-String -Pattern $regexAppVersionD -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webVersionDittoBeta = $webRequestbeta.RawContent | Select-String -Pattern $regexAppVersionBeta -AllMatches | ForEach-Object { $_.Matches.Value } | Select-Object -First 1
-        $webSplit = $webVersionDitto.Split('"')
-        $webSplitD = $webVersionDittoD.Split('"')
-        $webSplitBeta = $webVersionDittoBeta.Split(' ')
-        $VersionBeta = $webSplitBeta[1].Split("<")
-        $Version = $webSplit[1]
-        $VersionD = $webSplitD[1]
-        $VersionBeta = $VersionBeta[0]
-        $VersionBetaD = $VersionBeta.Replace(".", "_")
-        $x32 = "https://github.com/sabrogden/Ditto/releases/download/" + $Version + "/DittoSetup_" + $VersionD + ".exe"
-        $x64 = "https://github.com/sabrogden/Ditto/releases/download/" + $Version + "/DittoSetup_64bit_" + $VersionD + ".exe"
-        $x32beta = "https://ditto-cp.sourceforge.io/beta/files/DittoSetup_" + $VersionBetaD + ".exe"
-        $x64beta = "https://ditto-cp.sourceforge.io/beta/files/DittoSetup_64bit_" + $VersionBetaD + ".exe"
-        
+        $regexAppVersion = 'releases/download/([\d\.]+)/DittoSetup_([\d_]+)\.exe'
+        $webVersionDitto = [regex]::Match($webRequest.Content, $regexAppVersion)
+        if ($webVersionDitto.Success) {
+            $Version = $webVersionDitto.Groups[1].Value
+            $VersionUnderscore = $webVersionDitto.Groups[2].Value
+            $DownloadUrl = "https://github.com/sabrogden/Ditto/releases/download/$Version/DittoSetup_$VersionUnderscore.exe"
+        }
+        $assets = $release.assets | Where-Object {
+            $_.name -match '^DittoSetup(_64bit)?_([\d_]+)\.exe$'
+        }
+        $assets | ForEach-Object {
+            $versionDBeta = ([regex]::Match($_.name, 'DittoSetup(?:_64bit)?_([\d_]+)\.exe$')).Groups[1].Value
+            $versionBeta  = $versionDBeta.Replace('_','.')
+        }
         $PSObjectx32 = [PSCustomObject] @{
             Version      = $Version
             Architecture = "x86"
             Channel      = "Stable"
-            URI          = $x32
+            URI          = $DownloadUrl
             }
 
         $PSObjectx64 = [PSCustomObject] @{
         Version      = $Version
         Architecture = "x64"
         Channel      = "Stable"
-        URI          = $x64
+        URI          = $DownloadUrl
         }
 
         $PSObjectx32Beta = [PSCustomObject] @{
-            Version      = $VersionBeta
+            Version      = $versionBeta
             Architecture = "x86"
             Channel      = "Beta"
-            URI          = $x32beta
+            URI          = $assets.browser_download_url
             }
 
         $PSObjectx64Beta = [PSCustomObject] @{
-        Version      = $VersionBeta
+        Version      = $versionBeta
         Architecture = "x64"
         Channel      = "Beta"
-        URI          = $x64beta
+        URI          = $assets.browser_download_url
         }
 
         Write-Output -InputObject $PSObjectx32
@@ -3569,6 +3568,71 @@ Function Get-XCA {
             }
 
         Write-Output -InputObject $PSObjectx32
+    }
+}
+
+# Function Microsoft SysInternals Download
+#========================================================================================================================================
+Function Get-MicrosoftSysInternals {
+    [OutputType([System.Management.Automation.PSObject])]
+    [CmdletBinding()]
+    Param ()
+        $url = "https://learn.microsoft.com/de-de/sysinternals/downloads/sysinternals-suite"
+    Try {
+        $webRequest = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
+    }
+    Catch {
+        Throw "Failed to connect to URL: $url with error $_."
+        Break
+    }
+    Finally {
+        # Download URL extrahieren
+        $regexDownload = 'https:\/\/download\.sysinternals\.com\/files\/[^"]+\.zip'
+        $downloadUrl = $webRequest.RawContent |
+            Select-String -Pattern $regexDownload -AllMatches |
+            ForEach-Object { $_.Matches.Value } |
+            Select-Object -First 1
+
+        # Datum extrahieren
+        $regexDate = 'Aktualisiert:\s*([0-9]{1,2})\.\s+(\w+)\s+([0-9]{4})'
+        $dateMatch = $webRequest.RawContent |
+            Select-String -Pattern $regexDate -AllMatches |
+            ForEach-Object { $_.Matches } |
+            Select-Object -First 1
+
+        if ($dateMatch) {
+
+            $day = "{0:D2}" -f [int]$dateMatch.Groups[1].Value
+            $monthName = $dateMatch.Groups[2].Value.ToLower()
+            $year = $dateMatch.Groups[3].Value
+
+            $months = @{
+                "januar"   = "01"
+                "februar"  = "02"
+                "märz"     = "03"
+                "april"    = "04"
+                "mai"      = "05"
+                "juni"     = "06"
+                "juli"     = "07"
+                "august"   = "08"
+                "september"= "09"
+                "oktober"  = "10"
+                "november" = "11"
+                "dezember" = "12"
+            }
+
+            $month = $months[$monthName]
+
+            $formattedDate = "$year.$month.$day"
+        }
+
+        $PSObject = [PSCustomObject]@{
+            Version = $formattedDate
+            Channel = "Stable"
+            URI     = $downloadUrl
+        }
+
+        Write-Output -InputObject $PSObject
     }
 }
 
@@ -4273,7 +4337,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.83"
+$eVersion = "2.10.84"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4829,7 +4893,7 @@ $inputXML = @"
                     <Button x:Name="Button_Start" Content="Start" Margin="0,0,218,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" Grid.Row="1"/>
                     <Button x:Name="Button_Cancel" Content="Cancel" Margin="0,0,128,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" Grid.Row="1"/>
                     <Button x:Name="Button_Save" Content="Save" Margin="0,0,38,40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Grid.Column="2" ToolTip="Save Selected Software in LastSetting.txt or -GUIFile Parameter file" Grid.Row="1"/>
-                    <Label x:Name="Label_author" Content="Manuel Winkel / @deyda84 / Deyda Consulting GmbH / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,-20" VerticalAlignment="Bottom" FontSize="10" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="Label_author" Content="Manuel Winkel / @deyda84 / Deyda Consulting GmbH / www.deyda.net / 2026 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,-20" VerticalAlignment="Bottom" FontSize="10" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
                 </Grid>
             </ScrollViewer>
         </TabItem>
@@ -5619,7 +5683,7 @@ $inputXML = @"
                     <Button x:Name="Button_Start_Detail" Content="Start" HorizontalAlignment="Right" Margin="0,0,218,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button x:Name="Button_Cancel_Detail" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,128,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button x:Name="Button_Save_Detail" Content="Save" HorizontalAlignment="Right" Margin="0,0,38,40" VerticalAlignment="Bottom" Width="75" Grid.Column="3" ToolTip="Save Selected Software in LastSetting.txt or -GUIFile Parameter file" Grid.Row="1"/>
-                    <Label x:Name="Label_author_Detail" Content="Manuel Winkel / @deyda84 / Deyda Consulting GmbH / www.deyda.net / 2025 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Bottom" FontSize="10" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="Label_author_Detail" Content="Manuel Winkel / @deyda84 / Deyda Consulting GmbH / www.deyda.net / 2026 / Version $eVersion" HorizontalAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Bottom" FontSize="10" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2"/>
                 </Grid>
             </ScrollViewer>
         </TabItem>
@@ -12296,69 +12360,29 @@ If ($Download -eq "1") {
             3 {$PackageName = "CitrixWorkspaceAppWeb"}
         }
         If ($CitrixWorkspaceAppReleaseClear -eq "Current") {
-            $WSACD = Get-WorkspaceAppCurrent
-            #$WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
+            #$WSACD = Get-WorkspaceAppCurrent
+            $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         } else {
             $WSACD = Get-EvergreenApp -Name CitrixWorkspaceApp -WarningAction:SilentlyContinue | Where-Object { $_.Stream -like "*$CitrixWorkspaceAppReleaseClear*" }
         }
         $Version = $WSACD.version
         If ($Version -eq "0.0.0.0") {
-            $SplitVersion = $WSACD.uri
-            $SplitVersion = $SplitVersion.split("/")
-            $SplitVersion = $SplitVersion[7].split("p")
-            $SplitVersion = $SplitVersion[3].split(".")
-            $Version = $SplitVersion[0] + "." + $SplitVersion[1] + "." + $SplitVersion[2] + "." + $SplitVersion[3]
+            $Version = ([regex]::Match($WSACD.uri, 'CitrixWorkspaceApp([\d\.]+)\.exe')).Groups[1].Value
         }
         If ($Version) {
-            $CurrentWSASplit = $Version.split(".")
-            $CurrentWSAStrings = ([regex]::Matches($Version, "\." )).count
-            $CurrentWSAStringTwo = ([regex]::Matches($CurrentWSASplit[1], "." )).count
-            $CurrentWSAStringLast = ([regex]::Matches($CurrentWSASplit[3], "." )).count
-            If ($CurrentWSAStringTwo -lt "2") {
-                $CurrentWSASplit[1] = "0" + $CurrentWSASplit[1]
-            }
-            If ($CurrentWSAStringLast -lt "3") {
-                $CurrentWSASplit[3] = "0" + $CurrentWSASplit[3]
-            }
-            Switch ($CurrentWSAStrings) {
-                1 {
-                    $Version = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1]
-                }
-                2 {
-                    $Version = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2]
-                }
-                3 {
-                    $Version = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2] + "." + $CurrentWSASplit[3]
-                }
-            }
+            $Version = ($Version.Split('.') | % { $_.PadLeft(2,'0') }) -join '.'
         }
         $URL = $WSACD.uri
+        If ($URL -eq "https://downloadplugins.citrix.com/ReceiverUpdates/Prod/Receiver/Win/CitrixWorkspaceApp26.3.1.194.exe") {
+            $URL = "https://downloads.citrix.com/26228/CitrixWorkspaceApp_x64.exe?__gda__=exp=1779875005~acl=/*~hmac=427f9f36abce693b32f58233c4397b4df3207eacccf8c317a7812a5139ebfcfa"
+        }
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
+        $CurrentVersion = ""
         $CurrentVersion = Get-Content -Path "$PSScriptRoot\Citrix\$Product\Version.txt" -EA SilentlyContinue
         If ($CurrentVersion) {
-            $CurrentWSASplit = $CurrentVersion.split(".")
-            $CurrentWSAStrings = ([regex]::Matches($CurrentVersion, "\." )).count
-            $CurrentWSAStringTwo = ([regex]::Matches($CurrentWSASplit[1], "." )).count
-            $CurrentWSAStringLast = ([regex]::Matches($CurrentWSASplit[3], "." )).count
-            If ($CurrentWSAStringTwo -lt "2") {
-                $CurrentWSASplit[1] = "0" + $CurrentWSASplit[1]
-            }
-            If ($CurrentWSAStringLast -lt "3") {
-                $CurrentWSASplit[3] = "0" + $CurrentWSASplit[3]
-            }
-            Switch ($CurrentWSAStrings) {
-                1 {
-                    $NewCurrentVersion = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1]
-                }
-                2 {
-                    $NewCurrentVersion = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2]
-                }
-                3 {
-                    $NewCurrentVersion = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2] + "." + $CurrentWSASplit[3]
-                }
-            }
+            $CurrentVersion = ($CurrentVersion.Split('.') | % { $_.PadLeft(2,'0') }) -join '.'
         }
         If ($WhatIf -eq '0') {
             If (!(Test-Path -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility")) { New-Item -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility" -ItemType Directory | Out-Null }
@@ -12375,19 +12399,19 @@ If ($Download -eq "1") {
         }
         Write-Host -ForegroundColor Magenta "Download $Product"
         Write-Host "Download Version: $Version"
-        Write-Host "Current Version:  $NewCurrentVersion"
-        If ($NewCurrentVersion -lt $Version) {
+        Write-Host "Current Version:  $CurrentVersion"
+        If ($CurrentVersion -lt $Version) {
             Write-Host -ForegroundColor Green "Update available"
             If ($WhatIf -eq '0') {
                 If (!(Test-Path -Path "$PSScriptRoot\Citrix\$Product")) { New-Item -Path "$PSScriptRoot\Citrix\$Product" -ItemType Directory | Out-Null }
                 $LogPS = "$PSScriptRoot\Citrix\$Product\" + "$Product $Version.log"
                 If ($Repository -eq '1') {
-                    If ($NewCurrentVersion) {
-                        Write-Host "Copy $Product installer version $NewCurrentVersion to repository folder"
+                    If ($CurrentVersion) {
+                        Write-Host "Copy $Product installer version $CurrentVersion to repository folder"
                         If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product")) { New-Item -Path "$PSScriptRoot\_Repository\$Product" -ItemType Directory | Out-Null }
-                        If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product\$NewCurrentVersion")) { New-Item -Path "$PSScriptRoot\_Repository\$Product\$NewCurrentVersion" -ItemType Directory | Out-Null }
-                        Copy-Item -Path "$PSScriptRoot\Citrix\$Product\*.exe" -Destination "$PSScriptRoot\_Repository\$Product\$NewCurrentVersion" -ErrorAction SilentlyContinue
-                        Write-Host -ForegroundColor Green "Copy of the current version $NewCurrentVersion finished!"
+                        If (!(Test-Path -Path "$PSScriptRoot\_Repository\$Product\$CurrentVersion")) { New-Item -Path "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ItemType Directory | Out-Null }
+                        Copy-Item -Path "$PSScriptRoot\Citrix\$Product\*.exe" -Destination "$PSScriptRoot\_Repository\$Product\$CurrentVersion" -ErrorAction SilentlyContinue
+                        Write-Host -ForegroundColor Green "Copy of the current version $CurrentVersion finished!"
                     }
                 }
                 Remove-Item "$PSScriptRoot\Citrix\$Product\*" -Recurse
@@ -12396,6 +12420,7 @@ If ($Download -eq "1") {
             }
             Write-Host "Starting download of $Product version $Version"
             If ($WhatIf -eq '0') {
+                #Write-Host $Url
                 Get-Download $URL "$PSScriptRoot\Citrix\$Product\" $Source -includeStats
                 Write-Verbose "Stop logging"
                 Stop-Transcript | Out-Null
@@ -12630,7 +12655,7 @@ If ($Download -eq "1") {
         $Version = $CURDXD.Version
         $URL = $CURDXD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
-        $InstallerType = "exe"
+        $InstallerType = "msi"
         $Source = "$PackageName" + "$ControlUpRemoteDXEUCDLClear" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$ControlUpRemoteDXEUCClear" + ".txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
@@ -13136,7 +13161,7 @@ If ($Download -eq "1") {
     If ($GoogleChrome -eq 1) {
         $Product = "Google Chrome"
         $PackageName = "googlechromestandaloneenterprise_" + "$GoogleChromeArchitectureClear" + "_$GoogleChromeChannelClear"
-        $ChromeD = Get-EvergreenApp -Name GoogleChrome | Where-Object { $_.Architecture -eq "$GoogleChromeArchitectureClear" -and $_.Channel -eq "$GoogleChromeChannelClear" -and $_.Type -eq "msi"}
+        $ChromeD = Get-EvergreenApp -Name GoogleChrome | Where-Object { $_.Architecture -eq "$GoogleChromeArchitectureClear" -and $_.Channel -eq "$GoogleChromeChannelClear" -and $_.Type -eq "msi"} -WarningAction:SilentlyContinue
         $Version = $ChromeD.Version
         $ChromeSplit = $Version.split(".")
         $ChromeStrings = ([regex]::Matches($Version, "\." )).count
@@ -13515,7 +13540,7 @@ If ($Download -eq "1") {
     If ($IrfanView -eq 1) {
         $Product = "IrfanView"
         $PackageName = "IrfanView" + "$IrfanViewArchitectureClear"
-        $IrfanViewD = Get-IrfanView | Where-Object {$_.Architecture -eq "$IrfanViewArchitectureClear"}
+        $IrfanViewD = Get-NevergreenApp -Name IrfanView | Where-Object {$_.Architecture -eq "$IrfanViewArchitectureClear" -and $_.Name -eq "IrfanView"}
         $Version = $IrfanViewD.Version
         $URL = $IrfanViewD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
@@ -17164,11 +17189,11 @@ If ($Download -eq "1") {
     If ($Slack -eq 1) {
         $Product = "Slack"
         $PackageName = "Slack.setup" + "_$SlackArchitectureClear" + "_$SlackPlatformClear"
-        $SlackD = Get-EvergreenApp -Name Slack | Where-Object {$_.Architecture -eq "$SlackArchitectureClear" -and $_.Platform -eq "PerMachine" }
+        $SlackD = Get-EvergreenApp -Name Slack | Where-Object {$_.Architecture -eq "x64" -and $_.Type -eq "exe" }
         $Version = $SlackD.Version
         $URL = $SlackD.uri
         Add-Content -Path "$FWFile" -Value "$URL"
-        $InstallerType = "msi"
+        $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$SlackArchitectureClear" + "_$SlackPlatformClear" + ".txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
@@ -19594,7 +19619,8 @@ If ($Install -eq "1") {
         # Check, if a new version is available
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$ControlUpRemoteDXEUCClear" + ".txt"
         $Version = Get-Content -Path "$VersionPath" -ErrorAction SilentlyContinue
-        $ControlUpRemoteDXInstaller = "CURDX_Windows_" + "$ControlUpRemoteDXEUCDLClear" + ".exe"
+        $ControlUpRemoteDXInstaller = "CURDX_Windows_" + "$ControlUpRemoteDXEUCDLClear" + ".msi"
+        $InstallMSI = "$PSScriptRoot\$Product\$ControlUpRemoteDXInstaller"
         If (!($Version)) {
             $Version = $CURDXD.Version
         }
@@ -19606,28 +19632,23 @@ If ($Install -eq "1") {
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CURDXV"
         If ($CURDXV -lt $Version) {
-            $Options = @(
-                "/VERYSILENT"
+            $Arguments = @(
+                "/i"
+                "`"$InstallMSI`""
+                "/qn"
+                "Wifi=True Inactivity=True Location=True Isp=True InternetLatencyTarget=8.8.8.8"
             )
             DS_WriteLog "I" "Install $Product for $ControlUpRemoteDXEUCClear" $LogFile
             Write-Host -ForegroundColor Green "Update available"
             Try {
-                Write-Host "Starting install of $Product for $ControlUpRemoteDXEUCClear version $Version"
+                Write-Host "Starting install of $Product $ControlUpRemoteDXInstaller version $Version"
                 If ($WhatIf -eq '0') {
-                    $inst = Start-Process -FilePath "$PSScriptRoot\$Product\$ControlUpRemoteDXInstaller" -ArgumentList $Options -PassThru -ErrorAction Stop
+                    Install-MSI $InstallMSI $Arguments
                 }
-                else {
-                    Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
-                    DS_WriteLog "I" "Installation $Product for $ControlUpRemoteDXEUCClear finished!" $LogFile
-                }
-                If ($inst) {
-                    Wait-Process -InputObject $inst
-                    Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
-                    DS_WriteLog "I" "Installation $Product for $ControlUpRemoteDXEUCClear finished!" $LogFile
-                }
+                Get-Content $ControlUpRemoteDXLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
+                Remove-Item $ControlUpRemoteDXLog -ErrorAction SilentlyContinue
             } Catch {
-                Write-Host -ForegroundColor Red "Error installing $Product for $ControlUpRemoteDXEUCClear (Error: $($Error[0]))"
-                DS_WriteLog "E" "Error installing $Product for $ControlUpRemoteDXEUCClear (Error: $($Error[0]))" $LogFile
+                DS_WriteLog "E" "Error installing $Product $ControlUpRemoteDXInstaller version $Version (Error: $($Error[0]))" $LogFile
             }
             DS_WriteLog "-" "" $LogFile
             Write-Output ""
@@ -24934,33 +24955,36 @@ If ($Install -eq "1") {
             If ($SlackV.length -ne "6") {$SlackV = $SlackV -replace ".{2}$"}
         }
         $SlackLog = "$LogTemp\Slack.log"
-        $SlackInstaller = "Slack.setup" + "_$SlackArchitectureClear" + "_$SlackPlatformClear" + ".msi"
-        $InstallMSI = "$PSScriptRoot\$Product\$SlackInstaller"
+        $SlackInstaller = "Slack.setup" + "_$SlackArchitectureClear" + "_$SlackPlatformClear" + ".exe"
         Write-Host -ForegroundColor Magenta "Install $Product $SlackArchitectureClear $SlackPlatformClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $SlackV"
         If ($SlackV -ne $Version) {
             DS_WriteLog "I" "Install $Product $SlackArchitectureClear $SlackPlatformClear" $LogFile
             Write-Host -ForegroundColor Green "Update available"
-            $Arguments = @(
-                "/i"
-                "`"$InstallMSI`""
-                "/qn"
-                "/norestart"
-                "/L*V $SlackLog"
+            $Options = @(
+                "-quiet"
+                "-s"
             )
             Try {
                 Write-Host "Starting install of $Product $SlackArchitectureClear $SlackPlatformClear version $Version"
                 If ($WhatIf -eq '0') {
-                    Install-MSI $InstallMSI $Arguments
-                    Start-Sleep 25
-                    If ($CleanUpStartMenu) {
-                        If (Test-Path -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Slack*") {Remove-Item -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Slack*" -Recurse -Force}
-                        If (Test-Path -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Slack*") {Remove-Item -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Slack*" -Recurse -Force}
-                    }
+                    $inst = Start-Process -FilePath "$PSScriptRoot\$Product\$SlackInstaller" -ArgumentList $Options -PassThru -ErrorAction Stop
                 }
-                Get-Content $SlackLog -ErrorAction SilentlyContinue | Add-Content $LogFile -Encoding ASCII -ErrorAction SilentlyContinue
-                Remove-Item $SlackLog -ErrorAction SilentlyContinue
+                else{
+                    Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
+                    DS_WriteLog "I" "Installation $Product finished!" $LogFile
+                }
+                If ($inst) {
+                    Wait-Process -InputObject $inst
+                    If ($WhatIf -eq '0') {
+                        If (Test-Path "$Desktop\Slack.lnk") {Remove-Item -Path "$Desktop\Slack.lnk" -Force}
+                        If ($CleanUpStartMenu) {
+                            If (Test-Path -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Slack.lnk") {Remove-Item -Path "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Slack.lnk" -Force}
+                        }
+                    }
+                    Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
+                }
             } Catch {
                 DS_WriteLog "E" "Error installing $Product $SlackArchitectureClear $SlackPlatformClear (Error: $($Error[0]))" $LogFile
             }
