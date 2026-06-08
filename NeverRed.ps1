@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.84
+  Version:          2.10.85
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -290,7 +290,7 @@ the script checks the version number and will update the package.
   2026-05-19        Correction Adopt Open JDK download / install and add version 25
   2026-05-26        Correction Ditto download / Correction Citrix Workspace App Current download
   2026-05-27        Correction Microsoft SysInternals download / Correction ControlUp RemoteDX download & install / Correction IrfanView download
-
+  2026-06-08        Correction Filezilla download
 .PARAMETER ESfile
 
 Path to file (LastSetting.txt) for software selection in unattended mode.
@@ -4337,7 +4337,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.84"
+$eVersion = "2.10.85"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -12883,8 +12883,8 @@ If ($Download -eq "1") {
         #$FilezillaD = Get-EvergreenApp -Name Filezilla | Where-Object { $_.URI -like "*win64*"}
         #$Version = $FilezillaD.Version
         #$URL = $FilezillaD.uri
-        $URL = "https://www.deyda.net/wp-content/uploads/Share/FileZilla_3.69.5_win64_sponsored2-setup.exe"
-        $Version = "3.69.5"
+        $URL = "https://www.deyda.net/wp-content/uploads/Share/FileZilla_3.70.6_win64_sponsored2-setup.exe"
+        $Version = "3.70.6"
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
         $Source = "$PackageName" + "." + "$InstallerType"
