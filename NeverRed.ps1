@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.86
+  Version:          2.10.87
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -277,6 +277,8 @@ the script checks the version number and will update the package.
   2026-05-27        Correction Microsoft SysInternals download / Correction ControlUp RemoteDX download & install / Correction IrfanView download
   2026-06-08        Correction Filezilla download
   2026-06-10        Add FileZilla and WinSCP Hash Value / Add Hash Check Function
+  2026-06-11        Correction Citrix Workspace App Current download
+  
 
 .PARAMETER ESfile
 
@@ -4325,7 +4327,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.86"
+$eVersion = "2.10.87"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -12342,7 +12344,7 @@ If ($Download -eq "1") {
         }
         $URL = $WSACD.uri
         If ($URL -eq "https://downloadplugins.citrix.com/ReceiverUpdates/Prod/Receiver/Win/CitrixWorkspaceApp26.3.1.194.exe") {
-            $URL = "https://downloads.citrix.com/26228/CitrixWorkspaceApp_x64.exe?__gda__=exp=1779875005~acl=/*~hmac=427f9f36abce693b32f58233c4397b4df3207eacccf8c317a7812a5139ebfcfa"
+            $URL = "https://downloads.citrix.com/26228/CitrixWorkspaceFullInstaller_x64.exe?__gda__=exp=1781195311~acl=/*~hmac=af63c5bf56b4fc5bdbfe427b5ba5b51a58594167eb60e01e2fbe7b19784093e3"
         }
         Add-Content -Path "$FWFile" -Value "$URL"
         $InstallerType = "exe"
