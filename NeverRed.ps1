@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.88
+  Version:          2.10.89
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -278,7 +278,8 @@ the script checks the version number and will update the package.
   2026-06-08        Correction Filezilla download
   2026-06-10        Add FileZilla and WinSCP Hash Value / Add Hash Check Function
   2026-06-11        Correction Citrix Workspace App Current download
-  
+  2026-07-01        Correction Citrix Receiver Cleanup and Citrix Optimizer download
+
 
 .PARAMETER ESfile
 
@@ -4327,7 +4328,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.88"
+$eVersion = "2.10.89"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -11931,7 +11932,7 @@ If ($Download -eq "1") {
             #$Version1 = $CitrixOptimizerD.Version
             #$URL1 = $CitrixOptimizerD.uri
             $URL1 = "https://www.deyda.net/wp-content/uploads/Share/CitrixOptimizerTool-CTX224676.zip"
-            $Version1 = "3.5.0.1"
+            $Version1 = "3.5.0.13"
             Add-Content -Path "$FWFile" -Value "$URL1"
             $InstallerType1 = "zip"
             $Source1 = "$PackageName1" + "." + "$InstallerType1"
@@ -12357,6 +12358,7 @@ If ($Download -eq "1") {
         If ($WhatIf -eq '0') {
             If (!(Test-Path -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility")) { New-Item -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility" -ItemType Directory | Out-Null }
         }
+        Remove-Item -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility\ReceiverCleanupUtility.exe" -Force
         If (!(Test-Path -Path "$PSScriptRoot\Citrix\ReceiverCleanupUtility\ReceiverCleanupUtility.exe")) {
             Write-Host -ForegroundColor Magenta "Download Citrix Receiver Cleanup Utility"
             If ($WhatIf -eq '0') {
