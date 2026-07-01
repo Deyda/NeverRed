@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.89
+  Version:          2.10.90
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -278,7 +278,7 @@ the script checks the version number and will update the package.
   2026-06-08        Correction Filezilla download
   2026-06-10        Add FileZilla and WinSCP Hash Value / Add Hash Check Function
   2026-06-11        Correction Citrix Workspace App Current download
-  2026-07-01        Correction Citrix Receiver Cleanup and Citrix Optimizer download
+  2026-07-01        Correction Citrix Receiver Cleanup and Citrix Optimizer download / TotalCommander Download (Thx to Lineg-it)
 
 
 .PARAMETER ESfile
@@ -1136,8 +1136,8 @@ Function Get-TotalCommander() {
         $URLappVersionSplit = $appVersion.Split(".")
         $URLappVersion = $URLappVersionSplit[0] + $URLappVersionSplit[1]
         
-        $appx64URL = "https://totalcommander.ch/win/tcmd" + "$URLappVersion" + "x64.exe"
-        $appx32URL = "https://totalcommander.ch/win/tcmd" + "$URLappVersion" + "x32.exe"
+        $appx64URL = "https://totalcommander.ch/" + "$URLappVersion" + "/tcmd" + "$URLappVersion" + "x64.exe"
+        $appx32URL = "https://totalcommander.ch/" + "$URLappVersion" + "/tcmd" + "$URLappVersion" + "x32.exe"
         
         $PSObjectx64 = [PSCustomObject] @{
             Version      = $appVersion
@@ -4328,7 +4328,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.89"
+$eVersion = "2.10.90"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -23129,8 +23129,20 @@ If ($Install -eq "1") {
                     msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | sort-object LastWriteTime -Descending | Select-Object -First 1).FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 }
                 Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
-                Write-Host "Register $Product Add-In for Outlook"Mi 
-                ngen wie immer si
+                                Write-Host "Register $Product Add-In for Outlook"
+                If ($WhatIf -eq '0') {
+                    $appX64DLL = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x64" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
+                    $appX86DLL = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x86" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
+                    Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX64DLL`"" -ErrorAction SilentlyContinue
+                    Start-Process -FilePath "$env:WinDir\SysWOW64\regsvr32.exe" -ArgumentList "/s /n /i:user `"$appX86DLL`"" -ErrorAction SilentlyContinue
+                    # Add Registry Keys for loading the Add-in
+                    If (!(Test-Path 'HKLM:\Software\Microsoft\Office\Outlook\Addins\')) {New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\" | Out-Null}
+                    New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins" -Name "TeamsAddin.FastConnect" -Force -ErrorAction Ignore | Out-Null
+                    New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "DWord" -Name "LoadBehavior" -Value 3 -force | Out-Null
+                    New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "Description" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force | Out-Null
+                    New-ItemProperty -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\TeamsAddin.FastConnect" -Type "String" -Name "FriendlyName" -Value "Microsoft Teams Meeting Add-in for Microsoft Office" -force | Out-Null
+                    If (!(Test-Path 'HKLM:\Software\Microsoft\Office\Outlook\Addins\')) {New-Item -Path "HKLM:\Software\Microsoft\Office\Outlook\Addins\" | Out-Null}
+                }
                 Write-Host -ForegroundColor Green "Register $Product Add-In for Outlook finished!"
                 <#If (!(Get-ScheduledTask -TaskName "Teams Meeting AddIn for Microsoft Outlook" -ErrorAction SilentlyContinue)) {
                     Write-Host "Implement scheduled task to create settings.json file in the User Profile"
