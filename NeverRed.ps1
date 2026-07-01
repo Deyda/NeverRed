@@ -23129,7 +23129,11 @@ If ($Install -eq "1") {
                     msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | sort-object LastWriteTime -Descending | Select-Object -First 1).FullName)\MicrosoftTeamsMeetingAddinInstaller.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 }
                 Write-Host -ForegroundColor Green "Install $Product Add-In for Outlook finished!"
+<<<<<<< HEAD
                                 Write-Host "Register $Product Add-In for Outlook"
+=======
+                Write-Host "Register $Product Add-In for Outlook"
+>>>>>>> 9e68cac01d74655eef963de6f2c5871422170e4b
                 If ($WhatIf -eq '0') {
                     $appX64DLL = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x64" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
                     $appX86DLL = (Get-ChildItem -Path "C:\Windows\Microsoft\TeamsMeetingAddin\x86" -Include "Microsoft.Teams.AddinLoader.dll" -Recurse).FullName
