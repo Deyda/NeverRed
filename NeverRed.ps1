@@ -11736,14 +11736,6 @@ If ($Download -eq "1") {
         $Source = "$PackageName" + "." + "$InstallerType"
         $VersionPath = "$PSScriptRoot\$Product\Version_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear" + ".txt"
         $CurrentVersion = Get-Content -Path "$VersionPath" -EA SilentlyContinue
-        $CurrentVersion = ($CurrentVersion.Split('.') | ForEach-Object {
-            if ($_ -match '^\d$') {
-                $_.PadLeft(2,'0')
-            }
-            else {
-                $_
-            }
-        }) -join '.'
         Write-Host -ForegroundColor Magenta "Download $Product $AdoptOpenJDKVersionClear $AdoptOpenJDKArchitectureClear"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $CurrentVersion"
@@ -18505,14 +18497,6 @@ If ($Install -eq "1") {
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
                 }
-                $AdoptOpenJDKV = ($AdoptOpenJDKV.Split('.') | ForEach-Object {
-                    if ($_ -match '^\d$') {
-                        $_.PadLeft(2,'0')
-                    }
-                    else {
-                        $_
-                    }
-                }) -join '.'
             }
             11 { 
                 $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin11*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
@@ -18982,6 +18966,9 @@ If ($Install -eq "1") {
                 $Version3 = $DelProf2D.Version
             }
             $DelProf2V = Get-Content -Path "C:\Windows\System32\$Product3\Version.txt" -EA SilentlyContinue
+            If ($DelProf2V -like "Do?</h3><p>Delete") {
+                $DelProf2V = $DelProf2D.Version
+            }
             Write-Host -ForegroundColor Magenta "Copy $Product3"
             Write-Host "Download Version: $Version3"
             Write-Host "Current Version:  $DelProf2V"
@@ -18992,6 +18979,7 @@ If ($Install -eq "1") {
                 If ($WhatIf -eq '0') {
                     Copy-Item -Path "$PSScriptRoot\BIS-F\$Product3\DelProf2.exe" -Destination "C:\Windows\System32\DelProf2.exe" -ErrorAction SilentlyContinue -Force
                     If (!(Test-Path -Path "C:\Windows\System32\$Product3")) { New-Item -Path "C:\Windows\System32\$Product3" -ItemType Directory | Out-Null }
+                    Remove-Item "C:\Windows\System32\$Product3\*" -Recurse -Force
                     Copy-Item -Path "$PSScriptRoot\BIS-F\$Product3\Version.txt" -Destination "C:\Windows\System32\$Product3" -ErrorAction SilentlyContinue -Force
                 }
                 Write-Host -ForegroundColor Green "Copy of the new version $Version3 finished!"
