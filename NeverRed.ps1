@@ -18501,7 +18501,7 @@ If ($Install -eq "1") {
         }
         Switch ($AdoptOpenJDKVersionClear) {
             8 { 
-                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
+                $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8u*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
                 If (!$AdoptOpenJDKV) {
                     $AdoptOpenJDKV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Temurin*8*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -Last 1
                 }
