@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.91
+  Version:          2.10.92
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -279,6 +279,7 @@ the script checks the version number and will update the package.
   2026-06-10        Add FileZilla and WinSCP Hash Value / Add Hash Check Function
   2026-06-11        Correction Citrix Workspace App Current download
   2026-07-01        Correction Citrix Receiver Cleanup and Citrix Optimizer download / TotalCommander Download (Thx to Lineg-it)
+  2026-07-02        Correction Adoptium Temurin Open JDK download and install
 
 
 .PARAMETER ESfile
@@ -4328,7 +4329,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.91"
+$eVersion = "2.10.92"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -11601,19 +11602,18 @@ If ($Download -eq "1") {
         $Product = "Adoptium Temurin Open JDK"
         $PackageName = "AdoptiumTemurin_" + "$AdoptOpenJDKVersionClear" + "_$AdoptOpenJDKArchitectureClear"
         Switch ($AdoptOpenJDKVersionClear) {
-            8 { $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin8 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
+            8 { $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin8 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}               
                 $appVersion = $AdoptOpenJDKD.Version
                 $appVersion = $appVersion.Split("1.")[1]
                 $appVersion = $appVersion -replace('_','.')
                 $Version = $appVersion -replace('-b','.')
-                $Version = ($Version.Split('.') | ForEach-Object {
-                    if ($_ -match '^\d$') {
-                        $_.PadLeft(2,'0')
-                    }
-                    else {
-                        $_
-                    }
-                }) -join '.'
+                $parts = $Version.Split('.')
+                $Version = @(
+                    [int]$parts[0]
+                    [int]$parts[1]
+                    [int]$parts[2]
+                    $parts[3]
+                ) -join '.'
             }
             11 {
                 $AdoptOpenJDKD = Get-EvergreenApp -Name AdoptiumTemurin11 | Where-Object {$_.Architecture -eq $AdoptOpenJDKArchitectureClear -and $_.ImageType -eq "jdk"}
@@ -21231,6 +21231,7 @@ If ($Install -eq "1") {
                 Get-ScheduledTask -TaskName "Office Feature Updates" -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
                 Get-ScheduledTask -TaskName "Office Feature Updates Logon" -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
                 Write-Host -ForegroundColor Green "Disable Scheduled Task $Product finished!"
+                Write-Output ""
             }
         } Catch {
             Write-Host -ForegroundColor Red "Error Customize $Product (Error: $($Error[0]))"
