@@ -1,4 +1,3 @@
-```markdown
 # About
 
 ![NeverRed icon](/img/NeverRed.png)
