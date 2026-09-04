@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.94
+  Version:          2.10.93
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -282,7 +282,6 @@ the script checks the version number and will update the package.
   2026-07-02        Correction Adoptium Temurin Open JDK download and install
   2026-09-01        Correction MS AVD Remote Desktop to MS Windows App
   2026-09-03        Create MS Windows App Insider function
-  2026-09-04        Add Office 2024 and the direct DL function for Office
 
 
 .PARAMETER ESfile
@@ -4548,7 +4547,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.94"
+$eVersion = "2.10.93"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -21610,21 +21609,32 @@ If ($Install -eq "1") {
             Write-Output ""
         }
         Write-Host "Customize $Product"
+        Start-Sleep -Seconds 5
+
         Try {
             # Disable Microsoft 365 auto update
             If ($WhatIf -eq '0') {
                 Write-Host "Customize Scheduled Task"
-                Start-Sleep -s 5
+                Start-Sleep -Seconds 5
                 Get-ScheduledTask -TaskName "Office Automatic Updates*" -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
                 Get-ScheduledTask -TaskName "Office Feature Updates" -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
                 Get-ScheduledTask -TaskName "Office Feature Updates Logon" -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
+                Get-ScheduledTask -TaskName "Office Serviceability Manager" -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
                 Write-Host -ForegroundColor Green "Disable Scheduled Task $Product finished!"
                 Write-Output ""
             }
-        } Catch {
-            Write-Host -ForegroundColor Red "Error Customize $Product (Error: $($Error[0]))"
-            DS_WriteLog "E" "Error installing $Product (Error: $($Error[0]))" $LogFile
         }
+        Catch {
+            Write-Host -ForegroundColor Red "Error Customize $Product (Error: $($Error[0]))"
+            DS_WriteLog "E" "Error Customize $Product (Error: $($Error[0]))" $LogFile
+        }
+
+        # Stop, if no new version is available
+        Catch {
+            Write-Host -ForegroundColor Red "Error Customize $Product (Error: $($Error[0]))"
+            DS_WriteLog "E" "Error Customize $Product (Error: $($Error[0]))" $LogFile
+        }
+
         # Stop, if no new version is available
         Else {
             Write-Host -ForegroundColor Cyan "No update available for $Product"
@@ -22367,110 +22377,219 @@ If ($Install -eq "1") {
     #// Mark: Install Microsoft Office
     If ($MSOffice -eq 1) {
         $Product = "Microsoft Office " + $MSOfficeChannelClear
+
         # Check, if a new version is available
         $Version = Get-Content -Path "$PSScriptRoot\$Product\Version.txt" -ErrorAction SilentlyContinue
         If (!($Version)) {
             $Version = $MSOfficeD.Version
         }
-        $MSOfficeV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Office*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+
+        $MSOfficeV = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |
+            Where-Object {$_.DisplayName -like "*Microsoft Office*"}).DisplayVersion |
+            Sort-Object -Property Version -Descending |
+            Select-Object -First 1
+
         If (!$MSOfficeV) {
-            $MSOfficeV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Microsoft Office*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
+            $MSOfficeV = (Get-ItemProperty HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                Where-Object {$_.DisplayName -like "*Microsoft Office*"}).DisplayVersion |
+                Sort-Object -Property Version -Descending |
+                Select-Object -First 1
         }
+
         Write-Host -ForegroundColor Magenta "Install $Product"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $MSOfficeV"
+
         If ($MSOfficeV -lt $Version) {
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
+
             # Download MS Office install files only if pre-download is disabled
             If ($Download365 -eq 0) {
                 $OfficeDataPath = "$PSScriptRoot\$Product\Office\Data"
+
                 If ($MSOfficeArchitectureClear -eq '64') {
                     $OfficeCab = "$OfficeDataPath\v64.cab"
                 }
                 Else {
                     $OfficeCab = "$OfficeDataPath\v32.cab"
                 }
+
                 If (!(Test-Path -Path $OfficeCab)) {
                     Write-Host "Starting download of $Product install files"
+
                     $DOffice = @(
                         "/download install.xml"
                     )
+
                     If ($WhatIf -eq '0') {
                         Push-Location "$PSScriptRoot\$Product"
+
                         Start-Process `
                             -FilePath ".\setup.exe" `
                             -ArgumentList $DOffice `
                             -Wait `
                             -NoNewWindow
+
                         Pop-Location
                     }
+
                     Write-Host -ForegroundColor Green "Download of the new version $Version install files finished!"
                 }
             }
             Else {
                 $OfficeDataPath = "$PSScriptRoot\$Product\Office\Data"
+
                 If ($MSOfficeArchitectureClear -eq '64') {
                     $OfficeCab = "$OfficeDataPath\v64.cab"
                 }
                 Else {
                     $OfficeCab = "$OfficeDataPath\v32.cab"
                 }
+
                 If (!(Test-Path $OfficeCab)) {
                     Write-Host -ForegroundColor Red "Pre-downloaded Office files are missing!"
                     Write-Host -ForegroundColor Red "Expected: $OfficeCab"
                     Throw "Microsoft Office installation files are missing."
                 }
+
                 Write-Host -ForegroundColor Cyan "Office install files were pre-downloaded. Skip download."
             }
+
             # MS Office Uninstallation
             $Options = @(
                 "/configure remove.xml"
             )
+
             Write-Host "Uninstall Microsoft Office or Microsoft 365 Apps"
             DS_WriteLog "I" "Uninstall Microsoft Office or Microsoft 365 Apps" $LogFile
+
             Try {
                 If ($WhatIf -eq '0') {
-                    set-location $PSScriptRoot\$Product
-                    Start-Process -FilePath ".\setup.exe" -ArgumentList $Options -NoNewWindow -wait
-                    set-location $PSScriptRoot
+                    Set-Location "$PSScriptRoot\$Product"
+
+                    Start-Process `
+                        -FilePath ".\setup.exe" `
+                        -ArgumentList $Options `
+                        -NoNewWindow `
+                        -Wait
+
+                    Set-Location $PSScriptRoot
                 }
+
                 Write-Host -ForegroundColor Green "Uninstall Microsoft Office or Microsoft 365 Apps finished!"
                 DS_WriteLog "I" "Uninstallation $Product finished!" $LogFile
-            } Catch {
+            }
+            Catch {
                 Write-Host -ForegroundColor Red "Error uninstalling Microsoft Office or Microsoft 365 Apps (Error: $($Error[0]))"
                 DS_WriteLog "E" "Error uninstalling Microsoft Office or Microsoft 365 Apps (Error: $($Error[0]))" $LogFile
             }
+
             # MS Office Installation
             $Options = @(
                 "/configure install.xml"
             )
+
             DS_WriteLog "I" "Install $Product" $LogFile
             Write-Host "Starting install of $Product version $Version"
+
             Try {
                 If ($WhatIf -eq '0') {
-                    set-location $PSScriptRoot\$Product
-                    Start-Process -FilePath ".\setup.exe" -ArgumentList $Options -NoNewWindow -wait
-                    set-location $PSScriptRoot
+                    Set-Location "$PSScriptRoot\$Product"
+
+                    Start-Process `
+                        -FilePath ".\setup.exe" `
+                        -ArgumentList $Options `
+                        -NoNewWindow `
+                        -Wait
+
+                    Set-Location $PSScriptRoot
                 }
+
                 Write-Host -ForegroundColor Green "Install of the new version $Version finished!"
                 DS_WriteLog "I" "Installation $Product finished!" $LogFile
-            } Catch {
+            }
+            Catch {
                 Write-Host -ForegroundColor Red "Error installing $Product (Error: $($Error[0]))"
                 DS_WriteLog "E" "Error installing $Product (Error: $($Error[0]))" $LogFile
             }
+
+            # Disable Microsoft Office automatic updates
+            Try {
+                If ($WhatIf -eq '0') {
+
+                    Write-Host "Disable Microsoft Office Automatic Updates"
+
+                    # Disable automatic updates via policy
+                    $OfficeUpdatePolicyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Office\16.0\Common\OfficeUpdate"
+
+                    If (!(Test-Path $OfficeUpdatePolicyPath)) {
+                        New-Item `
+                            -Path $OfficeUpdatePolicyPath `
+                            -Force | Out-Null
+                    }
+
+                    New-ItemProperty `
+                        -Path $OfficeUpdatePolicyPath `
+                        -Name "EnableAutomaticUpdates" `
+                        -PropertyType DWord `
+                        -Value 0 `
+                        -Force | Out-Null
+
+                    # Disable scheduled tasks
+                    $OfficeScheduledTasks = @(
+                        "Office Automatic Updates*"
+                        "Office Feature Updates"
+                        "Office Feature Updates Logon"
+                        "Office Serviceability Manager"
+                    )
+
+                    foreach ($TaskName in $OfficeScheduledTasks) {
+
+                        $Tasks = Get-ScheduledTask `
+                            -TaskPath "\Microsoft\Office\" `
+                            -TaskName $TaskName `
+                            -ErrorAction SilentlyContinue
+
+                        foreach ($Task in $Tasks) {
+
+                            If ($Task.State -ne "Disabled") {
+
+                                Write-Host "Disable Scheduled Task: $($Task.TaskName)"
+
+                                Disable-ScheduledTask `
+                                    -TaskPath $Task.TaskPath `
+                                    -TaskName $Task.TaskName `
+                                    -ErrorAction SilentlyContinue |
+                                    Out-Null
+                            }
+                        }
+                    }
+
+                    Write-Host -ForegroundColor Green "Disable Microsoft Office Automatic Updates finished!"
+                    DS_WriteLog "I" "Disable Microsoft Office Automatic Updates finished!" $LogFile
+                }
+            }
+            Catch {
+                Write-Host -ForegroundColor Red "Error disabling Microsoft Office Automatic Updates (Error: $($Error[0]))"
+                DS_WriteLog "E" "Error disabling Microsoft Office Automatic Updates (Error: $($Error[0]))" $LogFile
+            }
+
             DS_WriteLog "-" "" $LogFile
             Write-Output ""
         }
+
         # Stop, if no new version is available
         Else {
             Write-Host -ForegroundColor Cyan "No update available for $Product"
             Write-Output ""
         }
+
         If ($CleanUp -eq '1') {
             If ($WhatIf -eq '0') {
                 Remove-Item "$PSScriptRoot\$Product\*" -Recurse
             }
+
             Write-Host -ForegroundColor Green "CleanUp for $Product install files successfully."
             DS_WriteLog "-" "" $LogFile
             Write-Output ""
