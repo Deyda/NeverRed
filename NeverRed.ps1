@@ -403,6 +403,110 @@ Function Install-MSI {
     }
 }
 
+# Global web request settings and wrapper
+#========================================================================================================================================
+$Script:WebRequestTimeoutSec = 45
+$Script:WebRequestDownloadTimeoutSec = 600
+$Script:WebRequestMaxRedirection = 10
+$Script:WebRequestRetryCount = 2
+
+function Invoke-WebRequestWithRetry {
+    [CmdletBinding()]
+    param(
+        [Parameter(Position = 0)]
+        [string]$Uri,
+
+        [string]$OutFile,
+
+        [switch]$UseBasicParsing,
+
+        [switch]$UseDefaultCredentials,
+
+        [switch]$DisableKeepAlive,
+
+        [string]$SessionVariable,
+
+        [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
+
+        [string]$UserAgent,
+
+        [int]$MaximumRedirection,
+
+        [int]$TimeoutSec
+    )
+
+    $RequestParameters = @{}
+
+    if ($PSBoundParameters.ContainsKey('Uri')) {
+        $RequestParameters.Uri = $Uri
+    }
+
+    if ($PSBoundParameters.ContainsKey('OutFile')) {
+        $RequestParameters.OutFile = $OutFile
+    }
+
+    if ($UseBasicParsing.IsPresent) {
+        $RequestParameters.UseBasicParsing = $true
+    }
+
+    if ($UseDefaultCredentials.IsPresent) {
+        $RequestParameters.UseDefaultCredentials = $true
+    }
+
+    if ($DisableKeepAlive.IsPresent) {
+        $RequestParameters.DisableKeepAlive = $true
+    }
+
+    if ($PSBoundParameters.ContainsKey('SessionVariable')) {
+        $RequestParameters.SessionVariable = $SessionVariable
+    }
+
+    if ($PSBoundParameters.ContainsKey('WebSession')) {
+        $RequestParameters.WebSession = $WebSession
+    }
+
+    if ($PSBoundParameters.ContainsKey('UserAgent')) {
+        $RequestParameters.UserAgent = $UserAgent
+    }
+
+    if ($PSBoundParameters.ContainsKey('MaximumRedirection')) {
+        $RequestParameters.MaximumRedirection = $MaximumRedirection
+    }
+    else {
+        $RequestParameters.MaximumRedirection = $Script:WebRequestMaxRedirection
+    }
+
+    if ($PSBoundParameters.ContainsKey('TimeoutSec')) {
+        $RequestParameters.TimeoutSec = $TimeoutSec
+    }
+    elseif ($PSBoundParameters.ContainsKey('OutFile')) {
+        # File downloads may be large: allow more time so big installers finish, while a dead URL is still bounded and can't hang forever.
+        $RequestParameters.TimeoutSec = $Script:WebRequestDownloadTimeoutSec
+    }
+    else {
+        $RequestParameters.TimeoutSec = $Script:WebRequestTimeoutSec
+    }
+
+    for ($Attempt = 1; $Attempt -le $Script:WebRequestRetryCount; $Attempt++) {
+        try {
+            $Response = & Microsoft.PowerShell.Utility\Invoke-WebRequest @RequestParameters -ErrorAction Stop
+            if ($null -eq $Response) {
+                throw "Invoke-WebRequest returned no response."
+            }
+            return $Response
+        }
+        catch {
+            if ($Attempt -eq $Script:WebRequestRetryCount) {
+                # Preserve original -ErrorAction SilentlyContinue behavior: return $null on failure instead of throwing, so scrapers can't crash the run.
+                Write-Verbose "Invoke-WebRequestWithRetry failed for '$($RequestParameters.Uri)' after $Script:WebRequestRetryCount attempts: $($_.Exception.Message)"
+                return $null
+            }
+        }
+    }
+}
+
+Set-Alias -Name Invoke-WebRequest -Value Invoke-WebRequestWithRetry -Scope Script
+
 # Function File Download with Progress Bar
 #========================================================================================================================================
 Function Get-Download {
@@ -411,13 +515,61 @@ Function Get-Download {
         $url, 
         $destinationFolder="$PSScriptRoot\$Product\",
         $fileD="$Source",
-        [switch]$includeStats
+        [switch]$includeStats,
+        [int]$TimeoutSec = 120,
+        [int]$RetryCount = 2
     )
-    $wc = New-Object Net.WebClient
-    $wc.UseDefaultCredentials = $true
     $destination = Join-Path $destinationFolder $fileD
     $start = Get-Date
-    $wc.DownloadFile($url, $destination)
+
+    # Stream to disk manually so large installers/ISOs don't buffer in memory (Invoke-WebRequest -OutFile issue on PS 5.1).
+    # TimeoutSec is a start/stall timeout, not a total cap: only a missing response (download never starts) or a transfer
+    # that stops delivering bytes for TimeoutSec aborts. A long but progressing download (e.g. Office ISO) always finishes.
+    $DownloadSucceeded = $false
+    for ($Attempt = 1; $Attempt -le $RetryCount; $Attempt++) {
+        $response = $null
+        $responseStream = $null
+        $fileStream = $null
+        try {
+            $request = [System.Net.HttpWebRequest]::Create($url)
+            $request.UseDefaultCredentials = $true
+            $request.AllowAutoRedirect = $true
+            $request.Timeout = $TimeoutSec * 1000
+            $request.ReadWriteTimeout = $TimeoutSec * 1000
+
+            $response = $request.GetResponse()
+            $responseStream = $response.GetResponseStream()
+            $fileStream = [System.IO.File]::Create($destination)
+
+            $buffer = New-Object byte[] 1048576
+            while (($bytesRead = $responseStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                $fileStream.Write($buffer, 0, $bytesRead)
+            }
+
+            $DownloadSucceeded = $true
+            break
+        }
+        catch {
+            if ($fileStream) { $fileStream.Dispose(); $fileStream = $null }
+            if (Test-Path $destination) {
+                Remove-Item -Path $destination -Force -ErrorAction SilentlyContinue
+            }
+
+            if ($Attempt -eq $RetryCount) {
+                throw "Download failed for URL '$url' after $RetryCount attempts (stall/start timeout ${TimeoutSec}s). Error: $($_.Exception.Message)"
+            }
+        }
+        finally {
+            if ($fileStream) { $fileStream.Dispose() }
+            if ($responseStream) { $responseStream.Dispose() }
+            if ($response) { $response.Dispose() }
+        }
+    }
+
+    if (-not $DownloadSucceeded) {
+        throw "Download failed for URL '$url'."
+    }
+
     $elapsed = ((Get-Date) - $start).ToString('hh\:mm\:ss')
     $totalSize = (Get-Item $destination).Length | Get-FileSize
     If ($includeStats.IsPresent){
@@ -4343,13 +4495,12 @@ Function Test-RegistryValue {
         [parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]$Path,
         [parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]$Value
     )
-    Try {
-        Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction Stop | Out-Null
-        Return $true
-    }
-    Catch {
+    If (!(Test-Path -Path $Path)) {
         Return $false
     }
+
+    $RegistryItem = Get-ItemProperty -Path $Path -ErrorAction SilentlyContinue
+    Return ($null -ne $RegistryItem -and $null -ne $RegistryItem.PSObject.Properties[$Value])
 }
 
 # Function Test RegistryValue
@@ -4359,13 +4510,12 @@ Function Test-RegistryValue2 {
         [parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]$Path,
         [parameter(Mandatory=$true)] [ValidateNotNullOrEmpty()]$Value
     )
-    Try {
-        Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction SilentlyContinue | Out-Null
-        Return $true
-    }
-    Catch {
+    If (!(Test-Path -Path $Path)) {
         Return $false
     }
+
+    $RegistryItem = Get-ItemProperty -Path $Path -ErrorAction SilentlyContinue
+    Return ($null -ne $RegistryItem -and $null -ne $RegistryItem.PSObject.Properties[$Value])
 }
 
 # Function Logging
@@ -4816,6 +4966,7 @@ $inputXML = @"
                         <ListBoxItem Content="Stable"/>
                     </ComboBox>
                     <CheckBox x:Name="Checkbox_MSEdge" Content="Microsoft Edge" HorizontalAlignment="Left" Margin="12,70,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
+                    <CheckBox x:Name="Checkbox_MSEdge_Force" Content="Force" HorizontalAlignment="Left" Margin="148,70,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
                     <ComboBox x:Name="Box_MSEdge" HorizontalAlignment="Left" Margin="214,66,0,0" VerticalAlignment="Top" SelectedIndex="2" Grid.Column="1" Grid.Row="1">
                         <ListBoxItem Content="Developer"/>
                         <ListBoxItem Content="Beta"/>
@@ -5326,6 +5477,7 @@ $inputXML = @"
                         <ListBoxItem Content="x86"/>
                         <ListBoxItem Content="x64"/>
                     </ComboBox>
+                    <CheckBox x:Name="Checkbox_MSEdge_Force_Detail" Content="Force" HorizontalAlignment="Left" Margin="330,630,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1"/>
                     <CheckBox x:Name="Checkbox_MSEdgeWebView2_Detail" Content="Microsoft Edge WebView2" HorizontalAlignment="Left" Margin="12,655,0,0" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
                     <ComboBox x:Name="Box_MSEdgeWebView2_Architecture" HorizontalAlignment="Left" Margin="194,652,0,0" VerticalAlignment="Top" SelectedIndex="0" Grid.Column="1" Grid.Row="1">
                         <ListBoxItem Content="-"/>
@@ -6704,6 +6856,18 @@ $inputXML = @"
     $WPFCheckbox_MSEdge_Detail.Add_Unchecked({
         $WPFCheckbox_MSEdge.IsChecked = $WPFCheckbox_MSEdge_Detail.IsChecked
     })
+    $WPFCheckbox_MSEdge_Force.Add_Checked({
+        $WPFCheckbox_MSEdge_Force_Detail.IsChecked = $WPFCheckbox_MSEdge_Force.IsChecked
+    })
+    $WPFCheckbox_MSEdge_Force.Add_Unchecked({
+        $WPFCheckbox_MSEdge_Force_Detail.IsChecked = $WPFCheckbox_MSEdge_Force.IsChecked
+    })
+    $WPFCheckbox_MSEdge_Force_Detail.Add_Checked({
+        $WPFCheckbox_MSEdge_Force.IsChecked = $WPFCheckbox_MSEdge_Force_Detail.IsChecked
+    })
+    $WPFCheckbox_MSEdge_Force_Detail.Add_Unchecked({
+        $WPFCheckbox_MSEdge_Force.IsChecked = $WPFCheckbox_MSEdge_Force_Detail.IsChecked
+    })
     $WPFCheckbox_MSEdgeWebView2.Add_Checked({
         $WPFCheckbox_MSEdgeWebView2_Detail.IsChecked = $WPFCheckbox_MSEdgeWebView2.IsChecked
     })
@@ -7334,6 +7498,8 @@ $inputXML = @"
         Else {$Script:MS365Apps = 0}
         If ($WPFCheckbox_MSEdge.ischecked -eq $true) {$Script:MSEdge = 1}
         Else {$Script:MSEdge = 0}
+        If ($WPFCheckbox_MSEdge_Force.ischecked -eq $true) {$Script:MSEdgeForce = 1}
+        Else {$Script:MSEdgeForce = 0}
         If ($WPFCheckbox_MSEdgeWebView2.ischecked -eq $true) {$Script:MSEdgeWebView2 = 1}
         Else {$Script:MSEdgeWebView2 = 0}
         If ($WPFCheckbox_MSOffice.ischecked -eq $true) {$Script:MSOffice = 1}
@@ -7742,6 +7908,8 @@ $inputXML = @"
         Else {$Script:MS365Apps = 0}
         If ($WPFCheckbox_MSEdge.ischecked -eq $true) {$Script:MSEdge = 1}
         Else {$Script:MSEdge = 0}
+        If ($WPFCheckbox_MSEdge_Force.ischecked -eq $true) {$Script:MSEdgeForce = 1}
+        Else {$Script:MSEdgeForce = 0}
         If ($WPFCheckbox_MSEdgeWebView2.ischecked -eq $true) {$Script:MSEdgeWebView2 = 1}
         Else {$Script:MSEdgeWebView2 = 0}
         If ($WPFCheckbox_MSOffice.ischecked -eq $true) {$Script:MSOffice = 1}
@@ -8164,6 +8332,8 @@ $inputXML = @"
         Else {$Script:MS365Apps = 0}
         If ($WPFCheckbox_MSEdge.ischecked -eq $true) {$Script:MSEdge = 1}
         Else {$Script:MSEdge = 0}
+        If ($WPFCheckbox_MSEdge_Force.ischecked -eq $true) {$Script:MSEdgeForce = 1}
+        Else {$Script:MSEdgeForce = 0}
         If ($WPFCheckbox_MSEdgeWebView2.ischecked -eq $true) {$Script:MSEdgeWebView2 = 1}
         Else {$Script:MSEdgeWebView2 = 0}
         If ($WPFCheckbox_MSOffice.ischecked -eq $true) {$Script:MSOffice = 1}
@@ -8571,6 +8741,8 @@ $inputXML = @"
         Else {$Script:MS365Apps = 0}
         If ($WPFCheckbox_MSEdge.ischecked -eq $true) {$Script:MSEdge = 1}
         Else {$Script:MSEdge = 0}
+        If ($WPFCheckbox_MSEdge_Force.ischecked -eq $true) {$Script:MSEdgeForce = 1}
+        Else {$Script:MSEdgeForce = 0}
         If ($WPFCheckbox_MSEdgeWebView2.ischecked -eq $true) {$Script:MSEdgeWebView2 = 1}
         Else {$Script:MSEdgeWebView2 = 0}
         If ($WPFCheckbox_MSOffice.ischecked -eq $true) {$Script:MSOffice = 1}
@@ -11342,6 +11514,72 @@ If ($Download -eq "1") {
                 Write-Host -ForegroundColor Green "Update PSWindowsUpdate module done. Version"$pa
                 Write-Output ""
             }
+        }
+    }
+
+    # Wrap Evergreen/Nevergreen lookups with a hard timeout so an unresponsive source can't hang the whole run.
+    # Defined after the module -Force imports so these global overrides win over the module commands for unqualified calls.
+    $global:NRAppLookupTimeoutSec = 90
+
+    Function global:Get-EvergreenApp {
+        [CmdletBinding()]
+        Param (
+            [Parameter(Mandatory = $true, Position = 0)]
+            [string]$Name,
+            [hashtable]$AppParams
+        )
+        $job = Start-Job -ArgumentList $Name, $AppParams -ScriptBlock {
+            param($AppName, $AppParameters)
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $ProgressPreference = 'SilentlyContinue'
+            $InformationPreference = 'SilentlyContinue'
+            Import-Module Evergreen -ErrorAction SilentlyContinue 6>$null
+            If ($AppParameters) {
+                Evergreen\Get-EvergreenApp -Name $AppName -AppParams $AppParameters -WarningAction SilentlyContinue -ErrorAction SilentlyContinue 3>$null 4>$null 5>$null 6>$null
+            } Else {
+                Evergreen\Get-EvergreenApp -Name $AppName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue 3>$null 4>$null 5>$null 6>$null
+            }
+        }
+        Try {
+            If (Wait-Job -Job $job -Timeout $global:NRAppLookupTimeoutSec) {
+                Receive-Job -Job $job
+            } Else {
+                Stop-Job -Job $job -ErrorAction SilentlyContinue
+                Write-Host -ForegroundColor Red "Lookup for '$Name' timed out after $($global:NRAppLookupTimeoutSec)s and was skipped."
+            }
+        } Finally {
+            Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    Function global:Get-NevergreenApp {
+        [CmdletBinding()]
+        Param (
+            [Parameter(Mandatory = $true, Position = 0)]
+            [string]$Name,
+            [hashtable]$AppParams
+        )
+        $job = Start-Job -ArgumentList $Name, $AppParams -ScriptBlock {
+            param($AppName, $AppParameters)
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $ProgressPreference = 'SilentlyContinue'
+            $InformationPreference = 'SilentlyContinue'
+            Import-Module Nevergreen -ErrorAction SilentlyContinue 6>$null
+            If ($AppParameters) {
+                Nevergreen\Get-NevergreenApp -Name $AppName -AppParams $AppParameters -WarningAction SilentlyContinue -ErrorAction SilentlyContinue 3>$null 4>$null 5>$null 6>$null
+            } Else {
+                Nevergreen\Get-NevergreenApp -Name $AppName -WarningAction SilentlyContinue -ErrorAction SilentlyContinue 3>$null 4>$null 5>$null 6>$null
+            }
+        }
+        Try {
+            If (Wait-Job -Job $job -Timeout $global:NRAppLookupTimeoutSec) {
+                Receive-Job -Job $job
+            } Else {
+                Stop-Job -Job $job -ErrorAction SilentlyContinue
+                Write-Host -ForegroundColor Red "Lookup for '$Name' timed out after $($global:NRAppLookupTimeoutSec)s and was skipped."
+            }
+        } Finally {
+            Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
         }
     }
 
@@ -21570,19 +21808,50 @@ If ($Install -eq "1") {
         Write-Host -ForegroundColor Magenta "Install $Product $MSEdgeChannelClear channel $MSEdgeArchitectureClear"
         Write-Host "Download Version: $NewVersion1"
         Write-Host "Current Version:  $NewCurrentVersion1"
-        If ($NewCurrentVersion1 -ne $NewVersion1) {
+        If (($NewCurrentVersion1 -ne $NewVersion1) -or ($MSEdgeForce -eq 1)) {
             DS_WriteLog "I" "Install $Product $MSEdgeChannelClear channel $MSEdgeArchitectureClear" $LogFile
+            $EdgeUpdateRegPath = "HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate"
+            $EdgeUpdateKeyExisted = $false
+            $EdgeUpdateBackup = @()
+            If ($MSEdgeForce -eq 1) {
+                Write-Host -ForegroundColor Yellow "Force mode enabled for $Product"
+            }
             If ($WhatIf -eq '0') {
-                If (!(Test-Path -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate)) {
-                    New-Item -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -ErrorAction SilentlyContinue | Out-Null
-                    New-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -Name Allowsxs -Value 1 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
+                If ($MSEdgeForce -eq 1) {
+                    $EdgeUpdateKeyExisted = Test-Path -Path $EdgeUpdateRegPath
+                    If ($EdgeUpdateKeyExisted) {
+                        $EdgeUpdateRegKey = Get-Item -Path $EdgeUpdateRegPath -ErrorAction SilentlyContinue
+                        If ($EdgeUpdateRegKey) {
+                            foreach ($ValueName in $EdgeUpdateRegKey.GetValueNames()) {
+                                $EdgeUpdateBackup += [PSCustomObject]@{
+                                    Name  = $ValueName
+                                    Value = $EdgeUpdateRegKey.GetValue($ValueName, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+                                    Kind  = $EdgeUpdateRegKey.GetValueKind($ValueName)
+                                }
+                            }
+                        }
+                    }
+
+                    If (!(Test-Path -Path $EdgeUpdateRegPath)) {
+                        New-Item -Path $EdgeUpdateRegPath -ErrorAction SilentlyContinue | Out-Null
+                    }
+
+                    New-ItemProperty -Path $EdgeUpdateRegPath -Name Allowsxs -Value 1 -PropertyType DWord -Force -ErrorAction SilentlyContinue | Out-Null
+                    New-ItemProperty -Path $EdgeUpdateRegPath -Name UpdateDefault -Value 1 -PropertyType DWord -Force -ErrorAction SilentlyContinue | Out-Null
+                    New-ItemProperty -Path $EdgeUpdateRegPath -Name InstallDefault -Value 1 -PropertyType DWord -Force -ErrorAction SilentlyContinue | Out-Null
                 }
                 Else {
-                    If ((Test-RegistryValue2 -Path "HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate" -Value "Allowsxs") -ne $true) {
+                    If (!(Test-Path -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate)) {
+                        New-Item -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -ErrorAction SilentlyContinue | Out-Null
                         New-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -Name Allowsxs -Value 1 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
-                    } Else {
-                        $EdgeInstallState = Get-ItemProperty -path "HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate" | Select-Object -Expandproperty "Allowsxs"
-                        If ($EdgeInstallState -ne "1") {Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -Name Allowsxs -Value 1 | Out-Null}
+                    }
+                    Else {
+                        If ((Test-RegistryValue2 -Path "HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate" -Value "Allowsxs") -ne $true) {
+                            New-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -Name Allowsxs -Value 1 -PropertyType DWORD -ErrorAction SilentlyContinue | Out-Null
+                        } Else {
+                            $EdgeInstallState = Get-ItemProperty -path "HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate" | Select-Object -Expandproperty "Allowsxs"
+                            If ($EdgeInstallState -ne "1") {Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\EdgeUpdate -Name Allowsxs -Value 1 | Out-Null}
+                        }
                     }
                 }
             }
@@ -21670,6 +21939,39 @@ If ($Install -eq "1") {
             } Catch {
                 Write-Host -ForegroundColor Red "Error customizing (Error: $($Error[0]))"
                 DS_WriteLog "E" "Error customizing (Error: $($Error[0]))" $LogFile
+            }
+
+            If (($MSEdgeForce -eq 1) -and ($WhatIf -eq '0')) {
+                Try {
+                    If ($EdgeUpdateKeyExisted) {
+                        If (!(Test-Path -Path $EdgeUpdateRegPath)) {
+                            New-Item -Path $EdgeUpdateRegPath -ErrorAction SilentlyContinue | Out-Null
+                        }
+
+                        $CurrentRegKey = Get-Item -Path $EdgeUpdateRegPath -ErrorAction SilentlyContinue
+                        If ($CurrentRegKey) {
+                            foreach ($CurrentName in $CurrentRegKey.GetValueNames()) {
+                                If (($CurrentName -ne "") -and ($CurrentName -notin $EdgeUpdateBackup.Name)) {
+                                    Remove-ItemProperty -Path $EdgeUpdateRegPath -Name $CurrentName -ErrorAction SilentlyContinue
+                                }
+                            }
+                        }
+
+                        foreach ($BackupEntry in $EdgeUpdateBackup) {
+                            If ($BackupEntry.Name -ne "") {
+                                New-ItemProperty -Path $EdgeUpdateRegPath -Name $BackupEntry.Name -Value $BackupEntry.Value -PropertyType $BackupEntry.Kind -Force -ErrorAction SilentlyContinue | Out-Null
+                            }
+                        }
+                    }
+                    Else {
+                        If (Test-Path -Path $EdgeUpdateRegPath) {
+                            Remove-Item -Path $EdgeUpdateRegPath -Recurse -Force -ErrorAction SilentlyContinue
+                        }
+                    }
+                }
+                Catch {
+                    DS_WriteLog "E" "Error restoring EdgeUpdate registry values (Error: $($Error[0]))" $LogFile
+                }
             }
             DS_WriteLog "-" "" $LogFile
             Write-Output ""
