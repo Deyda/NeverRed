@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.93
+  Version:          2.10.94
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -282,7 +282,7 @@ the script checks the version number and will update the package.
   2026-07-02        Correction Adoptium Temurin Open JDK download and install
   2026-09-01        Correction MS AVD Remote Desktop to MS Windows App
   2026-09-03        Create MS Windows App Insider function
-
+  2026-09-07        Error Correction
 
 .PARAMETER ESfile
 
@@ -4547,7 +4547,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.93"
+$eVersion = "2.10.94"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -21624,12 +21624,6 @@ If ($Install -eq "1") {
                 Write-Output ""
             }
         }
-        Catch {
-            Write-Host -ForegroundColor Red "Error Customize $Product (Error: $($Error[0]))"
-            DS_WriteLog "E" "Error Customize $Product (Error: $($Error[0]))" $LogFile
-        }
-
-        # Stop, if no new version is available
         Catch {
             Write-Host -ForegroundColor Red "Error Customize $Product (Error: $($Error[0]))"
             DS_WriteLog "E" "Error Customize $Product (Error: $($Error[0]))" $LogFile
