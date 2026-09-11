@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.94
+  Version:          2.10.95
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -4547,7 +4547,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.94"
+$eVersion = "2.10.95"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -23705,7 +23705,7 @@ If ($Install -eq "1") {
                 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name DisableAppInstallsOnFirstLogon -PropertyType DWORD -Value 0 -Force | Out-Null
                 #New-Item -ItemType File -Path "$env:USERPROFILE\AppData\Roaming\Microsoft\Teams\settings.json"
                 Write-Host "Install $Product Add-In for Outlook"
-                & $Teams_bootstraper_exe --installTMA> $null
+                & $Teams_bootstraper_exe --installTMA > $null
                 If ($MSTeamsNewArchitectureClear -eq "x86"){
                     msiexec.exe /i "$((Get-ChildItem -Path 'C:\Program Files\WindowsApps' -Filter 'MSTeams*' | sort-object LastWriteTime -Descending | Select-Object -First 1).FullName)\MicrosoftTeamsMeetingAddinInstallerx86.msi" Reboot=ReallySuppress ALLUSERS=1 TARGETDIR="C:\Windows\Microsoft\TeamsMeetingAddin" /qn
                 } Elseif ($MSTeamsNewArchitectureClear -eq "x64"){
