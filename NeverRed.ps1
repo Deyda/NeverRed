@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.95
+  Version:          2.10.96
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -283,6 +283,7 @@ the script checks the version number and will update the package.
   2026-09-01        Correction MS AVD Remote Desktop to MS Windows App
   2026-09-03        Create MS Windows App Insider function
   2026-09-07        Error Correction
+  2026-09-17        Correction Update Function
 
 .PARAMETER ESfile
 
@@ -4547,7 +4548,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.95"
+$eVersion = "2.10.96"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -4695,45 +4696,198 @@ If (!($NoUpdate)) {
         }
     }
     Else {
-        # There is a new Evergreen Script Version
-        Write-Host -Foregroundcolor Red "Attention! There is a new version of NeverRed."
+        # There is a new NeverRed Script Version
+        Write-Host -ForegroundColor Red "Attention! There is a new version of NeverRed."
         Write-Output ""
+
+        $UpdateScript = Join-Path $PSScriptRoot "update.ps1"
+
+        # Remove old update.ps1 if it exists
+        If (Test-Path -LiteralPath $UpdateScript -PathType Leaf) {
+            Remove-Item -LiteralPath $UpdateScript -Force -ErrorAction SilentlyContinue
+        }
+
+        # ============================================================================
+        # Create update.ps1
+        # ============================================================================
+
+        $UpdateContent = @(
+            'param('
+            '    [string]$ESfile,'
+            '    [string]$GUIfile'
+            ')'
+            ''
+            '# NeverRed Self Updater'
+            '# ============================================================================'
+            ''
+            '$NeverRedPath  = Join-Path $PSScriptRoot "NeverRed.ps1"'
+            '$NeverRedNew   = Join-Path $PSScriptRoot "NeverRed.new.ps1"'
+            '$EvergreenPath = Join-Path $PSScriptRoot "Evergreen.ps1"'
+            ''
+            'Write-Host ""'
+            'Write-Host "NeverRed Self Update" -ForegroundColor Cyan'
+            'Write-Host "====================" -ForegroundColor Cyan'
+            'Write-Host ""'
+            ''
+            'Write-Host "Current NeverRed: $NeverRedPath"'
+            'Write-Host "Download Target:  $NeverRedNew"'
+            'Write-Host ""'
+            ''
+            '# TLS 1.2 for Windows PowerShell 5.1'
+            '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12'
+            ''
+            '# Remove old temporary download if it exists'
+            'If (Test-Path -LiteralPath $NeverRedNew -PathType Leaf) {'
+            '    Write-Host "Removing old temporary NeverRed download..."'
+            '    Remove-Item -LiteralPath $NeverRedNew -Force -ErrorAction Stop'
+            '}'
+            ''
+            '# ============================================================================'
+            '# Download new NeverRed'
+            '# ============================================================================'
+            ''
+            'Write-Host "Downloading new NeverRed version..."'
+            ''
+            'Try {'
+            '    Microsoft.PowerShell.Utility\Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1" -OutFile $NeverRedNew -UseBasicParsing -ErrorAction Stop'
+            '}'
+            'Catch {'
+            '    Write-Host ""'
+            '    Write-Host "NeverRed download failed!" -ForegroundColor Red'
+            '    Write-Host $_.Exception.Message -ForegroundColor Red'
+            '    Write-Host ""'
+            '    Throw'
+            '}'
+            ''
+            '# ============================================================================'
+            '# Validate download'
+            '# ============================================================================'
+            ''
+            'If (!(Test-Path -LiteralPath $NeverRedNew -PathType Leaf)) {'
+            '    Throw "NeverRed.new.ps1 does not exist after download."'
+            '}'
+            ''
+            '$NewFile = Get-Item -LiteralPath $NeverRedNew'
+            ''
+            'If ($NewFile.Length -lt 10000) {'
+            '    Throw "Downloaded NeverRed file is unexpectedly small: $($NewFile.Length) bytes."'
+            '}'
+            ''
+            'Write-Host ""'
+            'Write-Host "Download successful: $($NewFile.Length) bytes" -ForegroundColor Green'
+            ''
+            '# ============================================================================'
+            '# Validate PowerShell syntax'
+            '# ============================================================================'
+            ''
+            'Write-Host "Checking downloaded NeverRed PowerShell syntax..."'
+            ''
+            '$Tokens = $null'
+            '$ParserErrors = $null'
+            ''
+            '[void][System.Management.Automation.Language.Parser]::ParseFile($NeverRedNew,[ref]$Tokens,[ref]$ParserErrors)'
+            ''
+            'If ($ParserErrors.Count -gt 0) {'
+            '    Write-Host ""'
+            '    Write-Host "Downloaded NeverRed.ps1 contains PowerShell parser errors!" -ForegroundColor Red'
+            '    $ParserErrors | ForEach-Object {'
+            '        Write-Host $_.Message -ForegroundColor Red'
+            '    }'
+            '    Throw "NeverRed update aborted because the downloaded script is invalid."'
+            '}'
+            ''
+            'Write-Host "PowerShell syntax OK." -ForegroundColor Green'
+            ''
+            '# ============================================================================'
+            '# Replace NeverRed'
+            '# ============================================================================'
+            ''
+            'Write-Host ""'
+            'Write-Host "Replacing NeverRed.ps1..."'
+            ''
+            '# Remove existing NeverRed only if it exists'
+            'If (Test-Path -LiteralPath $NeverRedPath -PathType Leaf) {'
+            '    Remove-Item -LiteralPath $NeverRedPath -Force -ErrorAction Stop'
+            '}'
+            ''
+            '# Move downloaded version to NeverRed.ps1'
+            'Move-Item -LiteralPath $NeverRedNew -Destination $NeverRedPath -Force -ErrorAction Stop'
+            ''
+            '# Verify replacement'
+            'If (!(Test-Path -LiteralPath $NeverRedPath -PathType Leaf)) {'
+            '    Throw "NeverRed.ps1 does not exist after replacement."'
+            '}'
+            ''
+            '$InstalledFile = Get-Item -LiteralPath $NeverRedPath'
+            ''
+            'Write-Host "NeverRed successfully updated." -ForegroundColor Green'
+            'Write-Host "File: $($InstalledFile.FullName)"'
+            'Write-Host "Size: $($InstalledFile.Length) bytes"'
+            ''
+            '# ============================================================================'
+            '# Remove Evergreen.ps1'
+            '# ============================================================================'
+            ''
+            'If (Test-Path -LiteralPath $EvergreenPath -PathType Leaf) {'
+            '    Write-Host "Removing Evergreen.ps1..."'
+            '    Remove-Item -LiteralPath $EvergreenPath -Force -ErrorAction SilentlyContinue'
+            '}'
+            ''
+            '# ============================================================================'
+            '# Start updated NeverRed'
+            '# ============================================================================'
+            ''
+            'Write-Host ""'
+            'Write-Host "Starting updated NeverRed..." -ForegroundColor Cyan'
+            'Write-Host ""'
+            ''
+            'If ($ESfile) {'
+            '    Write-Host "Starting NeverRed with ESfile: $ESfile"'
+            '    & $NeverRedPath -ESfile $ESfile'
+            '}'
+            'ElseIf ($GUIfile) {'
+            '    Write-Host "Starting NeverRed with GUIfile: $GUIfile"'
+            '    & $NeverRedPath -GUIfile $GUIfile'
+            '}'
+            'Else {'
+            '    & $NeverRedPath'
+            '}'
+        )
+
+        # Write update.ps1
+        Set-Content -LiteralPath $UpdateScript -Value $UpdateContent -Encoding UTF8
+
+        # ============================================================================
+        # Start update
+        # ============================================================================
+
         If ($ESfile) {
-            $update = @'
-                Remove-Item -Path "$PSScriptRoot\Evergreen.ps1" -Force
-                Remove-Item -Path "$PSScriptRoot\NeverRed.ps1" -Force 
-                Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
-                & "$PSScriptRoot\NeverRed.ps1" -ESfile $ESfile
-'@
-            $update > $PSScriptRoot\update.ps1
-            & "$PSScriptRoot\update.ps1"
+
+            & $UpdateScript -ESfile $ESfile
             Break
+
         }
         ElseIf ($GUIfile) {
-            $update = @'
-                Remove-Item -Path "$PSScriptRoot\Evergreen.ps1" -Force
-                Remove-Item -Path "$PSScriptRoot\NeverRed.ps1" -Force
-                Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
-                & "$PSScriptRoot\NeverRed.ps1" -GUIfile $GUIfile
-'@
-            $update > $PSScriptRoot\update.ps1
-            & "$PSScriptRoot\update.ps1"
+
+            & $UpdateScript -GUIfile $GUIfile
             Break
-            
+
         }
         Else {
+
             $wshell = New-Object -ComObject Wscript.Shell
-            $AnswerPending = $wshell.Popup("Do you want to download the new version?",0,"New Version Alert!",32+4)
+            $AnswerPending = $wshell.Popup(
+                "Do you want to download the new version?",
+                0,
+                "New Version Alert!",
+                32+4
+            )
+
             If ($AnswerPending -eq "6") {
+
                 Start-Process "https://www.deyda.net/index.php/en/NeverRed/"
-                $update = @'
-                    Remove-Item -Path "$PSScriptRoot\Evergreen.ps1" -Force
-                    Remove-Item -Path "$PSScriptRoot\NeverRed.ps1" -Force
-                    Invoke-WebRequest -Uri https://raw.githubusercontent.com/Deyda/NeverRed/master/NeverRed.ps1 -OutFile ("$PSScriptRoot\" + "NeverRed.ps1")
-                    & "$PSScriptRoot\NeverRed.ps1"
-'@
-                $update > $PSScriptRoot\update.ps1
-                & "$PSScriptRoot\update.ps1"
+
+                & $UpdateScript
                 Break
             }
         }
@@ -11404,7 +11558,7 @@ If ($Download -eq "1") {
             $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
             Write-Host -ForegroundColor Green "Install Evergreen module done. Version"$ea
             Write-Output ""
-            update-evergreen
+            Update-Evergreen
             Write-Output ""
             Write-Host -ForegroundColor Green "Evergreen module initialized"
             Write-Output ""
@@ -11422,7 +11576,7 @@ If ($Download -eq "1") {
             if ([version]"$ea" -ge [version]"$eb") {
                 Write-Host -ForegroundColor Green "Installed Evergreen module version is up to date."
                 Write-Output ""
-                update-evergreen
+                Update-Evergreen
                 Write-Host -ForegroundColor Green "Evergreen module initialized"
                 Write-Output ""
             }
@@ -19707,77 +19861,111 @@ If ($Install -eq "1") {
             2 {$CWAInstaller = "CitrixWorkspaceAppWeb.exe"}
             3 {$CWAInstaller = "CitrixWorkspaceAppWeb.exe"}
         }
+        # Get download version
         $Version = Get-Content -Path "$PSScriptRoot\Citrix\$Product\Version.txt" -ErrorAction SilentlyContinue
+
         If (!($Version)) {
             $Version = $WSACD.Version
         }
+
+        # Get installed Citrix Workspace App version
+        $WSA = (
+            Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+            Where-Object {
+                $_.DisplayName -like "*Citrix Workspace*" -and
+                $_.UninstallString -like "*Trolley*"
+            }
+        ).DisplayVersion |
+        Sort-Object -Property Version -Descending |
+        Select-Object -First 1
+
+        If (!$WSA) {
+            $WSA = (
+                Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                Where-Object {
+                    $_.DisplayName -like "*Citrix Workspace*" -and
+                    $_.UninstallString -like "*Trolley*"
+                }
+            ).DisplayVersion |
+            Sort-Object -Property Version -Descending |
+            Select-Object -First 1
+        }
+
+        If (!$WSA) {
+            $WSA = (
+                Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                Where-Object {
+                    $_.DisplayName -like "*Citrix Workspace*" -and
+                    $_.UninstallString -like "*CWAInstaller*"
+                }
+            ).DisplayVersion |
+            Sort-Object -Property Version -Descending |
+            Select-Object -First 1
+        }
+
+        If (!$WSA) {
+            $WSA = (
+                Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                Where-Object {
+                    $_.DisplayName -like "*Citrix Workspace*" -and
+                    $_.UninstallString -like "*CWAInstaller*"
+                }
+            ).DisplayVersion |
+            Sort-Object -Property Version -Descending |
+            Select-Object -First 1
+        }
+
+        If (!$WSA) {
+            $WSA = (
+                Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                Where-Object {
+                    $_.DisplayName -like "*Citrix Workspace*" -and
+                    $_.UninstallString -like "*bootstrapperhelper*"
+                }
+            ).DisplayVersion |
+            Sort-Object -Property Version -Descending |
+            Select-Object -First 1
+        }
+
+        If (!$WSA) {
+            $WSA = (
+                Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                Where-Object {
+                    $_.DisplayName -like "*Citrix Workspace*" -and
+                    $_.UninstallString -like "*bootstrapperhelper*"
+                }
+            ).DisplayVersion |
+            Sort-Object -Property Version -Descending |
+            Select-Object -First 1
+        }
+        # Normalize versions
+        $VersionCompare = $null
+        $WSACompare     = $null
         If ($Version) {
-            $CurrentWSASplit = $Version.split(".")
-            $CurrentWSAStrings = ([regex]::Matches($Version, "\." )).count
-            $CurrentWSAStringTwo = ([regex]::Matches($CurrentWSASplit[1], "." )).count
-            $CurrentWSAStringLast = ([regex]::Matches($CurrentWSASplit[3], "." )).count
-            If ($CurrentWSAStringTwo -lt "2") {
-                $CurrentWSASplit[1] = "0" + $CurrentWSASplit[1]
+            Try {
+                $Version = $Version.Trim()
+                $VersionCompare = [version]$Version
             }
-            If ($CurrentWSAStringLast -lt "3") {
-                $CurrentWSASplit[3] = "0" + $CurrentWSASplit[3]
+            Catch {
+                Write-Host -ForegroundColor Red "Invalid Citrix Workspace download version: $Version"
+                DS_WriteLog "E" "Invalid Citrix Workspace download version: $Version" $LogFile
             }
-            Switch ($CurrentWSAStrings) {
-                1 {
-                    $Version = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1]
-                }
-                2 {
-                    $Version = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2]
-                }
-                3 {
-                    $Version = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2] + "." + $CurrentWSASplit[3]
-                }
-            }
-        }
-        $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*Trolley*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
-        If (!$WSA) {
-            $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*Trolley*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
-        }
-        If (!$WSA) {
-            $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
-        }
-        If (!$WSA) {
-            $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*CWAInstaller*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
-        }
-        If (!$WSA) {
-            $WSA = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*bootstrapperhelper*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
-        }
-        If (!$WSA) {
-            $WSA = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.DisplayName -like "*Citrix Workspace*" -and $_.UninstallString -like "*bootstrapperhelper*"}).DisplayVersion | Sort-Object -Property Version -Descending | Select-Object -First 1
         }
         If ($WSA) {
-            $CurrentWSASplit = $WSA.split(".")
-            $CurrentWSAStrings = ([regex]::Matches($WSA, "\." )).count
-            $CurrentWSAStringTwo = ([regex]::Matches($CurrentWSASplit[1], "." )).count
-            $CurrentWSAStringLast = ([regex]::Matches($CurrentWSASplit[3], "." )).count
-            If ($CurrentWSAStringTwo -lt "2") {
-                $CurrentWSASplit[1] = "0" + $CurrentWSASplit[1]
+            Try {
+                $WSA = $WSA.Trim()
+                $WSACompare = [version]$WSA
             }
-            If ($CurrentWSAStringLast -lt "3") {
-                $CurrentWSASplit[3] = "0" + $CurrentWSASplit[3]
-            }
-            Switch ($CurrentWSAStrings) {
-                1 {
-                    $WSA = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1]
-                }
-                2 {
-                    $WSA = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2]
-                }
-                3 {
-                    $WSA = $CurrentWSASplit[0] + "." + $CurrentWSASplit[1] + "." + $CurrentWSASplit[2] + "." + $CurrentWSASplit[3]
-                }
+            Catch {
+                Write-Host -ForegroundColor Red "Invalid installed Citrix Workspace version: $WSA"
+                DS_WriteLog "E" "Invalid installed Citrix Workspace version: $WSA" $LogFile
             }
         }
         $UninstallWSACR = "$PSScriptRoot\Citrix\ReceiverCleanupUtility\ReceiverCleanupUtility.exe"
         Write-Host -ForegroundColor Magenta "Install $Product"
         Write-Host "Download Version: $Version"
         Write-Host "Current Version:  $WSA"
-        If ($WSA -ne $Version) {
+        If (!$WSACompare -or ($WSACompare -lt $VersionCompare)) {
             DS_WriteLog "I" "Uninstall $Product" $LogFile
             Write-Host -ForegroundColor Green "Update available"
             # Citrix WSA Uninstallation
