@@ -8,7 +8,7 @@ A new folder for every single package will be created, together with a version f
 the script checks the version number and will update the package.
 
 .NOTES
-  Version:          2.10.96
+  Version:          2.10.97
   Author:           Manuel Winkel / Deyda Consulting GmbH <www.deyda.net>
   Creation Date:    2021-01-29
 
@@ -284,6 +284,7 @@ the script checks the version number and will update the package.
   2026-09-03        Create MS Windows App Insider function
   2026-09-07        Error Correction
   2026-09-17        Correction Update Function
+  2026-10-06        Correction Update Evergreen Module Function
 
 .PARAMETER ESfile
 
@@ -4548,7 +4549,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Is there a newer NeverRed Script version?
 # ========================================================================================================================================
-$eVersion = "2.10.96"
+$eVersion = "2.10.97"
 $WebVersion = ""
 [bool]$NewerVersion = $false
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -11559,8 +11560,63 @@ If ($Download -eq "1") {
             Write-Host -ForegroundColor Green "Install Evergreen module done. Version"$ea
             Write-Output ""
             Update-Evergreen
-            Write-Output ""
-            Write-Host -ForegroundColor Green "Evergreen module initialized"
+            # Check Evergreen application cache
+            $EvergreenCache = "$env:LOCALAPPDATA\Evergreen"
+            $EvergreenApps = "$EvergreenCache\Apps"
+            $EvergreenManifests = "$EvergreenCache\Manifests"
+            $EvergreenZip = "$EvergreenCache\evergreen-apps.zip"
+
+            if (!(Test-Path $EvergreenApps) -or !(Test-Path $EvergreenManifests)) {
+
+                Write-Host -ForegroundColor Yellow "Evergreen Apps or Manifests cache is missing."
+                Write-Host -ForegroundColor Yellow "Extract Evergreen application cache manually."
+
+                if (Test-Path $EvergreenZip) {
+
+                    $EvergreenTemp = "$env:TEMP\NeverRed-Evergreen"
+
+                    Remove-Item $EvergreenTemp -Recurse -Force -ErrorAction SilentlyContinue
+                    New-Item $EvergreenTemp -ItemType Directory -Force | Out-Null
+
+                    try {
+                        Expand-Archive -Path $EvergreenZip -DestinationPath $EvergreenTemp -Force -ErrorAction Stop
+
+                        if ((Test-Path "$EvergreenTemp\Apps") -and
+                            (Test-Path "$EvergreenTemp\Manifests")) {
+
+                            Copy-Item "$EvergreenTemp\Apps" `
+                                "$EvergreenCache\Apps" `
+                                -Recurse -Force
+
+                            Copy-Item "$EvergreenTemp\Manifests" `
+                                "$EvergreenCache\Manifests" `
+                                -Recurse -Force
+
+                            Write-Host -ForegroundColor Green "Evergreen application cache extracted successfully."
+                        }
+                        else {
+                            Write-Host -ForegroundColor Red "Evergreen Apps or Manifests not found inside archive."
+                        }
+                    }
+                    catch {
+                        Write-Host -ForegroundColor Red "Failed to extract Evergreen application cache."
+                        Write-Host -ForegroundColor Red $_.Exception.Message
+                    }
+
+                    Remove-Item $EvergreenTemp -Recurse -Force -ErrorAction SilentlyContinue
+                }
+                else {
+                    Write-Host -ForegroundColor Red "Evergreen application archive not found: $EvergreenZip"
+                }
+            }
+
+            # Final validation
+            if ((Test-Path $EvergreenApps) -and (Test-Path $EvergreenManifests)) {
+                Write-Host -ForegroundColor Green "Evergreen module initialized"
+            }
+            else {
+                Write-Host -ForegroundColor Red "Evergreen module initialization failed - Apps or Manifests missing."
+            }
             Write-Output ""
         }
         Else {
@@ -11577,7 +11633,64 @@ If ($Download -eq "1") {
                 Write-Host -ForegroundColor Green "Installed Evergreen module version is up to date."
                 Write-Output ""
                 Update-Evergreen
-                Write-Host -ForegroundColor Green "Evergreen module initialized"
+                # Check Evergreen application cache
+                $EvergreenCache = "$env:LOCALAPPDATA\Evergreen"
+                $EvergreenApps = "$EvergreenCache\Apps"
+                $EvergreenManifests = "$EvergreenCache\Manifests"
+                $EvergreenZip = "$EvergreenCache\evergreen-apps.zip"
+
+                if (!(Test-Path $EvergreenApps) -or !(Test-Path $EvergreenManifests)) {
+
+                    Write-Host -ForegroundColor Yellow "Evergreen Apps or Manifests cache is missing."
+                    Write-Host -ForegroundColor Yellow "Extract Evergreen application cache manually."
+
+                    if (Test-Path $EvergreenZip) {
+
+                        $EvergreenTemp = "$env:TEMP\NeverRed-Evergreen"
+
+                        Remove-Item $EvergreenTemp -Recurse -Force -ErrorAction SilentlyContinue
+                        New-Item $EvergreenTemp -ItemType Directory -Force | Out-Null
+
+                        try {
+                            Expand-Archive -Path $EvergreenZip -DestinationPath $EvergreenTemp -Force -ErrorAction Stop
+
+                            if ((Test-Path "$EvergreenTemp\Apps") -and
+                                (Test-Path "$EvergreenTemp\Manifests")) {
+
+                                Copy-Item "$EvergreenTemp\Apps" `
+                                    "$EvergreenCache\Apps" `
+                                    -Recurse -Force
+
+                                Copy-Item "$EvergreenTemp\Manifests" `
+                                    "$EvergreenCache\Manifests" `
+                                    -Recurse -Force
+
+                                Write-Host -ForegroundColor Green "Evergreen application cache extracted successfully."
+                            }
+                            else {
+                                Write-Host -ForegroundColor Red "Evergreen Apps or Manifests not found inside archive."
+                            }
+                        }
+                        catch {
+                            Write-Host -ForegroundColor Red "Failed to extract Evergreen application cache."
+                            Write-Host -ForegroundColor Red $_.Exception.Message
+                        }
+
+                        Remove-Item $EvergreenTemp -Recurse -Force -ErrorAction SilentlyContinue
+                    }
+                    else {
+                        Write-Host -ForegroundColor Red "Evergreen application archive not found: $EvergreenZip"
+                    }
+                }
+
+                # Final validation
+                if ((Test-Path $EvergreenApps) -and (Test-Path $EvergreenManifests)) {
+                    Write-Host -ForegroundColor Green "Evergreen module initialized"
+                }
+                else {
+                    Write-Host -ForegroundColor Red "Evergreen module initialization failed - Apps or Manifests missing."
+                }
+
                 Write-Output ""
             }
             else {
@@ -11589,8 +11702,65 @@ If ($Download -eq "1") {
                 $ea = $estringver | Select-Object Moduleversion -ExpandProperty Moduleversion
                 Write-Host -ForegroundColor Green "Update Evergreen module done. Version"$ea
                 Write-Output ""
-                update-evergreen
-                Write-Host -ForegroundColor Green "Evergreen module initialized"
+                Update-Evergreen
+                # Check Evergreen application cache
+                $EvergreenCache = "$env:LOCALAPPDATA\Evergreen"
+                $EvergreenApps = "$EvergreenCache\Apps"
+                $EvergreenManifests = "$EvergreenCache\Manifests"
+                $EvergreenZip = "$EvergreenCache\evergreen-apps.zip"
+
+                if (!(Test-Path $EvergreenApps) -or !(Test-Path $EvergreenManifests)) {
+
+                    Write-Host -ForegroundColor Yellow "Evergreen Apps or Manifests cache is missing."
+                    Write-Host -ForegroundColor Yellow "Extract Evergreen application cache manually."
+
+                    if (Test-Path $EvergreenZip) {
+
+                        $EvergreenTemp = "$env:TEMP\NeverRed-Evergreen"
+
+                        Remove-Item $EvergreenTemp -Recurse -Force -ErrorAction SilentlyContinue
+                        New-Item $EvergreenTemp -ItemType Directory -Force | Out-Null
+
+                        try {
+                            Expand-Archive -Path $EvergreenZip -DestinationPath $EvergreenTemp -Force -ErrorAction Stop
+
+                            if ((Test-Path "$EvergreenTemp\Apps") -and
+                                (Test-Path "$EvergreenTemp\Manifests")) {
+
+                                Copy-Item "$EvergreenTemp\Apps" `
+                                    "$EvergreenCache\Apps" `
+                                    -Recurse -Force
+
+                                Copy-Item "$EvergreenTemp\Manifests" `
+                                    "$EvergreenCache\Manifests" `
+                                    -Recurse -Force
+
+                                Write-Host -ForegroundColor Green "Evergreen application cache extracted successfully."
+                            }
+                            else {
+                                Write-Host -ForegroundColor Red "Evergreen Apps or Manifests not found inside archive."
+                            }
+                        }
+                        catch {
+                            Write-Host -ForegroundColor Red "Failed to extract Evergreen application cache."
+                            Write-Host -ForegroundColor Red $_.Exception.Message
+                        }
+
+                        Remove-Item $EvergreenTemp -Recurse -Force -ErrorAction SilentlyContinue
+                    }
+                    else {
+                        Write-Host -ForegroundColor Red "Evergreen application archive not found: $EvergreenZip"
+                    }
+                }
+
+                # Final validation
+                if ((Test-Path $EvergreenApps) -and (Test-Path $EvergreenManifests)) {
+                    Write-Host -ForegroundColor Green "Evergreen module initialized"
+                }
+                else {
+                    Write-Host -ForegroundColor Red "Evergreen module initialization failed - Apps or Manifests missing."
+                }
+
                 Write-Output ""
             }
         }
